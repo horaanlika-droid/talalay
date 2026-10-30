@@ -84,13 +84,20 @@ export function normalize(raw) {
   };
 }
 
-async function fetchJSON(url, options) {
-  const res = await fetch(url, {
-    headers: { Accept: "application/json", ...(options && options.headers) },
-    ...options,
-  });
-  if (!res.ok) throw new Error(`${url} → ${res.status}`);
-  return res.json();
+async function fetchJSON(url, options = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 7000);
+  try {
+    const res = await fetch(url, {
+      ...options,
+      signal: options.signal || controller.signal,
+      headers: { Accept: "application/json", ...(options.headers || {}) },
+    });
+    if (!res.ok) throw new Error(`${url} → ${res.status}`);
+    return await res.json();
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export function loadContent({ force = false } = {}) {

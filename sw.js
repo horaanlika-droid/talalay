@@ -1,5 +1,5 @@
 /* Cocktail Embassy — offline shell (stale-while-revalidate). */
-const CACHE = "ce-shell-v5";
+const CACHE = "ce-shell-v6";
 const SHELL = [
   "./",
   "index.html",
