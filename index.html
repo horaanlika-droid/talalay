@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Cocktail Embassy — Hand-blown glassware</title>
+    <meta name="description" content="Cocktail Embassy supplies hand-blown crystal, barware and cocktail acids to bars, hotels and studios. Browse the catalogue and build a trade request.">
+    <meta name="theme-color" content="#0a1730">
+    <meta name="color-scheme" content="light">
+    <link rel="canonical" href="https://horaanlika-droid.github.io/talalay/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Cocktail Embassy">
+    <meta property="og:title" content="Cocktail Embassy — Hand-blown glassware">
+    <meta property="og:description" content="Levitating crystal, noir coupes and trade acids. Browse the catalogue and build a request.">
+    <meta property="og:image" content="assets/brand/og-cover.jpg">
+    <meta property="og:url" content="https://horaanlika-droid.github.io/talalay/">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="icon" href="assets/brand/favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Embassy">
+
+    <link rel="preload" as="image" href="assets/products/martini.webp">
+    <link rel="stylesheet" href="css/app.css">
+
+    <script src="js/config.js"></script>
+    <script type="module" src="js/app.js"></script>
+
+    <style>
+      /* Instant splash while the module graph boots */
+      .boot {
+        position: fixed;
+        inset: 0;
+        z-index: 300;
+        display: grid;
+        place-items: center;
+        background: #071226;
+        transition: opacity 0.45s ease, visibility 0.45s;
+      }
+      .boot img {
+        width: min(46vw, 210px);
+        opacity: 0.9;
+        animation: boot-pulse 1.8s ease-in-out infinite;
+      }
+      @keyframes boot-pulse {
+        50% {
+          opacity: 0.55;
+        }
+      }
+      body.is-ready .boot {
+        opacity: 0;
+        visibility: hidden;
+      }
+    </style>
+    <noscript>
+      <style>
+        .boot {
+          display: none;
+        }
+      </style>
+    </noscript>
+  </head>
+  <body>
+    <div class="boot" aria-hidden="true">
+      <img src="assets/brand/mark-chrome.png" alt="">
+    </div>
+
+    <div id="app"></div>
+
+    <noscript>
+      <div style="padding: 28px; font-family: system-ui, sans-serif; color: #0b1730; background: #f4efe6">
+        <h1 style="letter-spacing: -0.03em">Cocktail Embassy</h1>
+        <p>This catalogue needs JavaScript. Write to
+          <a href="mailto:orders@cocktailembassy.com">orders@cocktailembassy.com</a> for the trade catalogue.</p>
+      </div>
+    </noscript>
+  </body>
+</html>

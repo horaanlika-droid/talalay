@@ -1,0 +1,15 @@
+{
+  "name": "Cocktail Embassy",
+  "short_name": "Embassy",
+  "description": "Hand-blown glassware for the modern bar — catalogue and trade requests.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#071226",
+  "theme_color": "#0a1730",
+  "icons": [
+    { "src": "assets/brand/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "assets/brand/app-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

@@ -1,0 +1,469 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-30T00:00:00Z",
+  "settings": {
+    "brand": "Cocktail Embassy",
+    "tagline": "Hand-blown glassware for the modern bar.",
+    "announcement": "Complimentary EU shipping on trade orders over €250 · Worldwide dispatch",
+    "currency": "EUR",
+    "locale": "en-IE",
+    "priceNote": "Prices exclude VAT & shipping",
+    "requestNote": "No online payment — submit a request and our team confirms availability, shipping and final invoicing within one business day.",
+    "hero": [
+      {
+        "productSlug": "levitating-martini",
+        "kicker": "The Levitating Series",
+        "title": "Levitating",
+        "name": "Levitating Martini",
+        "subtitle": "Cocktail Collection",
+        "copy": "Hand-blown crystal that defies gravity. Ultra-light, perfectly balanced, unforgettable in the hand."
+      },
+      {
+        "productSlug": "etched-highball",
+        "kicker": "Etched Editions",
+        "title": "Etched",
+        "name": "Etched Highball",
+        "subtitle": "Signature Collection",
+        "copy": "A slender highball with a hand-etched constellation. Built for long, cold, precise serves."
+      },
+      {
+        "productSlug": "champagne-saucer",
+        "kicker": "Noir Series",
+        "title": "Noir",
+        "name": "Champagne Saucer",
+        "subtitle": "Noir Collection",
+        "copy": "A wide, shallow bowl tuned for aroma. The silhouette that started the Embassy."
+      }
+    ],
+    "contacts": {
+      "email": "orders@cocktailembassy.com",
+      "phone": "+31 10 000 0000",
+      "whatsapp": "",
+      "telegram": "https://t.me/cocktailembassy",
+      "instagram": "https://instagram.com/cocktailembassy",
+      "address": "Rotterdam · The Netherlands",
+      "hours": "Mon–Fri, 09:00–18:00 CET"
+    },
+    "shippingNote": "Dispatch in 2–4 business days. Pallet and mixed-case orders quoted individually.",
+    "returnsNote": "Breakage in transit is replaced free of charge — send photos within 48 hours of delivery.",
+    "about": "Cocktail Embassy supplies hand-blown crystal, barware and cocktail acids to bars, hotels and studios across Europe and the Gulf. Every piece is selected for balance in the hand and clarity on the bar."
+  },
+  "categories": [
+    {
+      "slug": "glassware",
+      "name": "Glassware",
+      "blurb": "Hand-blown crystal for every serve",
+      "sort": 1
+    },
+    {
+      "slug": "barware",
+      "name": "Barware",
+      "blurb": "Tools, vessels and finishing touches",
+      "sort": 2
+    },
+    {
+      "slug": "acids",
+      "name": "Acids & Other",
+      "blurb": "Cocktail acids, syrups and modifiers",
+      "sort": 3
+    }
+  ],
+  "collections": [
+    {
+      "slug": "levitating",
+      "name": "Levitating",
+      "subtitle": "Cocktail Collection",
+      "description": "Ultra-light crystal with a pulled stem, suspended for a unique experience.",
+      "image": "assets/editorial/crystal-light.webp",
+      "sort": 1
+    },
+    {
+      "slug": "noir",
+      "name": "Noir",
+      "subtitle": "Dark Service",
+      "description": "Deep shadows, wide bowls, low light. Designed for after-dinner service.",
+      "image": "assets/editorial/noir-coupe.webp",
+      "sort": 2
+    },
+    {
+      "slug": "signature",
+      "name": "Signature",
+      "subtitle": "House Editions",
+      "description": "The Embassy house cuts — etched, engraved and numbered by hand.",
+      "image": "assets/editorial/sunlit-sour.webp",
+      "sort": 3
+    },
+    {
+      "slug": "raw",
+      "name": "Raw",
+      "subtitle": "Studio Series",
+      "description": "Unfinished textures, sandblasted surfaces and single-piece vessels.",
+      "image": "assets/editorial/red-vessel.webp",
+      "sort": 4
+    }
+  ],
+  "products": [
+    {
+      "id": "p1",
+      "slug": "levitating-martini",
+      "name": "Levitating Martini",
+      "subtitle": "Hand-Blown Crystal · 210 ml",
+      "categorySlug": "glassware",
+      "collectionSlugs": ["levitating", "signature"],
+      "price": 42,
+      "volume": "210 ml",
+      "images": ["assets/products/martini.webp"],
+      "description": "An ultra-delicate, elongated martini glass designed for minimal elegance. The pulled stem replicates classic proportions while keeping the piece almost weightless in the hand.",
+      "specs": {
+        "Capacity": "210 ml",
+        "Material": "Lead-free hand-blown crystal",
+        "Height": "185 mm",
+        "Care": "Hand wash",
+        "Origin": "Hand-blown in Europe"
+      },
+      "badge": "Signature",
+      "featured": true,
+      "inStock": true,
+      "sort": 1
+    },
+    {
+      "id": "p2",
+      "slug": "embassy-goblet",
+      "name": "Embassy Goblet",
+      "subtitle": "Burgundy Goblet · 400 ml",
+      "categorySlug": "glassware",
+      "collectionSlugs": ["signature"],
+      "price": 38,
+      "volume": "400 ml",
+      "images": ["assets/products/goblet.webp"],
+      "description": "A generous all-purpose goblet with a slim shoulder and a wide, stable foot. Our most requested piece for wine service and large-format stirred drinks.",
+      "specs": {
+        "Capacity": "400 ml",
+        "Material": "Hand-blown crystal",
+        "Height": "150 mm",
+        "Care": "Hand wash",
+        "Packing": "6 per case"
+      },
+      "badge": "",
+      "featured": true,
+      "inStock": true,
+      "sort": 2
+    },
+    {
+      "id": "p3",
+      "slug": "saucer-coupe",
+      "name": "Saucer Coupe",
+      "subtitle": "Double-Wall Coupe · 220 ml",
+      "categorySlug": "glassware",
+      "collectionSlugs": ["noir"],
+      "price": 34,
+      "volume": "220 ml",
+      "images": ["assets/products/coupe.webp"],
+      "description": "A stepped coupe with an inner volume ring so the bowl reads fuller than it is. Tuned for champagne, sours and clarified milk punches.",
+      "specs": {
+        "Capacity": "220 ml",
+        "Material": "Hand-blown crystal",
+        "Height": "135 mm",
+        "Care": "Hand wash",
+        "Packing": "6 per case"
+      },
+      "badge": "",
+      "featured": false,
+      "inStock": true,
+      "sort": 3
+    },
+    {
+      "id": "p4",
+      "slug": "etched-highball",
+      "name": "Etched Highball",
+      "subtitle": "Etched Edition · 350 ml",
+      "categorySlug": "glassware",
+      "collectionSlugs": ["signature"],
+      "price": 28,
+      "volume": "350 ml",
+      "images": ["assets/products/highball.webp"],
+      "description": "A tall, slender highball decorated with a hand-etched constellation. Keeps carbonation alive and reads beautifully under bar light.",
+      "specs": {
+        "Capacity": "350 ml",
+        "Material": "Etched crystal",
+        "Height": "155 mm",
+        "Care": "Hand wash",
+        "Packing": "6 per case"
+      },
+      "badge": "Etched",
+      "featured": false,
+      "inStock": true,
+      "sort": 4
+    },
+    {
+      "id": "p5",
+      "slug": "champagne-saucer",
+      "name": "Champagne Saucer",
+      "subtitle": "Wide Bowl Saucer · 250 ml",
+      "categorySlug": "glassware",
+      "collectionSlugs": ["noir", "levitating"],
+      "price": 32,
+      "volume": "250 ml",
+      "images": ["assets/products/saucer.webp"],
+      "description": "The classic saucer, re-proportioned for aroma. A wide surface and thin rim make it the glass we reach for at the end of the night.",
+      "specs": {
+        "Capacity": "250 ml",
+        "Material": "Hand-blown crystal",
+        "Height": "110 mm",
+        "Care": "Hand wash",
+        "Packing": "6 per case"
+      },
+      "badge": "",
+      "featured": false,
+      "inStock": true,
+      "sort": 5
+    },
+    {
+      "id": "p6",
+      "slug": "basalt-rocks",
+      "name": "Basalt Rocks",
+      "subtitle": "Heavy Base Rocks · 320 ml",
+      "categorySlug": "glassware",
+      "collectionSlugs": ["raw"],
+      "price": 30,
+      "volume": "320 ml",
+      "images": ["assets/products/rocks.webp"],
+      "description": "A thick-bottomed rocks glass with a straight wall and a hint of weight. Built for spirit-forward serves and slow ice.",
+      "specs": {
+        "Capacity": "320 ml",
+        "Material": "Pressed crystal",
+        "Height": "95 mm",
+        "Care": "Dishwasher safe",
+        "Packing": "6 per case"
+      },
+      "badge": "",
+      "featured": true,
+      "inStock": true,
+      "sort": 6
+    },
+    {
+      "id": "p7",
+      "slug": "slope-tumbler",
+      "name": "Slope Tumbler",
+      "subtitle": "Stacking Tumbler · 300 ml",
+      "categorySlug": "glassware",
+      "collectionSlugs": ["raw"],
+      "price": 26,
+      "volume": "300 ml",
+      "images": ["assets/products/tumbler.webp"],
+      "description": "A taper that stacks in the cupboard and reads clean on the table. The everyday workhorse of the Embassy range.",
+      "specs": {
+        "Capacity": "300 ml",
+        "Material": "Pressed crystal",
+        "Height": "100 mm",
+        "Care": "Dishwasher safe",
+        "Packing": "6 per case"
+      },
+      "badge": "",
+      "featured": false,
+      "inStock": true,
+      "sort": 7
+    },
+    {
+      "id": "p8",
+      "slug": "stemmed-tumbler",
+      "name": "Stemmed Tumbler",
+      "subtitle": "Footed Tumbler · 330 ml",
+      "categorySlug": "glassware",
+      "collectionSlugs": ["levitating"],
+      "price": 36,
+      "volume": "330 ml",
+      "images": ["assets/products/footed.webp"],
+      "description": "A tumbler lifted onto a low foot — the silhouette of a wine glass with the ease of a rocks. Our quiet favourite.",
+      "specs": {
+        "Capacity": "330 ml",
+        "Material": "Hand-blown crystal",
+        "Height": "120 mm",
+        "Care": "Hand wash",
+        "Packing": "6 per case"
+      },
+      "badge": "New",
+      "featured": false,
+      "inStock": true,
+      "sort": 8
+    },
+    {
+      "id": "p9",
+      "slug": "cylinder-hurricane",
+      "name": "Cylinder Hurricane",
+      "subtitle": "Candle Hurricane · 380 ml",
+      "categorySlug": "barware",
+      "collectionSlugs": ["raw"],
+      "price": 34,
+      "volume": "380 ml",
+      "images": ["assets/products/hurricane.webp"],
+      "description": "A straight-sided hurricane that doubles as a candle vessel. Sandblasted base, polished rim, endlessly reusable.",
+      "specs": {
+        "Capacity": "380 ml",
+        "Material": "Hand-blown glass",
+        "Height": "115 mm",
+        "Care": "Hand wash",
+        "Packing": "4 per case"
+      },
+      "badge": "",
+      "featured": false,
+      "inStock": false,
+      "sort": 9
+    },
+    {
+      "id": "p10",
+      "slug": "column-tumbler",
+      "name": "Column Tumbler",
+      "subtitle": "Etched Column · 300 ml",
+      "categorySlug": "glassware",
+      "collectionSlugs": ["signature"],
+      "price": 28,
+      "volume": "300 ml",
+      "images": ["assets/products/cylinder.webp"],
+      "description": "A clean cylinder with a hand-etched chevron. Designed to disappear into the table and hold the light.",
+      "specs": {
+        "Capacity": "300 ml",
+        "Material": "Etched crystal",
+        "Height": "100 mm",
+        "Care": "Hand wash",
+        "Packing": "6 per case"
+      },
+      "badge": "",
+      "featured": false,
+      "inStock": true,
+      "sort": 10
+    },
+    {
+      "id": "p11",
+      "slug": "citric-acid-solution",
+      "name": "Citric Acid Solution",
+      "subtitle": "50% w/v · 500 ml",
+      "categorySlug": "acids",
+      "collectionSlugs": [],
+      "price": 18,
+      "volume": "500 ml",
+      "images": [],
+      "description": "A clean 50% citric acid solution for acid-adjusting citrus and building house cordials. Food-grade, unflavoured, bar-ready.",
+      "specs": {
+        "Volume": "500 ml",
+        "Concentration": "50% w/v",
+        "Storage": "Cool, dry, away from light",
+        "Shelf life": "24 months unopened"
+      },
+      "badge": "Trade",
+      "featured": false,
+      "inStock": true,
+      "sort": 11
+    },
+    {
+      "id": "p12",
+      "slug": "malic-acid-powder",
+      "name": "Malic Acid Powder",
+      "subtitle": "Food Grade · 250 g",
+      "categorySlug": "acids",
+      "collectionSlugs": [],
+      "price": 22,
+      "volume": "250 g",
+      "images": [],
+      "description": "Fine food-grade malic acid for a sharper, greener acidity in sours, shrubs and clarified punches. Includes a measuring scoop.",
+      "specs": {
+        "Weight": "250 g",
+        "Purity": "99.5%",
+        "Storage": "Sealed, dry",
+        "Shelf life": "36 months"
+      },
+      "badge": "",
+      "featured": false,
+      "inStock": true,
+      "sort": 12
+    },
+    {
+      "id": "p13",
+      "slug": "lactic-acid-solution",
+      "name": "Lactic Acid Solution",
+      "subtitle": "80% · 250 ml",
+      "categorySlug": "acids",
+      "collectionSlugs": [],
+      "price": 20,
+      "volume": "250 ml",
+      "images": [],
+      "description": "Round, dairy-soft acidity for milk-washed and dessert-adjacent drinks. Supplied with a drip-resistant cap.",
+      "specs": {
+        "Volume": "250 ml",
+        "Concentration": "80%",
+        "Storage": "Cool, dry, away from light",
+        "Shelf life": "24 months unopened"
+      },
+      "badge": "",
+      "featured": false,
+      "inStock": true,
+      "sort": 13
+    },
+    {
+      "id": "p14",
+      "slug": "jigger-precision",
+      "name": "Precision Jigger",
+      "subtitle": "Banded Steel · 15/30 ml",
+      "categorySlug": "barware",
+      "collectionSlugs": [],
+      "price": 24,
+      "volume": "15 / 30 ml",
+      "images": [],
+      "description": "A machined jigger with a matte exterior and polished interior band for accurate reads under low light.",
+      "specs": {
+        "Capacity": "15 / 30 ml",
+        "Material": "316 stainless steel",
+        "Finish": "Matte / polished band",
+        "Care": "Hand wash"
+      },
+      "badge": "",
+      "featured": false,
+      "inStock": true,
+      "sort": 14
+    },
+    {
+      "id": "p15",
+      "slug": "chrome-bar-spoon",
+      "name": "Chrome Bar Spoon",
+      "subtitle": "Twisted Stem · 40 cm",
+      "categorySlug": "barware",
+      "collectionSlugs": [],
+      "price": 16,
+      "volume": "40 cm",
+      "images": [],
+      "description": "A 40 cm twisted bar spoon with a weighted teardrop end. Balanced for long, silent stirs in a mixing glass.",
+      "specs": {
+        "Length": "40 cm",
+        "Material": "Chrome-plated steel",
+        "Weight": "48 g",
+        "Care": "Hand wash"
+      },
+      "badge": "",
+      "featured": false,
+      "inStock": true,
+      "sort": 15
+    },
+    {
+      "id": "p16",
+      "slug": "embassy-signature-bitters",
+      "name": "Embassy Signature Bitters",
+      "subtitle": "House Blend · 200 ml",
+      "categorySlug": "acids",
+      "collectionSlugs": ["signature"],
+      "price": 26,
+      "volume": "200 ml",
+      "images": ["assets/editorial/noir-coupe.webp"],
+      "description": "Our house aromatic blend: bitter orange, gentian and toasted oak. Two dashes finish a Martini without disturbing it.",
+      "specs": {
+        "Volume": "200 ml",
+        "ABV": "44%",
+        "Base": "Neutral spirit",
+        "Shelf life": "Indefinite"
+      },
+      "badge": "House",
+      "featured": true,
+      "inStock": true,
+      "sort": 16
+    }
+  ]
+}

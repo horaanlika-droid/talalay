@@ -1,0 +1,15 @@
+# Back office runtime
+server/data/
+server/media/
+server/__pycache__/
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
