@@ -90,19 +90,6 @@
         height: auto;
         display: block;
       }
-      /* a single chrome highlight travelling across the lockup */
-      .boot__lockup::after {
-        content: "";
-        position: absolute;
-        inset: -20% -30%;
-        background: linear-gradient(100deg, rgba(255, 255, 255, 0) 38%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 62%);
-        mix-blend-mode: screen;
-        -webkit-mask-image: linear-gradient(180deg, #000, #000);
-        mask-image: linear-gradient(180deg, #000, #000);
-        transform: translateX(-70%);
-        animation: boot-sheen 2.6s cubic-bezier(0.32, 0.72, 0, 1) 0.7s infinite;
-        pointer-events: none;
-      }
       .boot__bar {
         position: relative;
         width: 100%;
@@ -118,29 +105,16 @@
         box-shadow: 0 0 18px rgba(143, 208, 255, 0.55);
         transition: width 0.55s cubic-bezier(0.32, 0.72, 0, 1);
       }
-      .boot__meta {
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        gap: 16px;
-        width: 100%;
-        font-family: ui-monospace, "SF Mono", Menlo, monospace;
-        font-size: 9.5px;
-        letter-spacing: 0.24em;
-        text-transform: uppercase;
-        color: rgba(238, 243, 251, 0.46);
-      }
-      .boot__meta b {
+      .boot__by {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+        text-align: center;
+        font-size: 10px;
         font-weight: 500;
-        color: rgba(238, 243, 251, 0.86);
-        font-variant-numeric: tabular-nums;
-        letter-spacing: 0.12em;
-      }
-      .boot__foot {
-        font-size: 9px;
-        letter-spacing: 0.3em;
-        text-transform: uppercase;
-        color: rgba(238, 243, 251, 0.28);
+        letter-spacing: 0.18em;
+        color: rgba(238, 243, 251, 0.34);
       }
       @keyframes boot-lockup {
         to {
@@ -148,21 +122,9 @@
           transform: none;
         }
       }
-      @keyframes boot-sheen {
-        0% {
-          transform: translateX(-70%);
-        }
-        55%,
-        100% {
-          transform: translateX(70%);
-        }
-      }
       @media (prefers-reduced-motion: reduce) {
         .boot__lockup {
           animation-duration: 0.3s;
-        }
-        .boot__lockup::after {
-          display: none;
         }
       }
     </style>
@@ -181,12 +143,8 @@
           <img src="assets/brand/ce-logo-chrome.png" alt="Cocktail Embassy" fetchpriority="high">
         </div>
         <div class="boot__bar" aria-hidden="true"><span data-boot-bar></span></div>
-        <div class="boot__meta">
-          <span data-boot-status>Opening the cabinet</span>
-          <b><span data-boot-count>0</span>%</b>
-        </div>
-        <div class="boot__foot">Dubai · worldwide dispatch</div>
       </div>
+      <div class="boot__by">app by @stonym0ntana</div>
       <noscript><style>.boot{display:none}</style></noscript>
     </div>
 

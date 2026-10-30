@@ -23,9 +23,10 @@ means it works identically on Pages, on BotHost, or from a local folder.
   to dismiss), spring easing, 44 px touch targets.
 * **Mechanics** — the app shell follows the Telegram-mini-app pattern proven in
   `posudnayalavka`, worn in the Embassy's navy and chrome:
-  * **Opening curtain** — a choreographed splash (chrome lockup, hairline progress,
-    live percentage) that stays at least 2.6 s and lifts only once the first hero
-    plate is decoded. A failsafe lifts it after 9 s whatever happens.
+  * **Opening curtain** — the chrome lockup and a single hairline progress bar, no
+    counters and no copy, with `app by @stonym0ntana` set at the bottom. It stays at
+    least 2.6 s and lifts only once the first hero plate is decoded. A failsafe lifts
+    it after 9 s whatever happens.
   * **iOS screen motion** — a piece or a collection *pushes* in from the right, going
     back *pops* in from the left, tab switches cross-fade (`js/app.js`, `routeDepth`).
   * **Bar** — the current piece / collection name fades into the top bar as you
