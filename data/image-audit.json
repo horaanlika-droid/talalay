@@ -1,0 +1,22 @@
+{
+  "_comment": "Contact line of every catalogue photo, as a fraction of image height — read off a labelled grid (tools/diag_detect.py) and verified by eye. Everything below it is the old studio floor: contact shadow and mirror reflection. The harmoniser cuts there so the new set has no shadow and no reflection.",
+  "updatedAt": "2026-10-30",
+  "products": {
+    "coupe.webp": 0.750,
+    "cylinder.webp": 0.770,
+    "footed.webp": 0.800,
+    "goblet.webp": 0.848,
+    "highball.webp": 0.735,
+    "hurricane.webp": 0.775,
+    "martini.webp": 0.792,
+    "rocks.webp": 0.775,
+    "saucer.webp": 0.885,
+    "tumbler.webp": 0.768
+  },
+  "editorial": {
+    "crystal-light.webp": 0.845,
+    "noir-coupe.webp": 0.795,
+    "red-vessel.webp": 0.845,
+    "sunlit-sour.webp": 0.782
+  }
+}

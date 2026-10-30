@@ -74,7 +74,7 @@ function footerHTML(data) {
       <h4>Catalogue</h4>
       ${data.categories.map((cat) => `<a href="#/shop?c=${attr(cat.slug)}">${esc(cat.name)}</a>`).join("")}
       <a href="#/shop">All pieces</a>
-      <a href="#/archive">Archive</a>
+      <a href="#/archive">In development</a>
     </div>
     <div class="footer__col">
       <h4>Contact</h4>

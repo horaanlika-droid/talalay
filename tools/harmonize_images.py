@@ -334,6 +334,39 @@ def warp(path: Path, canvas: tuple[int, int], floating: bool = False,
     else:
         contact, cs = find_contact(img, path.name, matte)
 
+    # the plate's horizon is a *thin, wide* line where the table meets the air,
+    # and it rides right past the foot. In the contact band keep only shapes
+    # that survive a horizontal erosion — a foot does, a horizon line does not.
+    hh = int(h)
+    b0 = max(0, int(contact - hh * 0.075))
+    b1 = min(hh, int(contact + hh * 0.022))
+    if b1 - b0 > 6:
+        k = max(6, int(w * 0.055))
+        band = matte[b0:b1] > 0.40
+        thick = ndi.binary_opening(band, structure=np.ones((1, k)))
+        keep_band = ndi.binary_dilation(thick, np.ones((3, 3)), iterations=2)
+        new_matte = matte.copy()
+        new_matte[b0:b1] = np.where(keep_band, matte[b0:b1], 0.0)
+        if (new_matte[b0:b1] > 0.4).sum() > 0.25 * band.sum():
+            matte = new_matte
+
+    # the plate's horizon runs the full width of the frame: the piece is what
+    # carries column mass *above* the contact, a table edge does not. Clip the
+    # matte to the piece's own columns so no full-width line can survive.
+    above = matte[: max(4, contact - int(h * 0.06))]
+    cmass = above.sum(axis=0)
+    ccols = np.nonzero(cmass > max(2.0, cmass.max() * 0.12))[0]
+    if ccols.size > 4:
+        pad_x = max(2, int(w * 0.012))
+        matte = matte.copy()
+        lo_c, hi_c = max(0, int(ccols[0]) - pad_x), min(w - 1, int(ccols[-1]) + pad_x)
+        matte[:, :lo_c] = 0.0
+        matte[:, hi_c + 1:] = 0.0
+        ys, xs = np.nonzero(matte > 0.25)
+        if ys.size:
+            x0, x1 = int(xs.min()), int(xs.max())
+            y0, y1 = int(ys.min()), int(ys.max())
+
     outline = matte.copy()
     outline[contact + 1:] = 0.0
     body = solid_silhouette(matte, contact, (x0, x1, y0, y1))
@@ -389,12 +422,25 @@ def render(path: Path, out_dir: Path | None, canvas: tuple[int, int] = WORK,
     line = float(np.clip(contact_c - CH * 0.004, CH * 0.25, CH - 2))
     rows = np.arange(CH, dtype=np.float32)
     # a smooth landing, not a hard cut: the old glow above the floor melts away
-    fade = smoothstep(line + CH * 0.085, line - CH * 0.085, rows)
+    # above the contact line: full strength (the piece lives there)
+    # below it: a short, soft landing, so no reflection ever survives
+    fade = smoothstep(line + CH * 0.050, line - CH * 0.014, rows)
     keep = keep * fade[:, None]
     fill = fill * fade[:, None]
 
     # ---- the glass is its own edges, not its old studio's glow ------------
     D = I - Bc
+    # row levelling: a horizon or table edge runs the whole row, the glass does
+    # not. Measure it on the row's *background* columns and remove it, so the
+    # line vanishes beside the piece as well as at the frame edge.
+    bg = M < 0.15
+    if bg.any():
+        masked = np.where(bg[..., None], D, np.nan)
+        with np.errstate(all="ignore"):
+            flat = np.nanmedian(masked, axis=1)          # (CH, 3)
+        flat = np.nan_to_num(flat, nan=0.0)
+        flat[~np.isfinite(flat).all(axis=1)] = 0.0
+        D = D - flat[:, None, :]
     D_lf = blur(D, 20.0)
     sat = (I.max(axis=2) - I.min(axis=2)) / np.maximum(I.max(axis=2), 1.0)
     liquid = blur(smoothstep(0.22, 0.55, sat).astype(np.float32), 9.0)[..., None]
@@ -407,8 +453,14 @@ def render(path: Path, out_dir: Path | None, canvas: tuple[int, int] = WORK,
     # shadow, and it must never reach the new room
     D = np.clip(D, 0, D_CLAMP)
     # nothing outside the piece itself may carry light — the source's floor
-    # line, contact shadow and mirror reflection all live out there
-    D = D * np.clip(F * 1.25, 0, 1)[..., None]
+    # line, contact shadow and mirror reflection all live out there.
+    # floating plates are already clean, so their halo is kept whole.
+    D = D * (np.ones_like(F) if floating else np.clip(F * 1.25, 0, 1))[..., None]
+    if not floating:
+        # around the contact line the only light allowed is the glass itself:
+        # the source's table edge runs beside the foot and must not travel
+        near = smoothstep(CH * 0.14, CH * 0.02, np.abs(rows - float(contact_c)))[:, None, None]
+        D = D * (1 - near * (1 - np.clip(M * 3.0, 0, 1))[..., None])
 
     scene = C + D
 
@@ -417,7 +469,7 @@ def render(path: Path, out_dir: Path | None, canvas: tuple[int, int] = WORK,
     sD = sharp - Bc
     sD_lf = blur(sD, 20.0)
     sD = (sD - sD_lf) * keep[..., None] + sD_lf * lf_w * fill[..., None]
-    sD = sD * np.clip(F * 1.25, 0, 1)[..., None]
+    sD = sD * (np.ones_like(F) if floating else np.clip(F * 1.25, 0, 1))[..., None]
     glass = np.clip((M - 0.30) / 0.55, 0, 1) * fade[:, None]
     scene = scene * (1 - glass[..., None] * 0.85) + (C + sD) * (glass[..., None] * 0.85)
     scene = np.clip(scene, 0, 255)
@@ -428,6 +480,18 @@ def render(path: Path, out_dir: Path | None, canvas: tuple[int, int] = WORK,
     reach = np.clip(blur(np.maximum(keep, fill * 0.8), CW * 0.012) * 2.4, 0, 1)
     glow = bloom(np.zeros_like(scene), np.clip(sharp, 0, 255), np.clip(keep * 1.4, 0, 1))
     scene = np.clip(scene + glow * reach[..., None] * (1.0 - 0.72 * interior[..., None]), 0, 255)
+
+    # ---- the background is the room, nothing else --------------------------
+    # A residual table edge (the source's wall/table seam) can still ride above
+    # the contact line. It runs the full row; the glass does not. Flatten it out
+    # of the background only, so the piece and its bloom keep every pixel.
+    bg = M < 0.12
+    if bg.any():
+        diff = scene - C
+        with np.errstate(all="ignore"):
+            flat = np.nanmedian(np.where(bg[..., None], diff, np.nan), axis=1)
+        flat = np.nan_to_num(flat, nan=0.0)
+        scene = scene - flat[:, None, :] * bg[..., None]
 
     # ---- one exposure for the family --------------------------------------
     gain = float(st.extra.get("gain", 1.0))

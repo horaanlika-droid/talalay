@@ -119,6 +119,26 @@ _GLYPHS = {
     "H": ["10001", "10001", "10001", "11111", "10001", "10001", "10001"],
     "G": ["01110", "10001", "10000", "10111", "10001", "10001", "01110"],
     "Y": ["10001", "10001", "01010", "00100", "00100", "00100", "00100"],
+    "F": ["11111", "10000", "10000", "11110", "10000", "10000", "10000"],
+    "U": ["10001", "10001", "10001", "10001", "10001", "10001", "01110"],
+    "V": ["10001", "10001", "10001", "10001", "10001", "01010", "00100"],
+    "W": ["10001", "10001", "10001", "10101", "10101", "11011", "10001"],
+    "X": ["10001", "10001", "01010", "00100", "01010", "10001", "10001"],
+    "Z": ["11111", "00001", "00010", "00100", "01000", "10000", "11111"],
+    "J": ["00111", "00010", "00010", "00010", "00010", "10010", "01100"],
+    "Q": ["01110", "10001", "10001", "10001", "10101", "10010", "01101"],
+    "1": ["00100", "01100", "00100", "00100", "00100", "00100", "01110"],
+    "2": ["01110", "10001", "00001", "00010", "00100", "01000", "11111"],
+    "3": ["11110", "00001", "00001", "01110", "00001", "00001", "11110"],
+    "4": ["00010", "00110", "01010", "10010", "11111", "00010", "00010"],
+    "5": ["11111", "10000", "11110", "00001", "00001", "10001", "01110"],
+    "6": ["00110", "01000", "10000", "11110", "10001", "10001", "01110"],
+    "7": ["11111", "00001", "00010", "00100", "01000", "01000", "01000"],
+    "8": ["01110", "10001", "10001", "01110", "10001", "10001", "01110"],
+    "9": ["01110", "10001", "10001", "01111", "00001", "00010", "01100"],
+    "0": ["01110", "10001", "10011", "10101", "11001", "10001", "01110"],
+    "-": ["00000", "00000", "00000", "11111", "00000", "00000", "00000"],
+    "\u2019": ["01000", "00100", "00000", "00000", "00000", "00000", "00000"],
     " ": ["00000"] * 7,
 }
 
@@ -364,34 +384,229 @@ def save(img: Image.Image, path: Path, quality: int = 88) -> None:
     sm.save(path.with_name(path.stem + "-sm.webp"), quality=quality, method=6)
 
 
+ESSENCES = ["STRAWBERRY", "RASPBERRY", "GRAPEFRUIT", "PEACH", "VANILLA",
+            "CHERRY", "GREEN APPLE", "MANGO", "BANANA", "BLACKCURRANT"]
+
+
+def build_jobs(size: tuple[int, int]) -> dict:
+    jobs = {
+        # acids and other: the second page of the price list
+        "jar-citric.webp": jar(size, "CITRIC", "ACID", "1000 G"),
+        "jar-malic.webp": jar(size, "MALIC", "ACID", "1000 G"),
+        "jar-ascorbic.webp": jar(size, "ASCORBIC", "ACID", "1000 G"),
+        "jar-tartaric.webp": jar(size, "TARTARIC", "ACID", "1000 G"),
+        "jar-agar.webp": jar(size, "AGAR", "AGAR", "1000 G", scale=1.06),
+        "bottle-pectinase.webp": bottle(size, "PECTINASE", "CLARIFICATION", "300 ML"),
+        "sleeve-sugarcane.webp": sleeve(size, "STRAWS", "SUGAR CANE"),
+        "sleeve-coffee.webp": sleeve(size, "STRAWS", "COFFEE"),
+    }
+    for flavour in ESSENCES:
+        slug = flavour.lower().replace(" ", "-")
+        jobs["essence-%s.webp" % slug] = bottle(size, flavour, "ESSENCE", "100 ML")
+    return jobs
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry", default="")
+    ap.add_argument("--only", default="", help="substring filter on filenames")
     args = ap.parse_args()
     out = Path(args.dry) if args.dry else PKG
 
     size = (W * SS, H * SS)
-    jobs = {
-        # a square rigid box — no jigger on the artwork, just the house lockup
-        "box-jigger.webp": rigid_box(int(size[0] * 0.44), int(size[1] * 0.40),
-                                     int(size[0] * 0.10), size, logo="both"),
-        # the small one, for bitters
-        "box-bitters.webp": rigid_box(int(size[0] * 0.28), int(size[1] * 0.26),
-                                      int(size[0] * 0.070), size, logo="both",
-                                      label="BITTERS"),
-        # the long one, for bar spoons
-        "box-spoon.webp": long_box(size, "BAR SPOON"),
-        # opaque zip-lock pouches for the acids
-        "pouch-lactic.webp": pouch(size, "LACTIC ACID"),
-        "pouch-malic.webp": pouch(size, "MALIC ACID"),
-        "pouch-citric.webp": pouch(size, "CITRIC ACID"),
-    }
+    jobs = build_jobs(size)
+    if args.only:
+        jobs = {k: v for k, v in jobs.items() if args.only in k}
     for name, piece in jobs.items():
         img = place(piece, size).resize((W, H), Image.LANCZOS)
         save(img, out / name)
-        print(f"  {name:<24} {W}x{H}")
+        print("  %-28s %dx%d" % (name, W, H))
     return 0
 
+
+
+
+# ------------------------------------------------------- jars, bottles, sleeves
+def _rrect(cx: float, y0: float, y1: float, w: float, r: float, steps: int = 10):
+    """Rounded-rectangle polygon (chamfered corners, fine enough at 2x SS)."""
+    x0, x1 = cx - w / 2, cx + w / 2
+    pts = []
+    for (x, y, a0) in ((x0 + r, y0 + r, 180), (x1 - r, y0 + r, 270),
+                       (x1 - r, y1 - r, 0), (x0 + r, y1 - r, 90)):
+        for i in range(steps + 1):
+            a = np.deg2rad(a0 + 90 * i / steps)
+            pts.append((x + r * np.cos(a), y + r * np.sin(a)))
+    return pts
+
+
+def _shade(size, poly, top=(36, 42, 52), bottom=(17, 21, 28), lip=(24, 29, 38)):
+    """Matte navy film on a cylinder: vertical gradient, soft left highlight.
+
+    The same material as the stand-up pouches — no chrome, no gloss. The object
+    is only found by its hairline edges and by the room's glow behind it.
+    """
+    cw, ch = size
+    m = mask_from(size, poly)
+    ys, xs = np.nonzero(np.asarray(m) > 8)
+    if not ys.size:
+        return Image.new("RGB", size, APP_BG), m
+    y0, y1 = int(ys.min()), int(ys.max())
+    x0, x1 = int(xs.min()), int(xs.max())
+    span = max(1, x1 - x0)
+    xx = np.clip((np.arange(x0, x1 + 1) - x0) / span, 0, 1)
+    yy = np.clip((np.arange(y0, y1 + 1) - y0) / max(1, y1 - y0), 0, 1)
+
+    # across the cylinder: edges fall away, a soft sheen sits left of centre
+    across = 0.55 + 0.45 * np.sin(np.pi * np.clip(xx * 0.94 + 0.03, 0, 1)) ** 1.2
+    sheen = 0.20 * np.exp(-(((xx - 0.30) / 0.11) ** 2))
+
+    # down the body: lit at the shoulder, settling into the base
+    down = (np.array(bottom, np.float32)[None, :] * (1 - yy[:, None])
+            + np.array(top, np.float32)[None, :] * yy[:, None])
+    lift = (np.array(lip, np.float32) - np.array(bottom, np.float32)) * 0.5
+
+    patch = down[:, None, :] * across[None, :, None] + lift[None, None, :] * sheen[None, :, None]
+    band = np.zeros((ch, cw, 3), np.float32)
+    band[y0:y1 + 1, x0:x1 + 1] = patch
+    img = Image.fromarray(np.clip(band, 0, 255).astype(np.uint8), "RGB")
+
+    alpha = np.asarray(m, np.float32)[..., None] / 255.0
+    bg = np.array(APP_BG, np.float32)
+    out = bg + (np.asarray(img, np.float32) - bg) * alpha
+    return Image.fromarray(np.clip(out, 0, 255).astype(np.uint8), "RGB"), m
+
+
+def _label(img, size, cx, y, w, h, name, grade, note):
+    panel = Image.new("L", size, 0)
+    ImageDraw.Draw(panel).rectangle([cx - w / 2, y, cx + w / 2, y + h], outline=64,
+                                    width=max(1, int(h * 0.012)))
+    img = paste_masked(img, Image.new("RGB", size, (118, 132, 150)), panel)
+
+    mark = chrome_mark(int(w * 0.26))
+    img.paste(mark, (int(cx - mark.width / 2), int(y + h * 0.10)), mark.split()[3])
+    a = text_mark(name, int(w * 0.80), (238, 243, 251))
+    img.paste(a, (int(cx - a.width / 2), int(y + h * 0.40)), a.split()[3])
+    b = text_mark(grade, int(w * 0.42), (150, 164, 184))
+    img.paste(b, (int(cx - b.width / 2), int(y + h * 0.68)), b.split()[3])
+    c = text_mark(note, int(w * 0.60), (104, 118, 136))
+    img.paste(c, (int(cx - c.width / 2), int(y + h * 0.83)), c.split()[3])
+    return img
+
+
+def jar(size, name, grade, note, scale: float = 1.0):
+    """Matte cylindrical jar with a screw lid - acids and powders."""
+    cw, ch = size
+    w = int(cw * 0.40 * scale)
+    h = int(ch * 0.50 * scale)
+    cx = cw * 0.5
+    base = int(ch * 0.800)
+    top = base - h
+    lid_h = int(h * 0.16)
+
+    body_poly = _rrect(cx, top + lid_h, base, w, w * 0.06)
+    img, m_body = _shade(size, body_poly, top=(32, 38, 48), bottom=(15, 19, 26))
+    lid_poly = _rrect(cx, top, top + lid_h, w * 1.045, w * 0.05)
+    lid, m_lid = _shade(size, lid_poly, top=(44, 51, 63), bottom=(30, 36, 46))
+    img = Image.composite(lid, img, m_lid)
+
+    img = _edges(img, body_poly, (112, 128, 150), max(1, int(w * 0.006)), 82)
+    img = _edges(img, lid_poly, (128, 146, 170), max(1, int(w * 0.006)), 96)
+    seam = Image.new("L", size, 0)
+    ImageDraw.Draw(seam).line([(cx - w * 0.50, top + lid_h), (cx + w * 0.50, top + lid_h)],
+                              fill=96, width=max(1, int(h * 0.003)))
+    img = paste_masked(img, Image.new("RGB", size, (140, 156, 178)),
+                       seam.filter(ImageFilter.GaussianBlur(0.6)))
+
+    lw, lh = int(w * 0.78), int(h * 0.52)
+    img = _label(img, size, cx, int(top + lid_h + h * 0.20), lw, lh, name, grade, note)
+
+    alpha = np.asarray(m_body, np.float32) / 255.0
+    img = Image.fromarray(np.clip(np.asarray(img, np.float32)
+                                  + grain(size, 4.0, 7) * alpha[..., None], 0, 255).astype(np.uint8), "RGB")
+    return img, m_body
+
+
+def bottle(size, name, grade, note, scale: float = 1.0):
+    """Reagent bottle: straight body, drawn shoulder, slim neck, brushed cap."""
+    cw, ch = size
+    w = int(cw * 0.27 * scale)
+    h = int(ch * 0.60 * scale)
+    cx = cw * 0.5
+    base = int(ch * 0.800)
+    top = base - h
+
+    nw = w * 0.30
+    cap_bottom = top + h * 0.085
+    shoulder = top + h * 0.300
+
+    left_body, right_body = cx - w / 2, cx + w / 2
+    left_neck, right_neck = cx - nw / 2, cx + nw / 2
+    poly = [
+        (left_body, base - w * 0.04),
+        (left_body, shoulder),
+        (left_neck - w * 0.10, shoulder - h * 0.045),
+        (left_neck, shoulder - h * 0.090),
+        (left_neck, cap_bottom),
+        (right_neck, cap_bottom),
+        (right_neck, shoulder - h * 0.090),
+        (right_neck + w * 0.10, shoulder - h * 0.045),
+        (right_body, shoulder),
+        (right_body, base - w * 0.04),
+    ]
+    img, m_body = _shade(size, poly, top=(36, 43, 55), bottom=(14, 18, 25))
+
+    # the neck and the cap carry their own light so the silhouette reads in a grid
+    neck_poly = [(left_neck, cap_bottom), (right_neck, cap_bottom),
+                 (right_neck, shoulder - h * 0.090), (left_neck, shoulder - h * 0.090)]
+    neck, m_neck = _shade(size, neck_poly, top=(44, 52, 65), bottom=(26, 32, 42))
+    img = Image.composite(neck, img, m_neck)
+
+    cap_poly = _rrect(cx, top, cap_bottom + h * 0.006, nw * 1.55, nw * 0.20)
+    cap, m_cap = _shade(size, cap_poly, top=(120, 133, 152), bottom=(70, 81, 98))
+    img = Image.composite(cap, img, m_cap)
+
+    img = _edges(img, poly, (106, 122, 144), max(1, int(w * 0.009)), 92)
+    img = _edges(img, cap_poly, (150, 168, 192), max(1, int(w * 0.009)), 130)
+    img = _edges(img, [(left_neck - nw * 0.28, cap_bottom), (right_neck + nw * 0.28, cap_bottom)],
+                 (96, 110, 130), max(1, int(w * 0.006)), 110)
+
+    lw, lh = int(w * 0.82), int(h * 0.30)
+    img = _label(img, size, cx, int(shoulder + h * 0.22), lw, lh, name, grade, note)
+
+    alpha = np.asarray(m_body, np.float32) / 255.0
+    img = Image.fromarray(np.clip(np.asarray(img, np.float32)
+                                  + grain(size, 4.0, 7) * alpha[..., None], 0, 255).astype(np.uint8), "RGB")
+    return img, m_body
+
+
+def sleeve(size, name, note, scale: float = 1.0):
+    """Long kraft sleeve of cocktail straws - a tall, thin pack."""
+    cw, ch = size
+    w = int(cw * 0.22 * scale)
+    h = int(ch * 0.64 * scale)
+    cx = cw * 0.5
+    base = int(ch * 0.800)
+    top = base - h
+
+    poly = _rrect(cx, top + h * 0.03, base, w, w * 0.05)
+    img, m = _shade(size, poly, top=(38, 43, 50), bottom=(20, 24, 30))
+    img = _edges(img, poly, (110, 124, 142), max(1, int(w * 0.010)), 96)
+
+    band = Image.new("L", size, 0)
+    ImageDraw.Draw(band).rectangle([cx - w / 2, top + h * 0.30, cx + w / 2, top + h * 0.52], fill=90)
+    img = paste_masked(img, Image.new("RGB", size, (18, 22, 30)), band)
+
+    a = text_mark(name, int(w * 0.80), (238, 243, 251))
+    img.paste(a, (int(cx - a.width / 2), int(top + h * 0.36)), a.split()[3])
+    b = text_mark(note, int(w * 0.62), (150, 164, 184))
+    img.paste(b, (int(cx - b.width / 2), int(top + h * 0.44)), b.split()[3])
+    mark = chrome_mark(int(w * 0.24))
+    img.paste(mark, (int(cx - mark.width / 2), int(base + ch * 0.02)), mark.split()[3])
+
+    alpha = np.asarray(m, np.float32) / 255.0
+    img = Image.fromarray(np.clip(np.asarray(img, np.float32)
+                                  + grain(size, 4.0, 7) * alpha[..., None], 0, 255).astype(np.uint8), "RGB")
+    return img, m
 
 if __name__ == "__main__":
     raise SystemExit(main())

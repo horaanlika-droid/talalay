@@ -89,6 +89,7 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  overflow-x: clip;
   scroll-behavior: smooth;
 }
 
@@ -865,11 +866,12 @@ main {
   animation-play-state: paused;
 }
 @keyframes marquee {
+  /* the row carries the words twice: half a row is one seamless lap */
   from {
     transform: translateX(0);
   }
   to {
-    transform: translateX(-100%);
+    transform: translateX(-50%);
   }
 }
 
@@ -1049,10 +1051,13 @@ main {
 }
 @media (min-width: 1080px) {
   .hscroll {
-    grid-auto-columns: 31%;
+    /* the whole shelf fits: no sideways scroll on the desktop */
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-columns: auto;
     overflow: visible;
     margin-inline: 0;
     padding-inline: 0;
+    scroll-snap-type: none;
   }
 }
 
