@@ -1352,7 +1352,9 @@ main {
 }
 .pdp__stage {
   position: relative;
-  background: radial-gradient(62% 56% at 50% 44%, #1b3360 0%, #0b1a36 52%, #060f22 100%);
+  background:
+    radial-gradient(58% 44% at 50% 40%, rgba(34, 74, 128, 0.55) 0%, rgba(12, 26, 50, 0.35) 46%, rgba(6, 12, 24, 0) 74%),
+    var(--bg);
   color: #fff;
   margin-top: calc(-1 * (var(--nav-h) + var(--safe-top)));
   padding-top: calc(var(--nav-h) + var(--safe-top));
@@ -1376,18 +1378,12 @@ main {
   z-index: -1;
 }
 .pdp__figure {
-  height: min(56dvh, 560px);
+  height: min(42dvh, 420px);
   animation: levitate 8s ease-in-out infinite;
 }
 .pdp__floor {
-  position: absolute;
-  bottom: 16px;
-  left: 50%;
-  translate: -50% 0;
-  width: min(54%, 360px);
-  height: 26px;
-  background: radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 72%);
-  filter: blur(6px);
+  /* the piece levitates: no floor, no contact shadow */
+  display: none;
 }
 .pdp__thumbs {
   display: flex;
@@ -1555,13 +1551,13 @@ main {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: calc(var(--tabbar-h) + var(--safe-bottom));
   z-index: 60;
-  padding: 10px var(--page-x) calc(10px + var(--safe-bottom));
-  background: rgba(251, 249, 245, 0.9);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  backdrop-filter: blur(20px) saturate(180%);
-  border-top: 1px solid var(--line);
+  padding: 10px var(--page-x);
+  background: rgba(6, 12, 24, 0.86);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  backdrop-filter: blur(22px) saturate(160%);
+  border-top: 1px solid var(--hairline);
   display: flex;
   gap: 10px;
   align-items: center;
@@ -2217,8 +2213,8 @@ main {
 .sk-card {
   border-radius: var(--radius-md);
   overflow: hidden;
-  background: #fff;
-  border: 1px solid var(--line);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
 }
 .sk-card .skeleton {
   border-radius: 0;
