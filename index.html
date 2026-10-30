@@ -35,9 +35,13 @@
       setTimeout(function () {
         if (document.body.classList.contains("is-ready")) return;
         document.body.classList.remove("is-booting");
+        document.body.classList.add("is-ready");
         var boot = document.querySelector("[data-boot]");
-        if (boot) boot.classList.add("is-done");
-      }, 9000);
+        if (boot) {
+          boot.classList.add("is-done");
+          boot.setAttribute("aria-busy", "false");
+        }
+      }, 6000);
     </script>
     <script src="js/config.js"></script>
     <script type="module" src="js/app.js"></script>
