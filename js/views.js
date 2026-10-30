@@ -29,7 +29,7 @@ export function cardMedia(product, sizes = "") {
   )}" loading="lazy" decoding="async" ${sizes ? `sizes="${attr(sizes)}"` : ""}>`;
 }
 
-export const KINETIC_WORDS = `<span>Hand-blown <em>crystal</em></span><span>Bars &amp; hotels</span><span>Small-batch <em>editions</em></span><span>Trade pricing</span><span>Rotterdam</span><span>Worldwide <em>dispatch</em></span>`;
+export const KINETIC_WORDS = `<span>Hand-blown <em>crystal</em></span><span>Bars &amp; hotels</span><span>Small-batch <em>editions</em></span><span>Trade pricing</span><span>Dubai</span><span>Worldwide <em>dispatch</em></span>`;
 
 function productCard(data, product) {
   const badge = product.comingSoon

@@ -4,7 +4,7 @@
   "settings": {
     "brand": "Cocktail Embassy",
     "tagline": "Hand-blown glassware for the modern bar.",
-    "announcement": "Trade catalogue · AED per piece · Dispatch from Rotterdam",
+    "announcement": "Trade catalogue · AED per piece · Worldwide delivery from Dubai",
     "currency": "AED",
     "locale": "en-AE",
     "priceNote": "Prices per piece, AED, exclude VAT & shipping",
@@ -44,17 +44,17 @@
       }
     ],
     "contacts": {
-      "email": "orders@cocktailembassy.com",
-      "phone": "+31 10 000 0000",
-      "whatsapp": "",
-      "telegram": "https://t.me/cocktailembassy",
-      "instagram": "https://instagram.com/cocktailembassy",
-      "address": "Rotterdam · The Netherlands",
-      "hours": "Mon–Fri, 09:00–18:00 CET"
+      "email": "bartending.solution.uae@gmail.com",
+      "phone": "+971 56 238 8262",
+      "whatsapp": "https://wa.me/971562388262",
+      "telegram": "https://t.me/arttalalay",
+      "instagram": "",
+      "address": "Dubai · United Arab Emirates",
+      "hours": "HoReCa supplier · Worldwide delivery"
     },
-    "shippingNote": "Dispatch in 2–4 business days. Pallet and mixed-case orders quoted individually.",
+    "shippingNote": "Dispatch from Dubai in 2–4 business days. Worldwide delivery — pallet and mixed-case orders quoted individually.",
     "returnsNote": "Breakage in transit is replaced free of charge — send photos within 48 hours of delivery.",
-    "about": "Cocktail Embassy supplies hand-blown crystal, barware and cocktail acids to bars, hotels and studios across Europe and the Gulf. Every piece is selected for balance in the hand and clarity on the bar."
+    "about": "Cocktail Embassy is a HoReCa supplier based in Dubai — hand-blown crystal, barware and cocktail acids for bars and restaurants, delivered worldwide. Every piece is selected for balance in the hand and clarity on the bar."
   },
   "categories": [
     {
