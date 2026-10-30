@@ -54,12 +54,12 @@ export function productCard(data, product) {
 
 function archiveTile(data, collection) {
   const count = selectors.productsByCollection(data, collection.slug).filter((p) => p.archive).length;
-  return `<a class="archive-tile" href="#/collection/${attr(collection.slug)}">
-    ${
+  return `<a class="archive-tile spotlight" href="#/collection/${attr(collection.slug)}">
+    <span class="archive-tile__media">${
       collection.image
         ? `<img src="${attr(mediaUrl(collection.image))}" alt="" loading="lazy" decoding="async">`
         : ""
-    }
+    }</span>
     <span class="archive-tile__body">
       <span class="archive-tile__name">${esc(collection.name)}</span>
       <span class="archive-tile__meta">${count} ${count === 1 ? "piece" : "pieces"} · on request</span>
@@ -72,8 +72,8 @@ function collectionTile(data, collection) {
   const img = collection.image
     ? `<img src="${attr(mediaUrl(collection.image))}" alt="${attr(collection.name)}" loading="lazy" decoding="async">`
     : "";
-  return `<a class="tile" href="#/collection/${attr(collection.slug)}">
-    ${img}
+  return `<a class="tile spotlight" href="#/collection/${attr(collection.slug)}">
+    <span class="tile__media">${img}</span>
     <span class="tile__inner">
       <span class="tile__eyebrow">${esc(collection.subtitle || "Collection")}</span>
       <span class="tile__name">${esc(collection.name)}</span>
@@ -124,7 +124,7 @@ export function homeView(data) {
           </div>
           <p class="hero__meta-copy" data-hero-copy>${esc(first.copy || first.product.description)}</p>
           <div class="hero__actions">
-            <a class="btn btn--light" href="#/product/${attr(first.product.slug)}" data-hero-cta>
+            <a class="btn" href="#/product/${attr(first.product.slug)}" data-hero-cta>
               View piece ${icon("arrowRight")}
             </a>
             <div class="hero__dots" role="tablist" aria-label="Featured pieces">
@@ -179,8 +179,14 @@ export function homeView(data) {
       </div>
     </div>
 
+    <div class="kinetic" aria-hidden="true">
+      <div class="kinetic__row">
+        <span>Hand-blown <em>crystal</em></span><span>Bars &amp; hotels</span><span>Small-batch <em>editions</em></span><span>Trade pricing</span>
+      </div>
+    </div>
+
     <div class="wrap">
-      <section class="section" aria-labelledby="collections-title">
+      <section class="section reveal" aria-labelledby="collections-title">
         <div class="section-head">
           <div>
             <p class="eyebrow">Collections</p>
@@ -193,7 +199,7 @@ export function homeView(data) {
 
       ${
         archived.length
-          ? `<section class="archive-band" aria-labelledby="archive-title">
+          ? `<section class="archive-band reveal" aria-labelledby="archive-title">
         <div class="wrap">
           <div class="section-head">
             <div>
@@ -208,7 +214,7 @@ export function homeView(data) {
           : ""
       }
 
-      <section class="section" aria-labelledby="featured-title">
+      <section class="section reveal" aria-labelledby="featured-title">
         <div class="section-head">
           <div>
             <p class="eyebrow">The selection</p>
@@ -219,9 +225,9 @@ export function homeView(data) {
         <div class="grid">${grid.map((p) => productCard(data, p)).join("")}</div>
       </section>
 
-      <section class="section split" aria-labelledby="craft-title">
+      <section class="section split reveal" aria-labelledby="craft-title">
         <div class="split__media split__media--portrait">
-          <img src="assets/editorial/red-vessel.webp" alt="Sandblasted red cocktail vessel on travertine" loading="lazy" decoding="async">
+          <img src="assets/editorial/red-vessel.webp" alt="Sandblasted red cocktail vessel glowing in the Embassy studio" loading="lazy" decoding="async" class="dissolve">
         </div>
         <div class="split__copy">
           <p class="eyebrow">The craft</p>
@@ -232,8 +238,8 @@ export function homeView(data) {
         </div>
       </section>
 
-      <section class="section" aria-labelledby="trade-title">
-        <div class="mesh-card">
+      <section class="section reveal" aria-labelledby="trade-title">
+        <div class="mesh-card spotlight">
           <div style="display:grid;gap:18px;max-width:56ch;position:relative">
             <p class="eyebrow" style="color:rgba(11,23,48,.6)">Trade programme</p>
             <h2 class="h2" id="trade-title">Built for bars, hotels &amp; studios.</h2>
@@ -246,7 +252,7 @@ export function homeView(data) {
         </div>
       </section>
 
-      <section class="section" aria-labelledby="index-title">
+      <section class="section reveal" aria-labelledby="index-title">
         <div class="section-head">
           <div>
             <p class="eyebrow">Index</p>
@@ -661,8 +667,8 @@ export function productView(data, slug) {
           : ""
       }
 
-      <div class="info-card" style="background:rgba(255,255,255,.6)">
-        <h3>${icon("truck") ? "" : ""}Shipping &amp; terms</h3>
+      <div class="info-card">
+        <h3>Shipping &amp; terms</h3>
         <p>${esc(data.settings.shippingNote || "")} ${esc(data.settings.requestNote || "")}</p>
       </div>
     </div>

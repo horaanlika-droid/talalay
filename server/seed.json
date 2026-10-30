@@ -166,7 +166,7 @@
     },
     {
       "slug": "soon-teapot",
-      "name": "Soon Teapot",
+      "name": "Teapot",
       "subtitle": "Archive · on request",
       "description": "Retired house collection. Every piece is still hand-blown to order in small series — submit a request and we confirm timing and pricing.",
       "image": "assets/archive/covers/soon-teapot.webp",
@@ -465,7 +465,9 @@
       "collectionSlugs": [],
       "price": 18,
       "volume": "500 ml",
-      "images": [],
+      "images": [
+        "assets/packaging/pouch-citric.webp"
+      ],
       "description": "A clean 50% citric acid solution for acid-adjusting citrus and building house cordials. Food-grade, unflavoured, bar-ready.",
       "specs": {
         "Volume": "500 ml",
@@ -487,7 +489,9 @@
       "collectionSlugs": [],
       "price": 22,
       "volume": "250 g",
-      "images": [],
+      "images": [
+        "assets/packaging/pouch-malic.webp"
+      ],
       "description": "Fine food-grade malic acid for a sharper, greener acidity in sours, shrubs and clarified punches. Includes a measuring scoop.",
       "specs": {
         "Weight": "250 g",
@@ -557,7 +561,9 @@
       "collectionSlugs": [],
       "price": 16,
       "volume": "40 cm",
-      "images": [],
+      "images": [
+        "assets/packaging/box-spoon.webp"
+      ],
       "description": "A 40 cm twisted bar spoon with a weighted teardrop end. Balanced for long, silent stirs in a mixing glass.",
       "specs": {
         "Length": "40 cm",
@@ -582,7 +588,7 @@
       "price": 26,
       "volume": "200 ml",
       "images": [
-        "assets/editorial/noir-coupe.webp"
+        "assets/packaging/box-bitters.webp"
       ],
       "description": "Our house aromatic blend: bitter orange, gentian and toasted oak. Two dashes finish a Martini without disturbing it.",
       "specs": {
@@ -1244,7 +1250,7 @@
       "id": "a24",
       "slug": "ag0027",
       "name": "Teapot",
-      "subtitle": "Soon Teapot · 500 ml",
+      "subtitle": "Teapot · 500 ml",
       "categorySlug": "archive",
       "collectionSlugs": [
         "soon-teapot"
