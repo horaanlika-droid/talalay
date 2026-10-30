@@ -1,5 +1,5 @@
 /* Cocktail Embassy — offline shell (stale-while-revalidate). */
-const CACHE = "ce-shell-v4";
+const CACHE = "ce-shell-v5";
 const SHELL = [
   "./",
   "index.html",
@@ -14,6 +14,7 @@ const SHELL = [
   "data/content.json",
   "manifest.webmanifest",
   "assets/brand/mark-dark.png",
+  "assets/brand/ce-logo-chrome.png",
   "assets/brand/mark-chrome.png",
   "assets/brand/favicon.png",
   "assets/products/martini.webp",

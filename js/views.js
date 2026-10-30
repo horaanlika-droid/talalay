@@ -184,21 +184,6 @@ export function homeView(data) {
     .join("");
 
   const html = `${heroHTML}
-    ${
-      settings.announcement
-        ? `<div class="announce">${esc(settings.announcement)}</div>`
-        : ""
-    }
-    <div class="strip" aria-hidden="true">
-      <div class="strip__item">
-        <span>Hand-blown crystal</span><span>Bars &amp; hotels</span><span>Made in Europe</span>
-        <span>Trade pricing</span><span>Worldwide dispatch</span><span>Small-batch editions</span>
-      </div>
-      <div class="strip__item">
-        <span>Hand-blown crystal</span><span>Bars &amp; hotels</span><span>Made in Europe</span>
-        <span>Trade pricing</span><span>Worldwide dispatch</span><span>Small-batch editions</span>
-      </div>
-    </div>
 
     <div class="kinetic" aria-hidden="true">
       <div class="kinetic__row">
@@ -727,6 +712,7 @@ export function productView(data, slug) {
   return {
     title: `${product.name} — ${data.settings.brand || "Cocktail Embassy"}`,
     html,
+    navTitle: product.name,
     theme: "dark-top",
     mount(root) {
       const buy = root.querySelector(".pdp__buy [data-qty]");
@@ -814,6 +800,7 @@ export function collectionView(data, slug) {
   return {
     title: `${collection.name} — ${data.settings.brand || "Cocktail Embassy"}`,
     html,
+    navTitle: collection.name,
     theme: "dark-top",
   };
 }
