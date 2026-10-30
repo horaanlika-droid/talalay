@@ -315,3 +315,52 @@ that one source — no contradictory second shadow, no offset or tilted reflecti
 Centered, symmetrical, entire glass visible with generous even margins. Photorealistic,
 razor sharp, high dynamic range, no props, no text, no watermark.
 ```
+
+---
+
+## Photo sessions — glass + dynamic drink (queued)
+
+**Status: BLOCKED** — image generation endpoint returns `403 Forbidden` (account flagged for suspicious activity). Retry did not resolve; do not assume frames exist until files appear in `assets/scenes/` or `brand-source/generated/`.
+
+### Session plan
+One session = **3 glasses**. For each glass, produce **3 frames**:
+
+| Frame | Content | Notes |
+| --- | --- | --- |
+| **A** | Empty glass, front 3/4 view | Style 1430: navy, radial glow, thin glass, soap-bubble iridescence |
+| **B** | Empty glass, side profile | Same setting; silhouette must match shape donor 100 % |
+| **C** | Glass with **dynamic drink** | Liquid must bubble / be in energetic motion. No garnish, no invented drinks — use the drink references already in the repo |
+
+**Glass list (10 + super-pony):** `martini`, `goblet`, `coupe`, `highball`, `saucer`, `rocks`, `tumbler`, `footed`, `hurricane`, `cylinder`, plus `super-pony` (`assets/archive/AG0020.webp`).
+
+**Suggested session order:**
+1. Session 1: `martini`, `goblet`, `coupe`
+2. Session 2: `highball`, `saucer`, `rocks`
+3. Session 3: `tumbler`, `footed`, `hurricane`
+4. Session 4: `cylinder`, `super-pony`, retries
+
+**Deliverables per frame:** PNG master → `brand-source/generated/`; webp q≈82 over existing filenames; `-sm` thumb resized to 700 px wide.
+
+**Prompt rules (from Task 1 / reference `IMG_1430`):** image-to-image from the shape donor (`assets/products/<name>.webp`); silhouette 100 % identical, never text-to-image; ultra-thin hand-blown crystal; soap-bubble thin-film iridescence; deep-navy backdrop `#101B2E → #0A1220`; single soft key source above and slightly behind; elliptical contact shadow + vertical mirror reflection; no props, no text, no watermark.
+
+**⚠️ Drinks:** `assets/editorial/` does not exist in this clone — drink reference photos are missing. Confirm the source drink photos before shooting Frame C frames.
+
+---
+
+## Session log & open tasks
+
+### Session log
+- 2026-10-30: Opening curtain sped up — `BOOT_MIN` 2600→1500 ms, fallback 6000→4000 ms (PR #13 merged).
+- 2026-10-30: Glass collage added — all 11 glasses in style 1430 (`assets/scenes/glasses-collage-1430.*`). Hero `levitating-martini` re-rendered uncropped. Committed on `arena/07eb83de-talalay`.
+
+### Open tasks (photo sessions)
+- [ ] Session 1: `martini` (A,B,C), `goblet` (A,B,C), `coupe` (A,B,C)
+- [ ] Session 2: `highball` (A,B,C), `saucer` (A,B,C), `rocks` (A,B,C)
+- [ ] Session 3: `tumbler` (A,B,C), `footed` (A,B,C), `hurricane` (A,B,C)
+- [ ] Session 4: `cylinder` (A,B,C), `super-pony` (A,B,C), retries
+
+### Key notes for future sessions
+- Image generation is 403-blocked on the default endpoint; retry routes to another endpoint but currently also fails. Unblock before starting sessions.
+- `assets/editorial/` is absent — drink references must be restored or confirmed before Frame C.
+- Glass shapes must never change; always image-to-image from `assets/products/<name>.webp` (never text-to-image).
+- Style anchor: `brand-source/IMG_1430.jpeg` (single glass, navy, radial glow, thin glass).
