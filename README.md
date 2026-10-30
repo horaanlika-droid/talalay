@@ -124,3 +124,66 @@ assets/                 optimised webp product shots, editorial photos, brand ma
 server/                 FastAPI API + aiogram admin bot + Dockerfile
 brand-source/           original brand photography and logo files (not used at runtime)
 ```
+
+---
+
+## Next-session brief — photo regeneration & futuristic UI (queued 2026-10-30)
+
+> **RU (задание владельца, дословно):** сгенерировать бокалы как в тайлах референса, но **100 % идентичные** тем, что лежат в репо, с **тончайшим стеклом**; добавить на бокалы эффект света **в духе мыльных пузырей**; фотографии с напитками перегенерировать под ту же стилистику; приложение должно выглядеть **футуристично, воздушно и интуитивно**, как референсы IMG_1429 / IMG_1430 («1419» в переписке = IMG_1429) и макет интерфейса IMG_1440. Формы бокалов не менять никогда.
+
+Owner's request (EN): regenerate every glass photo in top quality — each glass alone on one dark background with a glow — silhouettes **100 % identical** to the pieces already in the repo, with **the thinnest possible hand-blown glass**, plus a **soap-bubble (thin-film iridescent) light effect** on the glass. Drink/editorial photos get regenerated into the same visual world. The storefront must become **futuristic, airy and intuitive**, per references `IMG_1429` / `IMG_1430` and interface mock `IMG_1440`. Glass shapes are never to be changed.
+
+### References (all in repo)
+
+| File | What it defines |
+| --- | --- |
+| `brand-source/IMG_1429.jpeg` | “Levitating” hero: deep-navy space, floating glasses, soft radial glow, elliptical shadow under each piece, ultra-thin crystal |
+| `brand-source/IMG_1430.jpeg` | Product stage: single glass on navy, radial glow halo, razor-thin stem and walls |
+| `brand-source/IMG_1440.png` | Full interface mock: dark-navy storefront, hero with three glasses + reflections, collection tile row, spec-driven product cards, cart panel |
+| `assets/products/*.webp` (current) | **Shape donors** — the exact silhouettes to preserve |
+| `brand-source/style-tests/thin-glass-*.png` | First-pass thin-glass renders (approved direction for backdrop/glow; iridescence still to be added) |
+
+### Task 1 — product photos (10 glasses)
+
+For each of `martini`, `goblet`, `coupe`, `highball`, `saucer`, `rocks`, `tumbler`, `footed`, `hurricane`, `cylinder`:
+
+1. **Image-to-image edit from the current `assets/products/<name>.webp`** (shape donor). Never text-to-image: silhouette, proportions, bowl curvature, stem, foot and etched details (dot constellations on `highball` and `cylinder`) must match 100 %.
+2. **Ultra-thin glass**: paper-thin transparent walls, razor-thin barely-visible rim, fine slender stem, delicate foot — walls read as almost invisible, drawn only by fine bright edge lines. No thick/chunky glass.
+3. **Soap-bubble light effect**: subtle thin-film iridescence — a pearl/rainbow sheen (magenta–cyan–gold) riding the rim and highlights, like light on a soap bubble. Tasteful accent, not a sticker over the glass.
+4. **One shared setting**: seamless deep-navy studio backdrop (`#101B2E → #0A1220`), cool-white radial glow halo tracing the silhouette, faint light beam from above, dark polished floor with a soft elliptical shadow + faint mirror reflection (levitating feel of 1429/1430).
+5. Empty glass, spotless, no props, no text, no watermark; centered, whole glass visible, even margins.
+
+### Task 2 — drink / editorial photos
+
+Regenerate `crystal-light`, `noir-coupe`, `sunlit-sour`, `red-vessel` (`assets/editorial/`) into the same navy-glow world: keep vessel shapes, drink colours and layers; replace concrete/sunlight staging with the dark navy backdrop, glow halo, iridescent highlights and soft reflection. `noir-coupe` also serves as the bitters product image.
+
+### Task 3 — pipeline, deliverables, QC
+
+- Masters (PNG or lossless webp) → `brand-source/generated/`.
+- Deliver webp q≈82 **over the existing filenames** `assets/products/<name>.webp` and `assets/editorial/<name>.webp` (zero code changes); `-sm` thumbs = resize to 700 px wide.
+- QC: overlay before/after silhouettes to prove the shape is unchanged; check thinness and etching; check one consistent backdrop tone across all cards.
+- If an image-model endpoint answers 403/“flagged”, simply retry the call — it routes to another endpoint.
+
+### Task 4 — futuristic, airy, intuitive UI
+
+Restyle the storefront per `IMG_1440` + `IMG_1429/1430`: dark-navy theme, floating hero product with glow, collection tile row, spec-driven product cards, sticky request/cart panel, generous negative space, spring easing. Keep the static architecture, hash routing and `content.json`-driven data. Airy = fewer boxes, more light and space.
+
+### Prompt template (product shot)
+
+```
+Two reference images. Image 1 is the exact product to photograph: keep its shape 100%
+identical — <shape description> — same silhouette, proportions, stem, foot, etched
+details; do not redesign or substitute it. Image 2 is ONLY a style reference for
+lighting, background and glass delicacy — never copy its glass shape. Produce an
+ultra-premium commercial product photograph of the glass from image 1. Critical:
+ultra-thin hand-blown crystal — paper-thin transparent walls, razor-thin barely
+visible rim, fine slender stem; walls almost invisible, drawn only by fine bright
+edge lines; no thick, chunky or heavy glass. Add a subtle soap-bubble thin-film
+iridescence: pearl/rainbow sheen (magenta-cyan-gold) on the rim and highlights.
+Setting: seamless deep navy-blue studio backdrop (#101B2E → #0A1220), soft cool-white
+radial glow behind the glass tracing its silhouette, gentle rim light, faint light
+beam from above; glass stands on a dark polished surface with soft elliptical shadow
+and faint mirror reflection. Centered, symmetrical, entire glass visible with generous
+even margins. Photorealistic, razor sharp, high dynamic range, no props, no text,
+no watermark.
+```
