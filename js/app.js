@@ -123,7 +123,7 @@ function footerHTML(data) {
 
 const bootEl = document.querySelector("[data-boot]");
 const bootBarEl = document.querySelector("[data-boot-bar]");
-const BOOT_MIN = prefersReducedMotion() ? 900 : 2600;
+const BOOT_MIN = prefersReducedMotion() ? 900 : 1500;
 const bootT0 = performance.now();
 let bootValue = 0;
 let bootReady = false;
