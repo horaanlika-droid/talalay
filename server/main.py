@@ -36,7 +36,7 @@ class RequestIn(BaseModel):
     note: str = Field(default="", max_length=2000)
     items: list[RequestItem] = Field(min_length=1, max_length=100)
     total: float | None = None
-    currency: str = Field(default="EUR", max_length=8)
+    currency: str = Field(default="AED", max_length=8)
     source: str = Field(default="web", max_length=32)
 
     @field_validator("email")

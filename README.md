@@ -23,7 +23,8 @@ means it works identically on Pages, on BotHost, or from a local folder.
   44 px touch targets.
 * **Responsive** — single column + tab bar on phones, split hero and 4-up grid on desktop,
   sticky product stage at ≥ 900 px.
-* **Catalogue** — 16 seeded pieces, 3 categories, 4 collections.
+* **Catalogue** — 52 pieces in 2 categories and 17 collections, generated from the
+  trade price list by `tools/build_catalog.py` (see *Catalogue source* below).
 * **Requests, not checkout** — pieces are added to a request and submitted with contact
   details; the shop owner receives it in Telegram.
 * **Data flow** — `API → bundled data/content.json → localStorage cache`. With no API
@@ -52,7 +53,7 @@ Everything the storefront shows is editable from the bot — no code, no redeplo
 * **Products** — name, subtitle, description, price, volume, badge, category,
   collections, featured flag, in-stock flag, photos (send a photo to upload).
 * **Collections** — the four tiles on the home page, each with a cover photo.
-* **Categories** — filters in the shop (`Glassware`, `Barware`, `Acids & Other`).
+* **Categories** — filters in the shop (`Glassware`, `Acids & Other`).
 * **Site & content** — brand, tagline, announcement bar, about paragraph, price note,
   request note, shipping and returns copy, currency, locale, all contact details,
   and the hero slides (which piece, headline, kicker, copy).
@@ -124,6 +125,41 @@ assets/                 optimised webp product shots, editorial photos, brand ma
 server/                 FastAPI API + aiogram admin bot + Dockerfile
 brand-source/           original brand photography and logo files (not used at runtime)
 ```
+
+---
+
+## Catalogue source
+
+`data/content.json` and `server/seed.json` are **generated** — edit
+`tools/build_catalog.py` and re-run it, never the JSON by hand:
+
+```bash
+python3 tools/build_catalog.py      # rewrites data/content.json + server/seed.json
+python3 tools/render_packaging.py   # redraws assets/packaging/*.webp
+```
+
+Two inputs:
+
+| Input | Where | What it supplies |
+| --- | --- | --- |
+| Trade price list | `brand-source/cocktail-embassy-catalog.webarchive` → Google Sheet `19Vo9G29…`, tab *Glassware* (gid=0) and tab *Acids and Other* (gid=248427238) | COD, capacity, height, ⌀, material, AED (USD kept as `priceUsd`) |
+| House range | `assets/products/*.webp` + `HOUSE` in the generator | the ten studio pieces and their copy |
+
+Rules baked into the generator:
+
+* **AED only** on the site (`settings.currency = "AED"`, locale `en-AE`); USD stays in
+  the JSON as reference.
+* Every price-list collection is a normal, priced, in-stock collection. The only
+  exceptions are **Teapot** (`AG0027`) and **Two Sips** (`AG0019`) — `comingSoon: true`,
+  shown as *First series*, ordered through the request form.
+* The price-list *Levitating* pieces (Super Pony, Rocks, Highball) merge into the house
+  **Levitating** collection; every other tab-1 collection gets its own page.
+* Page two of the list becomes the **Acids & Other** category: straws, acids,
+  hydrocolloids (Pectinase, Agar Agar) and the ten flavour essences.
+* Pieces the old data had but the price list does not (lactic acid, jigger, bar spoon,
+  bitters, AG0014) are gone.
+* `assets/packaging/*.webp` are drawn, not photographed, by `tools/render_packaging.py`
+  (`jar`, `bottle`, `sleeve`) on the same navy stage as the glass photography.
 
 ---
 

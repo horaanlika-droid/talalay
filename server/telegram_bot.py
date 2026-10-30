@@ -721,7 +721,7 @@ SETTING_FIELDS = [
     ("shippingNote", "Shipping note", "shippingNote"),
     ("returnsNote", "Returns note", "returnsNote"),
     ("currency", "Currency (EUR/USD/AED)", "currency"),
-    ("locale", "Locale (en-IE)", "locale"),
+    ("locale", "Locale (en-AE)", "locale"),
 ]
 
 CONTACT_FIELDS = [

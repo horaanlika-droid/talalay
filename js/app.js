@@ -43,9 +43,16 @@ function shellHTML() {
     </div>
   </header>
 
+  <div class="scrollline" data-scrollline aria-hidden="true"></div>
+
   <main id="view" tabindex="-1"></main>
 
   <footer class="footer" data-footer></footer>
+
+  <a class="rail" href="#/request" data-rail aria-label="Open your request">
+    <span><span class="rail__count" data-rail-count>0</span> in your request</span>
+    <span class="btn">Review <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15"/><path d="m13.4 6.4 5.6 5.6-5.6 5.6"/></svg></span>
+  </a>
 
   <nav class="tabbar" aria-label="Primary">
     <a class="tab" href="#/" data-tab="home">${icon("home")}<span>Home</span></a>
@@ -67,7 +74,7 @@ function footerHTML(data) {
       <h4>Catalogue</h4>
       ${data.categories.map((cat) => `<a href="#/shop?c=${attr(cat.slug)}">${esc(cat.name)}</a>`).join("")}
       <a href="#/shop">All pieces</a>
-      <a href="#/archive">Archive</a>
+      <a href="#/archive">In development</a>
     </div>
     <div class="footer__col">
       <h4>Contact</h4>
@@ -152,6 +159,7 @@ async function render() {
 
   updateActiveNav(def);
   updateNavTheme(true);
+  motionEngine();
 
   // Scroll: top for a new destination, restore for in-page updates.
   if (!location.hash.includes("?")) window.scrollTo({ top: 0, behavior: "instant" in document.documentElement.style ? "instant" : "auto" });
@@ -184,14 +192,82 @@ function updateNavTheme(force = false) {
   }
   const solid = y > 12;
   nav.classList.toggle("is-solid", solid);
-  nav.dataset.theme = wantsDark && y < threshold ? "dark" : "light";
-  if (force) nav.dataset.theme = wantsDark && y < threshold ? "dark" : "light";
+  // the whole site is one dark room: the bar only gets denser as you scroll
+  nav.dataset.theme = "dark";
+}
+
+/* --------------------------------------------------------------- motion */
+
+let revealObserver = null;
+
+function motionEngine() {
+  const line = document.querySelector("[data-scrollline]");
+  const rail = document.querySelector("[data-rail]");
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      const doc = document.documentElement;
+      const max = Math.max(1, doc.scrollHeight - window.innerHeight);
+      const p = Math.min(1, Math.max(0, window.scrollY / max));
+      if (line) line.style.setProperty("--progress", p.toFixed(4));
+      if (rail) rail.classList.toggle("is-in", window.scrollY > window.innerHeight * 0.7 && request.count() > 0);
+    });
+  };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll, { passive: true });
+
+  // reveal sections as they come into view
+  if (revealObserver) revealObserver.disconnect();
+  if ("IntersectionObserver" in window && !reduced) {
+    revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("is-in");
+            revealObserver.unobserve(e.target);
+          }
+        });
+      },
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.08 }
+    );
+    document.querySelectorAll(".reveal:not(.is-in)").forEach((el, i) => {
+      el.style.setProperty("--reveal-delay", `${Math.min(i, 6) * 60}ms`);
+      revealObserver.observe(el);
+    });
+  } else {
+    document.querySelectorAll(".reveal").forEach((el) => el.classList.add("is-in"));
+  }
+
+  // a light that follows the pointer across the glass panels
+  if (!reduced) {
+    document.querySelectorAll(".spotlight").forEach((el) => {
+      el.addEventListener(
+        "pointermove",
+        (ev) => {
+          const r = el.getBoundingClientRect();
+          el.style.setProperty("--mx", `${ev.clientX - r.left}px`);
+          el.style.setProperty("--my", `${ev.clientY - r.top}px`);
+        },
+        { passive: true }
+      );
+    });
+  }
+  onScroll();
 }
 
 /* -------------------------------------------------------------- badges */
 
 function updateBadges() {
   const count = request.count();
+  const railCount = document.querySelector("[data-rail-count]");
+  if (railCount) railCount.textContent = String(count);
+  const rail = document.querySelector("[data-rail]");
+  if (rail && count === 0) rail.classList.remove("is-in");
   document.querySelectorAll("[data-cart-count], [data-tab-badge]").forEach((el) => {
     el.textContent = String(count);
     el.hidden = count === 0;

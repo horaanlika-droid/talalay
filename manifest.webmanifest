@@ -6,10 +6,19 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#071226",
-  "theme_color": "#0a1730",
+  "background_color": "#060c18",
+  "theme_color": "#060c18",
   "icons": [
-    { "src": "assets/brand/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
-    { "src": "assets/brand/app-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+    {
+      "src": "assets/brand/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/brand/app-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
   ]
 }

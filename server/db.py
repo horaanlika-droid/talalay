@@ -17,8 +17,8 @@ DEFAULT_SETTINGS: dict[str, Any] = {
     "brand": "Cocktail Embassy",
     "tagline": "Hand-blown glassware for the modern bar.",
     "announcement": "",
-    "currency": "EUR",
-    "locale": "en-IE",
+    "currency": "AED",
+    "locale": "en-AE",
     "priceNote": "Prices exclude VAT & shipping",
     "requestNote": "No online payment — submit a request and our team confirms availability, shipping and final invoicing within one business day.",
     "shippingNote": "Dispatch in 2–4 business days.",
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS requests (
     note TEXT DEFAULT '',
     items TEXT DEFAULT '[]',
     total REAL DEFAULT 0,
-    currency TEXT DEFAULT 'EUR',
+    currency TEXT DEFAULT 'AED',
     status TEXT DEFAULT 'new',
     notified INTEGER DEFAULT 0
 );
@@ -507,7 +507,7 @@ def create_request(payload: dict) -> dict:
                         payload.get("note", ""),
                         _json(items),
                         float(payload.get("total") or 0),
-                        payload.get("currency", "EUR"),
+                        payload.get("currency", "AED"),
                     ),
                 )
                 conn.commit()
