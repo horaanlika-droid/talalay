@@ -37,7 +37,7 @@ Open `js/config.js` and set the URL of the BotHost service:
 ```js
 window.CE_CONFIG = {
   apiBase: "https://your-service.bothost.ru",
-  requestEmail: "orders@cocktailembassy.com",
+  requestEmail: "bartending.solution.uae@gmail.com",
 };
 ```
 

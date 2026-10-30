@@ -322,7 +322,7 @@ def build() -> dict:
     data["settings"]["currency"] = "AED"
     data["settings"]["locale"] = "en-AE"
     data["settings"]["priceNote"] = "Prices per piece, AED, exclude VAT & shipping"
-    data["settings"]["announcement"] = "Trade catalogue · AED per piece · Dispatch from Rotterdam"
+    data["settings"]["announcement"] = "Trade catalogue · AED per piece · Worldwide delivery from Dubai"
 
     collections, products = [], []
 

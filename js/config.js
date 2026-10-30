@@ -11,5 +11,5 @@
 window.CE_CONFIG = {
   apiBase: "",
   telegramAdmin: "",
-  requestEmail: "orders@cocktailembassy.com",
+  requestEmail: "bartending.solution.uae@gmail.com",
 };
