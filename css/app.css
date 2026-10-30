@@ -6,7 +6,7 @@
 /* ---------- Tokens ---------- */
 :root {
   /* ---- the room (shared with the photography: tools/harmonize_images.py) ---- */
-  --bg: #060c18;
+  --bg: #070c18;                 /* = the backdrop of every photo (rgb 7,12,24) */
   --bg-deep: #04080f;
   --bg-lift: #0a1220;
   --surface: rgba(255, 255, 255, 0.035);
@@ -30,7 +30,7 @@
   --line: var(--hairline);
   --line-strong: var(--hairline-strong);
   --navy-1000: #03060c;
-  --navy-950: #060c18;
+  --navy-950: #070c18;
   --navy-900: #0a1220;
   --navy-800: #0e1a2c;
   --navy-700: #16263e;
@@ -337,22 +337,22 @@ main {
   padding-top: var(--safe-top);
   display: flex;
   align-items: center;
-  background: rgba(6, 12, 24, 0.55);
+  background: rgba(7, 12, 24, 0.55);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid transparent;
   transition: background 0.3s, border-color 0.3s, color 0.3s;
 }
 .nav[data-theme="dark"] {
-  background: rgba(7, 18, 38, 0.6);
+  background: rgba(7, 12, 24, 0.6);
   color: #fff;
   border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 .nav[data-theme="dark"].is-solid {
-  background: rgba(7, 18, 38, 0.95);
+  background: rgba(7, 12, 24, 0.95);
 }
 .nav.is-solid {
-  background: rgba(6, 12, 24, 0.86);
+  background: rgba(7, 12, 24, 0.86);
   border-bottom-color: var(--line);
 }
 .nav__inner {
@@ -555,8 +555,8 @@ main {
   position: absolute;
   inset: 0;
   z-index: -3;
-  background: var(--bg) url("../assets/brand/room.webp") center / cover no-repeat;
-  opacity: 0.55;
+  background: var(--bg);
+  opacity: 1;
 }
 .hero__glow {
   position: absolute;
@@ -815,7 +815,7 @@ main {
 
 /* ---------- Announcement ---------- */
 .announce {
-  background: var(--bg-deep);
+  background: var(--bg);
   border-bottom: 1px solid var(--hairline);
   color: rgba(255, 255, 255, 0.76);
   font-size: 11.5px;
@@ -1241,7 +1241,7 @@ main {
   position: sticky;
   top: calc(var(--nav-h) + var(--safe-top));
   z-index: 40;
-  background: linear-gradient(180deg, var(--bg) 72%, rgba(6, 12, 24, 0));
+  background: linear-gradient(180deg, var(--bg) 72%, rgba(7, 12, 24, 0));
   padding-block: 10px 12px;
   margin-inline: calc(-1 * var(--page-x));
   padding-inline: var(--page-x);
@@ -1828,8 +1828,8 @@ main {
   position: absolute;
   inset: 0;
   z-index: -2;
-  background: url("../assets/brand/room.webp") center / cover no-repeat;
-  opacity: 0.85;
+  background: var(--bg);
+  opacity: 1;
 }
 .hero-mini__bg img {
   position: absolute;
@@ -2019,7 +2019,7 @@ main {
   align-items: center;
   height: calc(var(--tabbar-h) + var(--safe-bottom));
   padding-bottom: var(--safe-bottom);
-  background: rgba(6, 12, 24, 0.72);
+  background: rgba(7, 12, 24, 0.78);
   -webkit-backdrop-filter: blur(22px) saturate(180%);
   backdrop-filter: blur(22px) saturate(180%);
   border-top: 1px solid var(--line);
@@ -2098,7 +2098,7 @@ main {
   right: 0;
   bottom: 0;
   z-index: 130;
-  background: linear-gradient(180deg, #101a2b 0%, #0a1220 100%);
+  background: var(--bg);
   border: 1px solid var(--hairline);
   border-bottom: 0;
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
@@ -2497,9 +2497,8 @@ main {
 .archive-band {
   margin: clamp(28px, 6vw, 72px) 0;
   padding: clamp(28px, 5vw, 64px) 0;
-  background:
-    radial-gradient(90% 120% at 50% 0%, rgba(38, 62, 105, 0.55) 0%, rgba(10, 18, 32, 0) 60%),
-    linear-gradient(180deg, #101b2e 0%, #0a1220 100%);
+  background: var(--bg);
+  border-block: 1px solid var(--hairline);
   color: #fff;
 }
 .archive-band .h2 { color: #fff; }
@@ -2511,9 +2510,7 @@ main {
 }
 
 .hero-mini--navy {
-  background:
-    radial-gradient(80% 90% at 50% 10%, rgba(38, 62, 105, 0.5) 0%, rgba(10, 18, 32, 0) 65%),
-    linear-gradient(180deg, #101b2e 0%, #0a1220 100%);
+  background: var(--bg);
 }
 .section--tight { padding-top: 0; }
 

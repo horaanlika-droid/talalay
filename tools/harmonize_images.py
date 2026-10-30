@@ -36,7 +36,7 @@ ASSETS = ROOT / "assets"
 MANIFEST = ROOT / "data" / "image-audit.json"
 
 # ------------------------------------------------------------------ the set
-APP_BG = (6, 12, 24)          # #060c18 — shared with css/app.css (--bg)
+APP_BG = (7, 12, 24)          # #060c18 — shared with css/app.css (--bg)
 WORK = (1200, 1500)           # 4:5 — composite space (lean on memory)
 WORK_TYPE = (1400, 900)       # 14:9 wide covers
 PREVIEW = (800, 1000)

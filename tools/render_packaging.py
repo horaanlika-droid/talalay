@@ -26,7 +26,7 @@ ASSETS = ROOT / "assets"
 BRAND = ASSETS / "brand"
 PKG = ASSETS / "packaging"
 
-APP_BG = (6, 12, 24)
+APP_BG = (7, 12, 24)
 SS = 2                      # supersample factor
 W, H = 1200, 1500           # delivered master (4:5)
 

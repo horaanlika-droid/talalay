@@ -163,6 +163,64 @@ Rules baked into the generator:
 
 ---
 
+## House photography rules (owner, 30 Oct 2026)
+
+These are hard rules for every image in `assets/` and every future regeneration.
+They are enforced/documented with the tools in `tools/`, not by hand.
+
+1. **One room.** The backdrop of every photograph equals the app background —
+   `#070c18` = `rgb(7, 12, 24)`. Corners, edges and the app's `--bg` are the same
+   number, so a photo has no frame and floats straight on the page. `css/app.css`,
+   `index.html`, `manifest.webmanifest`, `tools/harmonize_images.py` and
+   `tools/render_packaging.py` all carry that one value.
+2. **Thin glass.** Walls *and* base are paper-thin: no solid glass puck at the
+   bottom of a tumbler/highball/rocks, no heavy foot. Crystal is drawn by fine
+   bright edge lines only.
+3. **Cold service.** A glass with a drink is ice-cold: condensation, chill haze,
+   frost creeping from the foot, a wisp of vapour.
+4. **Ice means a lot of ice.** If a serve has ice, the glass is packed with large
+   cubes up to the rim — never one lone cube.
+5. **No garnish.** No fruit, peel, herbs, straws, umbrellas. Only the liquid, its
+   meniscus and (where it belongs) ice.
+6. **Reference set.** The old `ce` catalogue photography in `assets/archive/`
+   (`AG0001…AG0027`, `covers/`) is the visual target: tight halo, quiet contrast,
+   piece ~¾ of the frame, flat `rgb(7,12,24)` backdrop.
+7. **Never change the silhouette.** Glass shapes are shape-locked to the shipped
+   masters; every regeneration is image-to-image from them.
+
+### Tools
+
+| Tool | What it does |
+| --- | --- |
+| `tools/reframe_images.py` | finds the piece, re-crops to the reference framing (piece = 77.5 % of a 4:5 canvas, baseline on the floor line), feathers the edges into the room tone, re-delivers webp + `-sm` |
+| `tools/tone_images.py` | measures the halo (concentric ring brightness) and dims *only the backdrop* until it matches the reference median — the glass keeps its exact light |
+| `tools/contact_sheet.py` | QC contact sheet of a set on the room tone, with a 100 % crop of each base |
+| `tools/audit_images.py` | measures backdrop tone, glow, framing, subject size per file |
+| `tools/harmonize_images.py` | legacy re-stager (kept for archive/packaging) |
+| `tools/render_packaging.py` | draws the packaging placeholders |
+
+```bash
+python3 tools/tone_images.py --set products                 # halo → reference
+python3 tools/reframe_images.py --set products              # framing → reference
+python3 tools/contact_sheet.py --set products               # QC sheet
+```
+
+### Status (30 Oct 2026)
+
+* ✅ one room: app background, nav, tab bar, hero, sheets, manifest and all photos
+  share `rgb(7, 12, 24)`; the `room.webp` overlay was removed from the hero and
+  the info page.
+* ✅ products (10): re-framed to the reference crop and re-lit to the reference
+  halo — see `brand-source/qc/sheet-products-full.png`.
+* ◻ drinks (10) + editorial (4): **regeneration blocked** — the image endpoint
+  answers `403 … account has been flagged` for every call (text-to-image and
+  image-to-image alike). `assets/drinks/` is wired into `tools/build_catalog.py`:
+  drop `<product-slug>.webp` there and the product page picks it up as a second
+  image. Nothing else is needed.
+* The one approved drink frame so far (`brand-source/generated/drinks/
+  levitating-martini.png`, no garnish, thin base) is kept as the reference render
+  for the next batch; it needs a larger piece in frame before delivery.
+
 ## Next-session brief — photo regeneration & futuristic UI (queued 2026-10-30)
 
 > **RU (задание владельца, дословно):** сгенерировать бокалы как в тайлах референса, но **100 % идентичные** тем, что лежат в репо, с **тончайшим стеклом**; добавить на бокалы эффект света **в духе мыльных пузырей**; фотографии с напитками перегенерировать под ту же стилистику; приложение должно выглядеть **футуристично, воздушно и интуитивно**, как референсы IMG_1429 / IMG_1430 («1419» в переписке = IMG_1429) и макет интерфейса IMG_1440. Формы бокалов не менять никогда.
@@ -214,7 +272,9 @@ Restyle the storefront per `IMG_1440` + `IMG_1429/1430`: dark-navy theme, floati
 ### Task 5 — more drinks in our glassware (generate)
 
 Grow the drink photography in the same house style (navy glow, thin glass, iridescence,
-consistent light physics). Suggested serves, one per glass where possible: Negroni in
+consistent light physics) and under the *House photography rules* above: **no garnish**,
+**paper-thin base**, **ice means a packed glass**, **the glass is ice-cold** (condensation,
+frost, chill haze). Suggested serves, one per glass where possible: Negroni in
 `rocks`, champagne in `saucer`, clarified martini in `martini`, soda & ice in `highball`,
 daiquiri in `coupe`, sparkling water in `goblet`, spritz in `footed`, cold brew in
 `tumbler`, virgin hurricane in `hurricane`, etched-water serve in `cylinder`. Use for
