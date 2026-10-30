@@ -29,6 +29,31 @@ export function cardMedia(product, sizes = "") {
   )}" loading="lazy" decoding="async" ${sizes ? `sizes="${attr(sizes)}"` : ""}>`;
 }
 
+/* Whole-scene hero plates — room, glow and glass baked into one raster file by
+   tools/render_scenes.py. The page never stacks a glass over a backdrop. */
+const HERO_SCENES = new Set([
+  "levitating-martini",
+  "etched-highball",
+  "champagne-saucer",
+  "levitating-super-pony",
+]);
+
+/* Wide header plates for the four live collections: the glass is the same
+   picture, scaled so it survives a short full-width band without being cut. */
+const COLLECTION_BANNERS = new Set(["levitating", "noir", "signature", "raw"]);
+
+function collectionBanner(collection) {
+  if (COLLECTION_BANNERS.has(collection.slug)) return `assets/scenes/banner-${collection.slug}.webp`;
+  return collection.image ? mediaUrl(collection.image) : "";
+}
+
+function heroScene(product, portrait) {
+  if (HERO_SCENES.has(product.slug)) {
+    return `assets/scenes/hero-${product.slug}${portrait ? "-portrait" : ""}.webp`;
+  }
+  return mediaUrl(product.images?.[0] || "");
+}
+
 export const KINETIC_WORDS = `<span>Hand-blown <em>crystal</em></span><span>Bars &amp; hotels</span><span>Small-batch <em>editions</em></span><span>Trade pricing</span><span>Dubai</span><span>Worldwide <em>dispatch</em></span>`;
 
 function productCard(data, product) {
@@ -102,25 +127,16 @@ export function homeView(data) {
 
   const heroHTML = first
     ? `<section class="hero" data-hero>
-      <div class="hero__bg"></div>
-      <div class="hero__glow"></div>
-      <div class="hero__grain"></div>
+      <picture class="hero__art${HERO_SCENES.has(first.product.slug) ? "" : " hero__art--plain"}" aria-hidden="true">
+        <source media="(min-width: 900px)" srcset="${attr(heroScene(first.product, false))}">
+        <img data-hero-art src="${attr(heroScene(first.product, true))}" alt="" fetchpriority="high" decoding="async">
+      </picture>
       <div class="hero__inner">
         <p class="hero__kicker" data-hero-kicker>${esc(first.kicker || "The collection")}</p>
         <div class="hero__titleWrap">
           <h1 class="h-hero hero__title" data-hero-title>${esc(first.title || first.name)}</h1>
         </div>
-        <div class="hero__stage">
-          <span class="hero__floor" aria-hidden="true"></span>
-          <div class="glass-figure" data-hero-figure>
-            <img class="glass-glow" data-hero-glow src="${attr(
-              mediaUrl(first.product.images[0] || "")
-            )}" alt="" aria-hidden="true" decoding="async">
-            <img data-hero-img src="${attr(mediaUrl(first.product.images[0] || ""))}" alt="${attr(
-      first.product.name
-    )}" fetchpriority="high" decoding="async">
-          </div>
-        </div>
+        <div class="hero__stage"></div>
         <div class="hero__meta">
           <div>
             <div class="hero__meta-name" data-hero-name>${esc(first.name)}</div>
@@ -232,7 +248,7 @@ export function homeView(data) {
 
       <section class="section split reveal" aria-labelledby="craft-title">
         <div class="split__media split__media--portrait">
-          <img src="assets/editorial/red-vessel.webp" alt="Sandblasted red cocktail vessel glowing in the Embassy studio" loading="lazy" decoding="async" class="dissolve">
+          <img src="assets/products/goblet.webp" alt="Embassy Goblet — hand-blown crystal in the Embassy studio" loading="lazy" decoding="async">
         </div>
         <div class="split__copy">
           <p class="eyebrow">The craft</p>
@@ -290,7 +306,8 @@ function mountHero(root, slides) {
   const els = {
     kicker: hero.querySelector("[data-hero-kicker]"),
     title: hero.querySelector("[data-hero-title]"),
-    img: hero.querySelector("[data-hero-img]"),
+    art: hero.querySelector("[data-hero-art]"),
+    artSource: hero.querySelector(".hero__art source"),
     name: hero.querySelector("[data-hero-name]"),
     sub: hero.querySelector("[data-hero-sub]"),
     priceEl: hero.querySelector("[data-hero-price]"),
@@ -318,7 +335,8 @@ function mountHero(root, slides) {
 
     const node = hero;
     node.classList.add("is-changing");
-    setTimeout(() => {
+
+    const apply = () => {
       els.kicker.textContent = slide.kicker || "The collection";
       els.title.textContent = slide.title || slide.name;
       els.name.textContent = slide.name;
@@ -326,20 +344,31 @@ function mountHero(root, slides) {
       els.priceEl.textContent = fmt(slide.product.price);
       els.copy.textContent = slide.copy || slide.product.description;
       els.cta.setAttribute("href", `#/product/${slide.product.slug}`);
-      if (slide.product.images[0]) {
-        const next = mediaUrl(slide.product.images[0]);
-        const img = new Image();
-        img.src = next;
-        img.onload = () => {
-          els.img.src = next;
-          els.img.alt = slide.product.name;
-          const glow = hero.querySelector("[data-hero-glow]");
-          if (glow) glow.src = next;
-        };
-      }
-      node.classList.remove("is-changing");
+      requestAnimationFrame(() => node.classList.remove("is-changing"));
       animating = false;
-    }, 190);
+    };
+
+    const wide = heroScene(slide.product, false);
+    const portrait = heroScene(slide.product, true);
+    const picture = hero.querySelector(".hero__art");
+    if (picture) picture.classList.toggle("hero__art--plain", !HERO_SCENES.has(slide.product.slug));
+    if (wide && portrait && els.art) {
+      // One plate per slide: wait for the wide file, then swap both variants.
+      let settled = false;
+      const swap = () => {
+        if (settled) return;
+        settled = true;
+        if (els.artSource) els.artSource.srcset = wide;
+        els.art.src = portrait;
+        setTimeout(apply, 190);
+      };
+      const pre = new Image();
+      pre.onload = pre.onerror = swap;
+      pre.src = wide;
+      setTimeout(swap, 1500);
+    } else {
+      setTimeout(apply, 190);
+    }
   }
 
   function start() {
@@ -592,19 +621,14 @@ export function productView(data, slug) {
 
   const html = `<div class="pdp">
     <section class="pdp__stage" aria-label="${attr(product.name)}">
-      <div class="pdp__glow" aria-hidden="true"></div>
       <div class="pdp__stage-inner">
         ${
           img
-            ? `<div class="glass-figure pdp__figure">
-                 <img class="glass-glow" data-pdp-glow src="${attr(img)}" alt="" aria-hidden="true" decoding="async">
-                 <img data-pdp-img src="${attr(img)}" alt="${attr(product.name)} — ${attr(
+            ? `<img class="pdp__figure" data-pdp-img src="${attr(img)}" alt="${attr(product.name)} — ${attr(
                 product.subtitle || ""
-              )}" fetchpriority="high" decoding="async">
-               </div>`
+              )}" fetchpriority="high" decoding="async">`
             : `<img class="pdp__figure" src="assets/brand/mark-chrome.png" alt="" style="height:min(30dvh,280px);opacity:.45">`
         }
-        <span class="pdp__floor" aria-hidden="true"></span>
         ${
           product.images.length > 1
             ? `<div class="pdp__thumbs">${product.images
@@ -727,8 +751,6 @@ export function productView(data, slug) {
         if (thumb) {
           const main = root.querySelector("[data-pdp-img]");
           if (main) main.src = thumb.dataset.pdpThumb;
-          const glow = root.querySelector("[data-pdp-glow]");
-          if (glow) glow.src = thumb.dataset.pdpThumb;
           root.querySelectorAll("[data-pdp-thumb]").forEach((t) =>
             t.classList.toggle("is-active", t === thumb)
           );
@@ -749,8 +771,9 @@ export function collectionView(data, slug) {
   const products = selectors.productsByCollection(data, slug);
   const live = products.filter((p) => !p.comingSoon);
   const arch = products.filter((p) => p.comingSoon);
+  const banner = collectionBanner(collection);
   const html = `<section class="hero-mini">
-      ${collection.image ? `<div class="hero-mini__bg"><img src="${attr(mediaUrl(collection.image))}" alt=""></div>` : ""}
+      ${banner ? `<div class="hero-mini__bg"><img src="${attr(banner)}" alt=""></div>` : ""}
       <div class="hero-mini__inner">
         <p class="eyebrow" style="color:rgba(255,255,255,.55)">${esc(collection.subtitle || "Collection")}</p>
         <h1 class="h1">${esc(collection.name)}</h1>
@@ -1142,7 +1165,7 @@ export function infoView(data) {
   ].join("");
 
   const html = `<section class="hero-mini">
-      <div class="hero-mini__bg"><img src="assets/editorial/crystal-light.webp" alt=""></div>
+      <div class="hero-mini__bg"><img src="assets/scenes/banner-signature.webp" alt=""></div>
       <div class="hero-mini__inner">
         <p class="eyebrow" style="color:rgba(255,255,255,.55)">The Embassy</p>
         <h1 class="h1">Glass, considered.</h1>
@@ -1155,7 +1178,7 @@ export function infoView(data) {
     <div class="wrap">
       <section class="section split">
         <div class="split__media split__media--portrait">
-          <img src="assets/editorial/red-vessel.webp" alt="Sandblasted vessel" loading="lazy">
+          <img src="assets/products/coupe.webp" alt="Saucer Coupe — hand-blown crystal" loading="lazy">
         </div>
         <div class="split__copy">
           <p class="eyebrow">Since 2024</p>

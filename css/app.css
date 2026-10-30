@@ -551,33 +551,46 @@ main {
   display: flex;
   flex-direction: column;
 }
-.hero__bg {
+/* One raster plate: the room, its glow and the glass are already in the file.
+   Nothing is stacked on top of a painted backdrop. */
+.hero__art {
   position: absolute;
   inset: 0;
-  z-index: -3;
-  background: var(--bg) url("../assets/brand/room.webp") center / cover no-repeat;
-  opacity: 0.55;
-}
-.hero__glow {
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  background:
-    radial-gradient(42% 52% at 68% 46%, rgba(96, 152, 224, 0.30) 0%, rgba(96, 152, 224, 0) 74%),
-    radial-gradient(80% 60% at 12% 0%, rgba(38, 70, 122, 0.22) 0%, rgba(38, 70, 122, 0) 70%);
+  z-index: 0;
+  display: block;
   pointer-events: none;
 }
-.hero__grain {
+.hero__art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+/* A hero slide the bot points at a piece with no wide plate yet: show the
+   catalogue picture whole instead of cropping it. */
+.hero__art--plain img {
+  object-fit: contain;
+  padding: clamp(16px, 6vw, 72px);
+}
+/* a readable fall of light over the plate — not a second picture */
+.hero::after {
+  content: "";
   position: absolute;
   inset: 0;
-  z-index: -1;
-  opacity: 0.35;
-  mix-blend-mode: overlay;
+  z-index: 1;
   pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  background: linear-gradient(
+    180deg,
+    rgba(6, 12, 24, 0.62) 0%,
+    rgba(6, 12, 24, 0.18) 30%,
+    rgba(6, 12, 24, 0) 52%,
+    rgba(6, 12, 24, 0.5) 82%,
+    rgba(6, 12, 24, 0.82) 100%
+  );
 }
 .hero__inner {
   position: relative;
+  z-index: 2;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -621,74 +634,6 @@ main {
   justify-content: center;
   min-height: 300px;
   margin-top: -6px;
-}
-.hero__stage .glass-figure {
-  height: min(38dvh, 340px);
-  animation: levitate 9s ease-in-out infinite;
-}
-.hero__floor-slot {
-  display: none;
-}
-
-/* The piece is a photograph of the same room the page is painted with.
-   `lighten` dissolves its backdrop into the page and the radial mask removes
-   the last edge of the frame, so the glass simply floats on the site. */
-.glass-figure {
-  position: relative;
-  display: grid;
-  place-items: center;
-  isolation: isolate;
-}
-.glass-figure > img {
-  position: relative;
-  z-index: 2;
-  height: 100%;
-  width: auto;
-  max-width: 100%;
-  object-fit: contain;
-  mix-blend-mode: lighten;
-  transition: opacity 0.25s ease;
-}
-.glass-figure > img:not(.glass-glow) {
-  /* radial: dissolve the photo's frame into the room
-     linear: nothing survives below the foot — no table line, no reflection */
-  -webkit-mask-image: radial-gradient(58% 54% at 50% 46%, #000 55%, transparent 88%);
-  mask-image: radial-gradient(58% 54% at 50% 46%, #000 55%, transparent 88%);
-}
-.glass-figure > .glass-glow {
-  /* the photography already carries its own bloom: this only breathes */
-  position: absolute;
-  inset: 8%;
-  z-index: 1;
-  width: 84%;
-  height: 84%;
-  max-width: none;
-  object-fit: contain;
-  filter: blur(46px) brightness(1.15);
-  opacity: 0.22;
-  mix-blend-mode: lighten;
-  pointer-events: none;
-  animation: glow-breathe 9s ease-in-out infinite;
-}
-@keyframes glow-breathe {
-  0%,
-  100% {
-    opacity: 0.46;
-    transform: scale(1.01);
-  }
-  50% {
-    opacity: 0.30;
-    transform: scale(1.07);
-  }
-}
-@keyframes levitate {
-  0%,
-  100% {
-    transform: translateY(1.2%) scale(1.01);
-  }
-  50% {
-    transform: translateY(-2.2%) scale(1.03);
-  }
 }
 .hero__meta {
   position: relative;
@@ -787,10 +732,6 @@ main {
     padding-bottom: clamp(10px, 3vw, 40px);
     z-index: 2;
     pointer-events: none;
-  }
-  .hero__stage .glass-figure {
-    height: min(50dvh, 470px);
-    margin-top: clamp(-70px, -4.5vw, -18px);
   }
   .hero__meta {
     grid-column: 2;
@@ -923,11 +864,8 @@ main {
 .card__media img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  /* no frame, no shadow: the photo's room is the page's room */
-  mix-blend-mode: lighten;
-  -webkit-mask-image: radial-gradient(62% 58% at 50% 48%, #000 54%, transparent 88%);
-  mask-image: radial-gradient(62% 58% at 50% 48%, #000 54%, transparent 88%);
+  /* one finished plate — no blend, no mask, no backdrop underneath */
+  object-fit: cover;
   transition: transform 0.7s var(--ease-ios);
 }
 .card:hover .card__media img {
@@ -1091,9 +1029,6 @@ main {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  mix-blend-mode: lighten;
-  -webkit-mask-image: radial-gradient(78% 76% at 50% 50%, #000 52%, transparent 94%);
-  mask-image: radial-gradient(78% 76% at 50% 50%, #000 52%, transparent 94%);
   transition: transform 0.9s var(--ease-ios);
 }
 .tile:hover img {
@@ -1160,11 +1095,6 @@ main {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-.split__media img.dissolve {
-  mix-blend-mode: lighten;
-  -webkit-mask-image: radial-gradient(74% 70% at 50% 48%, #000 58%, transparent 96%);
-  mask-image: radial-gradient(74% 70% at 50% 48%, #000 58%, transparent 96%);
 }
 .split__media--portrait {
   aspect-ratio: 4 / 5;
@@ -1357,9 +1287,8 @@ main {
 }
 .pdp__stage {
   position: relative;
-  background:
-    radial-gradient(58% 44% at 50% 40%, rgba(34, 74, 128, 0.55) 0%, rgba(12, 26, 50, 0.35) 46%, rgba(6, 12, 24, 0) 74%),
-    var(--bg);
+  /* the plate is a finished raster picture: room, glow and glass in one file */
+  background: var(--bg);
   color: #fff;
   margin-top: calc(-1 * (var(--nav-h) + var(--safe-top)));
   padding-top: calc(var(--nav-h) + var(--safe-top));
@@ -1374,21 +1303,11 @@ main {
   display: grid;
   place-items: center;
 }
-.pdp__glow {
-  position: absolute;
-  inset: 6% 8% auto;
-  height: 70%;
-  background: radial-gradient(50% 50% at 50% 50%, rgba(136, 180, 255, 0.32) 0%, rgba(136, 180, 255, 0) 70%);
-  filter: blur(10px);
-  z-index: -1;
-}
 .pdp__figure {
+  width: auto;
+  max-width: 100%;
   height: min(42dvh, 420px);
-  animation: levitate 8s ease-in-out infinite;
-}
-.pdp__floor {
-  /* the piece levitates: no floor, no contact shadow */
-  display: none;
+  object-fit: contain;
 }
 .pdp__thumbs {
   display: flex;
@@ -1630,9 +1549,6 @@ main {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  mix-blend-mode: lighten;
-  -webkit-mask-image: radial-gradient(80% 80% at 50% 48%, #000 52%, transparent 94%);
-  mask-image: radial-gradient(80% 80% at 50% 48%, #000 52%, transparent 94%);
 }
 .line-item__name {
   font-size: 14.5px;
@@ -1828,8 +1744,7 @@ main {
   position: absolute;
   inset: 0;
   z-index: -2;
-  background: url("../assets/brand/room.webp") center / cover no-repeat;
-  opacity: 0.85;
+  background: var(--bg);
 }
 .hero-mini__bg img {
   position: absolute;
@@ -1837,11 +1752,7 @@ main {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 50% 38%;
-  opacity: 0.5;
-  mix-blend-mode: lighten;
-  -webkit-mask-image: radial-gradient(58% 64% at 50% 46%, #000 30%, transparent 84%);
-  mask-image: radial-gradient(58% 64% at 50% 46%, #000 30%, transparent 84%);
+  object-position: 50% 42%;
 }
 .hero-mini::after {
   content: "";
@@ -2282,12 +2193,6 @@ main {
   }
 }
 
-@media (min-width: 760px) and (max-width: 899px) {
-  .hero__stage .glass-figure {
-    height: min(44dvh, 400px);
-  }
-}
-
 /* ---------- Print ---------- */
 @media print {
   .nav,
@@ -2461,11 +2366,11 @@ main {
   opacity: 0;
   transform: translateY(6px);
 }
-.hero__stage img {
-  transition: opacity 0.2s ease;
+.hero__art img {
+  transition: opacity 0.28s ease;
 }
-.hero.is-changing .hero__stage > * {
-  opacity: 0.35;
+.hero.is-changing .hero__art img {
+  opacity: 0.5;
 }
 .hero__meta-name {
   text-wrap: balance;
@@ -2685,9 +2590,6 @@ main {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  mix-blend-mode: lighten;
-  -webkit-mask-image: radial-gradient(76% 76% at 50% 44%, #000 46%, transparent 92%);
-  mask-image: radial-gradient(76% 76% at 50% 44%, #000 46%, transparent 92%);
   transition: transform 0.9s var(--ease-ios);
 }
 .archive-tile:hover img {

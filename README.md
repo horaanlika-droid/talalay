@@ -17,8 +17,8 @@ Live site: **https://horaanlika-droid.github.io/talalay/**
 Plain static files — no build step, no dependencies. Hash routing (`#/shop`, `#/product/…`)
 means it works identically on Pages, on BotHost, or from a local folder.
 
-* **Design** — dark navy hero with levitating product photography (reference 1429),
-  chrome wordmark, cream paper background, oversized negative tracking typography.
+* **Design** — dark navy hero with a levitating glass plate (reference 1429), one flat
+  raster picture per slide, chrome wordmark, oversized negative tracking typography.
   iOS-native details: bottom tab bar, safe-area insets, sheet dialogs, spring easing,
   44 px touch targets.
 * **Responsive** — single column + tab bar on phones, split hero and 4-up grid on desktop,
@@ -121,7 +121,7 @@ sw.js                   offline shell
 css/app.css             design tokens + all components
 js/                     config, api, store, views, router, icons
 data/content.json       seed catalogue (also seeds the bot database)
-assets/                 optimised webp product shots, editorial photos, brand marks
+assets/                 whole-scene webp plates (glass + room baked in), brand marks
 server/                 FastAPI API + aiogram admin bot + Dockerfile
 brand-source/           original brand photography and logo files (not used at runtime)
 ```
@@ -136,6 +136,8 @@ brand-source/           original brand photography and logo files (not used at r
 ```bash
 python3 tools/build_catalog.py      # rewrites data/content.json + server/seed.json
 python3 tools/render_packaging.py   # redraws assets/packaging/*.webp
+python3 tools/harmonize_images.py --set products   # re-stages catalogue photos
+python3 tools/render_scenes.py --set all           # hero + collection plates
 ```
 
 Two inputs:
@@ -163,7 +165,38 @@ Rules baked into the generator:
 
 ---
 
+## Visuals — one flat raster per picture
+
+The storefront never composites a cut-out glass over a painted backdrop. Every
+picture the visitor sees is **one finished WebP**: the navy room, its glow and the
+piece are already in the file. CSS only paints the matching app colour (`#060c18`)
+around it, so a plate has no visible frame.
+
+| File | Made by | Used for |
+| --- | --- | --- |
+| `assets/products/*.webp` | `tools/harmonize_images.py` | product cards, product stage, cart, story split |
+| `assets/scenes/hero-<slug>.webp` | `tools/render_scenes.py` | hero, desktop 16:9 |
+| `assets/scenes/hero-<slug>-portrait.webp` | `tools/render_scenes.py` | hero, phones 3:4 |
+| `assets/scenes/cover-<slug>.webp` | `tools/render_scenes.py` | collection tiles, collection header |
+| `assets/archive/**`, `assets/packaging/**` | archive pipeline / `render_packaging.py` | archive and acids & other |
+
+Rules:
+
+* **Glass only.** There is no drink photography in the catalogue — no cocktails,
+  no liquid, no garnish. Vessel shapes are never redrawn or substituted.
+* **No blend modes, no masks, no duplicated glow layer.** `mix-blend-mode`,
+  `mask-image` and stacked backdrops are not used for product imagery anymore.
+* The scene tools work from the approved catalogue photos, so a plate is always
+  the same glass in the same room as the rest of the set.
+
+---
+
 ## Next-session brief — photo regeneration & futuristic UI (queued 2026-10-30)
+
+> **Update (2026-10-30, later):** this brief is superseded on drinks and compositing.
+> Drink/editorial photography has been **removed** — the catalogue is glass only —
+> and every visual is now a single flat raster plate (see *Visuals* above). Tasks 2
+> and 5 below are history, kept for the record.
 
 > **RU (задание владельца, дословно):** сгенерировать бокалы как в тайлах референса, но **100 % идентичные** тем, что лежат в репо, с **тончайшим стеклом**; добавить на бокалы эффект света **в духе мыльных пузырей**; фотографии с напитками перегенерировать под ту же стилистику; приложение должно выглядеть **футуристично, воздушно и интуитивно**, как референсы IMG_1429 / IMG_1430 («1419» в переписке = IMG_1429) и макет интерфейса IMG_1440. Формы бокалов не менять никогда.
 

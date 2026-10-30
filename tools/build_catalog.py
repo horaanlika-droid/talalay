@@ -26,7 +26,7 @@ HOUSE = OrderedDict([
     ("levitating", (
         "Levitating", "Cocktail Collection",
         "Ultra-light crystal with a pulled stem, suspended for a unique experience.",
-        "assets/editorial/crystal-light.webp", [
+        "assets/scenes/cover-levitating.webp", [
             dict(slug="levitating-martini", name="Levitating Martini",
                  subtitle="Hand-Blown Crystal · 210 ml", price=42, badge="Signature",
                  image="assets/products/martini.webp",
@@ -53,7 +53,7 @@ HOUSE = OrderedDict([
     ("noir", (
         "Noir", "Dark Service",
         "Deep shadows, wide bowls, low light. Designed for after-dinner service.",
-        "assets/editorial/noir-coupe.webp", [
+        "assets/scenes/cover-noir.webp", [
             dict(slug="saucer-coupe", name="Saucer Coupe",
                  subtitle="Double-Wall Coupe · 220 ml", price=34, badge=None,
                  image="assets/products/coupe.webp",
@@ -65,7 +65,7 @@ HOUSE = OrderedDict([
     ("signature", (
         "Signature", "House Editions",
         "The Embassy house cuts — etched, engraved and numbered by hand.",
-        "assets/editorial/sunlit-sour.webp", [
+        "assets/scenes/cover-signature.webp", [
             dict(slug="embassy-goblet", name="Embassy Goblet",
                  subtitle="Burgundy Goblet · 400 ml", price=38, badge=None,
                  image="assets/products/goblet.webp",
@@ -91,7 +91,7 @@ HOUSE = OrderedDict([
     ("raw", (
         "Raw", "Studio Series",
         "Unfinished textures, sandblasted surfaces and single-piece vessels.",
-        "assets/editorial/red-vessel.webp", [
+        "assets/scenes/cover-raw.webp", [
             dict(slug="basalt-rocks", name="Basalt Rocks",
                  subtitle="Heavy Base Rocks · 320 ml", price=30, badge=None,
                  image="assets/products/rocks.webp",

@@ -321,9 +321,15 @@ async function boot() {
   window.__CE_DATA__ = data;
   document.querySelector("[data-footer]").innerHTML = footerHTML(data);
 
-  // Preload key editorial imagery after first paint.
+  // Preload the hero plates after first paint — each is one finished raster
+  // picture (room + glow + glass), so the carousel never flashes a frame.
   requestAnimationFrame(() => {
-    ["assets/editorial/red-vessel.webp", "assets/editorial/crystal-light.webp"].forEach((src) => {
+    [
+      "assets/scenes/hero-levitating-martini.webp",
+      "assets/scenes/hero-levitating-martini-portrait.webp",
+      "assets/scenes/hero-etched-highball.webp",
+      "assets/scenes/hero-champagne-saucer.webp",
+    ].forEach((src) => {
       const img = new Image();
       img.src = src;
     });
