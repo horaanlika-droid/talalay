@@ -176,8 +176,10 @@ They are enforced/documented with the tools in `tools/`, not by hand.
 2. **Thin glass.** Walls *and* base are paper-thin: no solid glass puck at the
    bottom of a tumbler/highball/rocks, no heavy foot. Crystal is drawn by fine
    bright edge lines only.
-3. **Cold service.** A glass with a drink is ice-cold: condensation, chill haze,
-   frost creeping from the foot, a wisp of vapour.
+3. **Frozen glass.** Every piece reads ice-cold — empty product masters included:
+   a fine frost creeping up from the foot, condensation beads on the walls and
+   etched zones, a cold blue-white sheen on the rims. Nothing is buried: the
+   crystal keeps its sharp lines and the backdrop never moves.
 4. **Ice means a lot of ice.** If a serve has ice, the glass is packed with large
    cubes up to the rim — never one lone cube.
 5. **No garnish.** No fruit, peel, herbs, straws, umbrellas. Only the liquid, its
@@ -212,14 +214,21 @@ python3 tools/contact_sheet.py --set products               # QC sheet
   the info page.
 * ✅ products (10): re-framed to the reference crop and re-lit to the reference
   halo — see `brand-source/qc/sheet-products-full.png`.
-* ◻ drinks (10) + editorial (4): **regeneration blocked** — the image endpoint
-  answers `403 … account has been flagged` for every call (text-to-image and
-  image-to-image alike). `assets/drinks/` is wired into `tools/build_catalog.py`:
-  drop `<product-slug>.webp` there and the product page picks it up as a second
-  image. Nothing else is needed.
-* The one approved drink frame so far (`brand-source/generated/drinks/
-  levitating-martini.png`, no garnish, thin base) is kept as the reference render
-  for the next batch; it needs a larger piece in frame before delivery.
+* ◻ drinks: **2 of 10 delivered** — `assets/drinks/champagne-saucer.webp` and
+  `assets/drinks/levitating-martini.webp` (no garnish, thin base, ice-cold glass,
+  flat `rgb(7,12,24)` backdrop), already wired in as the second product image by
+  `tools/build_catalog.py`. The remaining serves (Negroni in `rocks` with a packed
+  glass, soda in `etched-highball`, water in `embassy-goblet`, daiquiri in
+  `saucer-coupe`, …) are blocked intermittently: the image endpoint answers
+  `403 … account has been flagged` on most calls and usually succeeds on the
+  second attempt. Masters go to `brand-source/generated/drinks/<slug>.png`, then:
+
+  ```bash
+  python3 tools/reframe_images.py --src <masters> --dest assets/drinks \
+      --piece-h 0.80 --baseline 0.86
+  python3 tools/build_catalog.py        # picks the new frames up
+  ```
+* ◻ editorial (4): same regeneration queue, same rules.
 
 ## Next-session brief — photo regeneration & futuristic UI (queued 2026-10-30)
 

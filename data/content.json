@@ -223,7 +223,8 @@
       "priceUsd": null,
       "volume": "210 ml",
       "images": [
-        "assets/products/martini.webp"
+        "assets/products/martini.webp",
+        "assets/drinks/levitating-martini.webp"
       ],
       "description": "An ultra-delicate, elongated martini glass designed for minimal elegance. The pulled stem replicates classic proportions while keeping the piece almost weightless in the hand.",
       "specs": {
@@ -252,7 +253,8 @@
       "priceUsd": null,
       "volume": "250 ml",
       "images": [
-        "assets/products/saucer.webp"
+        "assets/products/saucer.webp",
+        "assets/drinks/champagne-saucer.webp"
       ],
       "description": "The classic saucer, re-proportioned for aroma. A wide surface and thin rim make it the glass we reach for at the end of the night.",
       "specs": {
