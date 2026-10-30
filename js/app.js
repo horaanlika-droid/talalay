@@ -123,30 +123,23 @@ function footerHTML(data) {
 
 const bootEl = document.querySelector("[data-boot]");
 const bootBarEl = document.querySelector("[data-boot-bar]");
-const bootCountEl = document.querySelector("[data-boot-count]");
-const bootStatusEl = document.querySelector("[data-boot-status]");
-const BOOT_STATUS = ["Opening the cabinet", "Cutting the light", "Setting the glass", "Welcome"];
 const BOOT_MIN = prefersReducedMotion() ? 900 : 2600;
 const bootT0 = performance.now();
 let bootValue = 0;
 let bootReady = false;
 let bootFinished = false;
-let bootStatus = -1;
 let bootFrame = 0;
 
 function bootPaint() {
   const elapsed = performance.now() - bootT0;
-  const stage = Math.min(BOOT_STATUS.length - 1, Math.floor(elapsed / 900));
-  if (stage !== bootStatus && !bootReady) {
-    bootStatus = stage;
-    if (bootStatusEl) bootStatusEl.textContent = BOOT_STATUS[stage];
-  }
-  bootValue = bootReady
+  // the bar is the only thing that reports progress. It creeps towards the end
+  // of the opening and only runs home once the catalogue is in hand *and* the
+  // opening has had its time, so it never parks at 100 % and waits.
+  const ready = bootReady && elapsed >= BOOT_MIN - 600;
+  bootValue = ready
     ? Math.min(100, bootValue + 1.6)
-    : Math.min(92, bootValue + (8 + (elapsed / 1000) * 26 - bootValue) * 0.05);
-  const shown = Math.max(0, Math.round(bootValue));
-  if (bootBarEl) bootBarEl.style.width = `${shown}%`;
-  if (bootCountEl) bootCountEl.textContent = String(shown).padStart(2, "0");
+    : Math.min(92, bootValue + (8 + (elapsed / 1000) * 40 - bootValue) * 0.06);
+  if (bootBarEl) bootBarEl.style.width = `${Math.max(0, Math.round(bootValue))}%`;
   if (bootReady && bootValue >= 100 && elapsed >= BOOT_MIN) {
     bootFinish();
     return;
@@ -159,8 +152,6 @@ function bootFinish() {
   bootFinished = true;
   cancelAnimationFrame(bootFrame);
   if (bootBarEl) bootBarEl.style.width = "100%";
-  if (bootCountEl) bootCountEl.textContent = "100";
-  if (bootStatusEl) bootStatusEl.textContent = BOOT_STATUS[BOOT_STATUS.length - 1];
   document.body.classList.remove("is-booting");
   document.body.classList.add("is-ready");
   bootEl?.classList.add("is-done");
