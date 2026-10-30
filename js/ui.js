@@ -81,6 +81,39 @@ export function openSheet({ title = "", body = "", actions = "", onMount } = {})
     if (e.target.closest("[data-close]")) closeSheet();
   });
 
+  // drag the sheet down to dismiss it, the way a native one behaves
+  let drag = null;
+  const onDown = (e) => {
+    if (e.target.closest("[data-close]")) return;
+    drag = { y: e.clientY, dy: 0, at: performance.now(), id: e.pointerId };
+    sheet.classList.add("is-dragging");
+    try {
+      sheet.setPointerCapture(e.pointerId);
+    } catch {
+      /* older engines: pointer capture is a nicety, not a requirement */
+    }
+  };
+  const onMove = (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    drag.dy = Math.max(0, e.clientY - drag.y);
+    sheet.style.transform = `translateY(${drag.dy}px)`;
+  };
+  const onUp = () => {
+    if (!drag) return;
+    const { dy, at } = drag;
+    drag = null;
+    sheet.classList.remove("is-dragging");
+    sheet.style.transform = "";
+    if (dy > 96 || (dy > 24 && performance.now() - at < 260)) closeSheet();
+  };
+  [sheet.querySelector(".sheet__grab"), sheet.querySelector(".sheet__head")].forEach((handle) => {
+    if (!handle) return;
+    handle.addEventListener("pointerdown", onDown);
+    handle.addEventListener("pointermove", onMove);
+    handle.addEventListener("pointerup", onUp);
+    handle.addEventListener("pointercancel", onUp);
+  });
+
   const onKey = (e) => {
     if (e.key === "Escape") {
       closeSheet();

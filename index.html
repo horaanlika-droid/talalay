@@ -24,37 +24,146 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Embassy">
 
+    <link rel="preload" as="image" href="assets/brand/ce-logo-chrome.png" fetchpriority="high">
     <link rel="preload" as="image" href="assets/scenes/hero-levitating-martini.webp" media="(min-width: 900px)">
     <link rel="preload" as="image" href="assets/scenes/hero-levitating-martini-portrait.webp" media="(max-width: 899px)">
     <link rel="stylesheet" href="css/app.css">
 
+    <script>
+      // Last resort: if the module graph never boots, the catalogue must not stay
+      // behind the curtain. The curtain is cosmetic; the shop is the point.
+      setTimeout(function () {
+        if (document.body.classList.contains("is-ready")) return;
+        document.body.classList.remove("is-booting");
+        var boot = document.querySelector("[data-boot]");
+        if (boot) boot.classList.add("is-done");
+      }, 9000);
+    </script>
     <script src="js/config.js"></script>
     <script type="module" src="js/app.js"></script>
 
     <style>
-      /* Instant splash while the module graph boots */
+      /* ---------- Opening curtain ----------
+         Served inline so the very first paint is already the brand, not a white
+         flash. app.js drives the progress hairline and lifts the curtain once the
+         catalogue is in hand; the whole opening never lasts less than 2.4 s. */
+      html,
+      body {
+        background: #060c18;
+      }
+      body.is-booting {
+        overflow: hidden;
+      }
       .boot {
         position: fixed;
         inset: 0;
         z-index: 300;
         display: grid;
         place-items: center;
-        background: radial-gradient(58% 52% at 50% 46%, #16294a 0%, #0a1428 52%, #060c18 100%);
-        transition: opacity 0.45s ease, visibility 0.45s;
+        background:
+          radial-gradient(120% 80% at 50% 8%, rgba(84, 148, 255, 0.22) 0%, rgba(84, 148, 255, 0) 58%),
+          radial-gradient(58% 52% at 50% 46%, #16294a 0%, #0a1428 52%, #060c18 100%);
+        transition: opacity 0.7s cubic-bezier(0.32, 0.72, 0, 1), visibility 0.7s;
       }
-      .boot img {
-        width: min(46vw, 210px);
-        opacity: 0.9;
-        animation: boot-pulse 1.8s ease-in-out infinite;
-      }
-      @keyframes boot-pulse {
-        50% {
-          opacity: 0.55;
-        }
-      }
-      body.is-ready .boot {
+      .boot.is-done {
         opacity: 0;
         visibility: hidden;
+        pointer-events: none;
+      }
+      .boot__inner {
+        display: grid;
+        justify-items: center;
+        gap: 26px;
+        width: min(86vw, 460px);
+        padding: 0 8px;
+        text-align: center;
+      }
+      .boot__lockup {
+        position: relative;
+        width: min(62vw, 300px);
+        opacity: 0;
+        transform: translateY(10px) scale(0.97);
+        animation: boot-lockup 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.05s forwards;
+      }
+      .boot__lockup img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      /* a single chrome highlight travelling across the lockup */
+      .boot__lockup::after {
+        content: "";
+        position: absolute;
+        inset: -20% -30%;
+        background: linear-gradient(100deg, rgba(255, 255, 255, 0) 38%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 62%);
+        mix-blend-mode: screen;
+        -webkit-mask-image: linear-gradient(180deg, #000, #000);
+        mask-image: linear-gradient(180deg, #000, #000);
+        transform: translateX(-70%);
+        animation: boot-sheen 2.6s cubic-bezier(0.32, 0.72, 0, 1) 0.7s infinite;
+        pointer-events: none;
+      }
+      .boot__bar {
+        position: relative;
+        width: 100%;
+        height: 1px;
+        background: rgba(238, 243, 251, 0.12);
+        overflow: visible;
+      }
+      .boot__bar span {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 0%;
+        background: linear-gradient(90deg, rgba(201, 212, 228, 0.35), #eef3fb 62%, #ffffff);
+        box-shadow: 0 0 18px rgba(143, 208, 255, 0.55);
+        transition: width 0.55s cubic-bezier(0.32, 0.72, 0, 1);
+      }
+      .boot__meta {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+        width: 100%;
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 9.5px;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: rgba(238, 243, 251, 0.46);
+      }
+      .boot__meta b {
+        font-weight: 500;
+        color: rgba(238, 243, 251, 0.86);
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.12em;
+      }
+      .boot__foot {
+        font-size: 9px;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: rgba(238, 243, 251, 0.28);
+      }
+      @keyframes boot-lockup {
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes boot-sheen {
+        0% {
+          transform: translateX(-70%);
+        }
+        55%,
+        100% {
+          transform: translateX(70%);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .boot__lockup {
+          animation-duration: 0.3s;
+        }
+        .boot__lockup::after {
+          display: none;
+        }
       }
     </style>
     <noscript>
@@ -65,9 +174,20 @@
       </style>
     </noscript>
   </head>
-  <body>
-    <div class="boot" aria-hidden="true">
-      <img src="assets/brand/mark-chrome.png" alt="">
+  <body class="is-booting">
+    <div class="boot" data-boot role="status" aria-busy="true">
+      <div class="boot__inner">
+        <div class="boot__lockup">
+          <img src="assets/brand/ce-logo-chrome.png" alt="Cocktail Embassy" fetchpriority="high">
+        </div>
+        <div class="boot__bar" aria-hidden="true"><span data-boot-bar></span></div>
+        <div class="boot__meta">
+          <span data-boot-status>Opening the cabinet</span>
+          <b><span data-boot-count>0</span>%</b>
+        </div>
+        <div class="boot__foot">Dubai · worldwide dispatch</div>
+      </div>
+      <noscript><style>.boot{display:none}</style></noscript>
     </div>
 
     <div id="app"></div>

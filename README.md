@@ -19,8 +19,21 @@ means it works identically on Pages, on BotHost, or from a local folder.
 
 * **Design** — dark navy hero with a levitating glass plate (reference 1429), one flat
   raster picture per slide, chrome wordmark, oversized negative tracking typography.
-  iOS-native details: bottom tab bar, safe-area insets, sheet dialogs, spring easing,
-  44 px touch targets.
+  iOS-native details: bottom tab bar, safe-area insets, sheet dialogs (drag them down
+  to dismiss), spring easing, 44 px touch targets.
+* **Mechanics** — the app shell follows the Telegram-mini-app pattern proven in
+  `posudnayalavka`, worn in the Embassy's navy and chrome:
+  * **Opening curtain** — a choreographed splash (chrome lockup, hairline progress,
+    live percentage) that stays at least 2.6 s and lifts only once the first hero
+    plate is decoded. A failsafe lifts it after 9 s whatever happens.
+  * **iOS screen motion** — a piece or a collection *pushes* in from the right, going
+    back *pops* in from the left, tab switches cross-fade (`js/app.js`, `routeDepth`).
+  * **Bar** — the current piece / collection name fades into the top bar as you
+    scroll, and a back chevron appears on deep screens.
+  * **Running line** — one `ticker` under the bar carries the trade announcement and
+    the house lines across the top of every screen; it never blocks a tap and stands
+    still for `prefers-reduced-motion`. The kinetic display band on the home page stays.
+  * **Press states** — every card, tile and row answers the finger, like a native list.
 * **Responsive** — single column + tab bar on phones, split hero and 4-up grid on desktop,
   sticky product stage at ≥ 900 px.
 * **Catalogue** — 52 pieces in 2 categories and 17 collections, generated from the

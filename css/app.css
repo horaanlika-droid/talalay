@@ -67,6 +67,7 @@
 
   --nav-h: 60px;
   --tabbar-h: 58px;
+  --ticker-h: 30px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --page-x: clamp(18px, 5vw, 64px);
@@ -264,21 +265,9 @@ main {
 }
 
 .page {
-  padding-top: calc(var(--nav-h) + var(--safe-top));
+  padding-top: calc(var(--nav-h) + var(--safe-top) + var(--ticker-h));
   padding-bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 28px);
   min-height: 60vh;
-  animation: page-in 0.42s var(--ease-ios) both;
-}
-
-@keyframes page-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -541,8 +530,8 @@ main {
 /* ---------- Hero ---------- */
 .hero {
   position: relative;
-  margin-top: calc(-1 * (var(--nav-h) + var(--safe-top)));
-  padding-top: calc(var(--nav-h) + var(--safe-top));
+  margin-top: calc(-1 * (var(--nav-h) + var(--safe-top) + var(--ticker-h)));
+  padding-top: calc(var(--nav-h) + var(--safe-top) + var(--ticker-h));
   background: var(--bg);
   color: var(--fg);
   overflow: hidden;
@@ -755,57 +744,7 @@ main {
 }
 
 /* ---------- Announcement ---------- */
-.announce {
-  background: var(--bg-deep);
-  border-bottom: 1px solid var(--hairline);
-  color: rgba(255, 255, 255, 0.76);
-  font-size: 11.5px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  text-align: center;
-  padding: 9px 16px;
-  font-weight: 550;
-}
-.announce a {
-  color: #fff;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-/* ---------- Marquee / brand strip ---------- */
-.strip {
-  display: flex;
-  gap: clamp(28px, 6vw, 72px);
-  padding-block: 16px;
-  border-block: 1px solid var(--hairline);
-  overflow: hidden;
-  white-space: nowrap;
-  font-size: 11px;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: var(--muted);
-  font-weight: 550;
-  background: rgba(255, 255, 255, 0.015);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
-}
-.strip__item {
-  display: inline-flex;
-  align-items: center;
-  gap: clamp(28px, 6vw, 72px);
-  animation: marquee 34s linear infinite;
-}
-.strip__item::after {
-  content: "";
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 10px var(--accent);
-}
-.strip:hover .strip__item {
-  animation-play-state: paused;
-}
+/* ---------- Marquee ---------- */
 @keyframes marquee {
   /* the row carries the words twice: half a row is one seamless lap */
   from {
@@ -1169,7 +1108,7 @@ main {
 }
 .controls {
   position: sticky;
-  top: calc(var(--nav-h) + var(--safe-top));
+  top: calc(var(--nav-h) + var(--safe-top) + var(--ticker-h));
   z-index: 40;
   background: linear-gradient(180deg, var(--bg) 72%, rgba(6, 12, 24, 0));
   padding-block: 10px 12px;
@@ -1290,8 +1229,8 @@ main {
   /* the plate is a finished raster picture: room, glow and glass in one file */
   background: var(--bg);
   color: #fff;
-  margin-top: calc(-1 * (var(--nav-h) + var(--safe-top)));
-  padding-top: calc(var(--nav-h) + var(--safe-top));
+  margin-top: calc(-1 * (var(--nav-h) + var(--safe-top) + var(--ticker-h)));
+  padding-top: calc(var(--nav-h) + var(--safe-top) + var(--ticker-h));
   overflow: hidden;
   isolation: isolate;
 }
@@ -1686,7 +1625,7 @@ main {
   }
   .cart-aside {
     position: sticky;
-    top: calc(var(--nav-h) + 24px);
+    top: calc(var(--nav-h) + var(--ticker-h) + 24px);
     display: grid;
     gap: 14px;
   }
@@ -1734,8 +1673,8 @@ main {
   position: relative;
   background: var(--bg);
   color: #fff;
-  margin-top: calc(-1 * (var(--nav-h) + var(--safe-top)));
-  padding-top: calc(var(--nav-h) + var(--safe-top) + clamp(28px, 8vw, 74px));
+  margin-top: calc(-1 * (var(--nav-h) + var(--safe-top) + var(--ticker-h)));
+  padding-top: calc(var(--nav-h) + var(--safe-top) + var(--ticker-h) + clamp(28px, 8vw, 74px));
   padding-bottom: clamp(28px, 8vw, 74px);
   overflow: hidden;
   isolation: isolate;
@@ -2172,6 +2111,7 @@ main {
 @media (min-width: 760px) {
   :root {
     --nav-h: 68px;
+    --ticker-h: 34px;
   }
   .nav__links {
     display: flex;
@@ -2196,6 +2136,7 @@ main {
 /* ---------- Print ---------- */
 @media print {
   .nav,
+  .ticker,
   .tabbar,
   .footer,
   .pdp__actions {
@@ -2633,4 +2574,250 @@ main {
     white-space: nowrap;
     overflow: visible;
   }
+}
+
+/* ==========================================================================
+   Shell mechanics — the running line, iOS screen motion, pressed states
+   ========================================================================== */
+
+/* ---------- The running line ----------
+   One row of words carried across the top of every screen, under the bar. It
+   holds the trade announcement and the house lines. It is not interactive, so
+   it never blocks a tap, and it stands still for anyone who asked motion to
+   stop. */
+.ticker {
+  position: fixed;
+  top: calc(var(--nav-h) + var(--safe-top));
+  left: 0;
+  right: 0;
+  z-index: 88;
+  display: flex;
+  align-items: center;
+  height: var(--ticker-h);
+  overflow: hidden;
+  background: rgba(6, 12, 24, 0.74);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--hairline);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 4%, #000 96%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 4%, #000 96%, transparent 100%);
+  pointer-events: none;
+}
+.ticker__track {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  will-change: transform;
+  animation: ticker-run 58s linear infinite;
+}
+.ticker__word {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(16px, 3.4vw, 34px);
+  padding-right: clamp(16px, 3.4vw, 34px);
+  font-size: 9.5px;
+  font-weight: 560;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.ticker__word::after {
+  content: "";
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(143, 208, 255, 0.8);
+  opacity: 0.85;
+}
+.ticker__word--announce {
+  color: var(--fg-soft);
+}
+@keyframes ticker-run {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+@media (max-width: 759px) {
+  .ticker__word {
+    font-size: 9px;
+    letter-spacing: 0.26em;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ticker__track {
+    animation: none;
+  }
+}
+
+/* ---------- Screens: the iOS push / pop ----------
+   Tapping a piece carries the new screen in from the right; going back lands it
+   from the left; switching tabs is a soft fade. One screen at a time, so the
+   document keeps its own scroll and nothing is duplicated. */
+.screen {
+  /* no will-change here: a persistent transform would capture fixed children
+     (the sticky buy bar) and pin them to the page instead of the viewport */
+  backface-visibility: hidden;
+}
+.screen.is-push {
+  animation: screen-push 0.46s var(--ease-ios) both;
+}
+.screen.is-pop {
+  animation: screen-pop 0.44s var(--ease-ios) both;
+}
+.screen.is-fade {
+  animation: screen-fade 0.34s var(--ease-ios) both;
+}
+@keyframes screen-push {
+  from {
+    opacity: 0;
+    transform: translate3d(8%, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes screen-pop {
+  from {
+    opacity: 0;
+    transform: translate3d(-6%, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes screen-fade {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .screen {
+    animation: none !important;
+  }
+}
+
+/* ---------- Bar: a title that arrives, and a way back ---------- */
+.nav__title {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--safe-top) + var(--nav-h) / 2);
+  transform: translate(-50%, -50%) translateY(4px);
+  max-width: 46%;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.32s var(--ease-ios), transform 0.32s var(--ease-ios);
+}
+.nav.is-solid .nav__title,
+.nav[data-deep="true"] .nav__title {
+  opacity: 0.92;
+  transform: translate(-50%, -50%);
+}
+.nav__back {
+  display: none;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-left: -8px;
+  border-radius: var(--radius-pill);
+  color: var(--fg);
+  transition: background 0.2s, transform 0.16s var(--ease-ios);
+}
+.nav__back svg {
+  width: 19px;
+  height: 19px;
+}
+.nav__back:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+.nav__back:active {
+  transform: scale(0.9);
+}
+.nav[data-deep="true"] .nav__back {
+  display: grid;
+}
+@media (max-width: 1023px) {
+  .nav__title {
+    max-width: 52%;
+  }
+  .nav[data-deep="true"] .brand {
+    display: none;
+  }
+}
+@media (min-width: 760px) {
+  /* the links live in the middle of the bar from here on: no title on top of them */
+  .nav__title {
+    display: none;
+  }
+}
+
+/* ---------- Pressed states ----------
+   Everything that can be opened answers the finger, the way a native list does. */
+.card:active,
+.tile:active,
+.archive-tile:active,
+.cat-row:active,
+.chip:active,
+.pdp__thumb:active {
+  transform: scale(0.982);
+  transition: transform 0.12s var(--ease-ios);
+}
+@media (hover: hover) {
+  .card:active,
+  .tile:active,
+  .archive-tile:active,
+  .cat-row:active {
+    transform: none;
+  }
+}
+.btn:active {
+  transform: scale(0.985);
+}
+.tab:active {
+  opacity: 0.6;
+}
+
+/* ---------- Sheet: drag it down to dismiss ---------- */
+.sheet.is-dragging {
+  transition: none !important;
+}
+.sheet__grab,
+.sheet__head {
+  touch-action: none;
+}
+.sheet__grab {
+  cursor: grab;
+}
+
+/* ---------- Boot: the page wakes up under the curtain ---------- */
+body.is-booting .nav {
+  transform: translateY(-100%);
+}
+body.is-booting .ticker {
+  opacity: 0;
+}
+.nav {
+  transition: background 0.3s, border-color 0.3s, color 0.3s, transform 0.6s var(--ease-ios);
+}
+.ticker {
+  transition: opacity 0.6s var(--ease-ios);
 }

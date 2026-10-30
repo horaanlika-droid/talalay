@@ -2,7 +2,7 @@
 import { icon } from "./icons.js";
 import { loadContent, state, mediaUrl } from "./api.js";
 import { request } from "./store.js";
-import { toast, esc, attr } from "./ui.js";
+import { toast, esc, attr, prefersReducedMotion } from "./ui.js";
 import {
   homeView,
   shopView,
@@ -21,15 +21,41 @@ const NAV_ITEMS = [
   { key: "info", href: "#/info", label: "The Embassy" },
 ];
 
+/* ------------------------------------------------------------ ticker */
+
+const TICKER_LINES = [
+  "Hand-blown crystal",
+  "Bars & hotels",
+  "Trade pricing",
+  "Small-batch editions",
+  "Made in Europe",
+  "Worldwide dispatch",
+  "Dubai",
+];
+
+function tickerHTML(announcement = "") {
+  const words = [announcement, ...TICKER_LINES].filter(Boolean);
+  const lap = words
+    .map(
+      (word, i) =>
+        `<span class="ticker__word${i === 0 && announcement ? " ticker__word--announce" : ""}">${esc(word)}</span>`
+    )
+    .join("");
+  // the row is carried twice: one lap is exactly half the track, so the loop is seamless
+  return `<div class="ticker__track" data-ticker-track>${lap}${lap}</div>`;
+}
+
 /* --------------------------------------------------------------- shell */
 
 function shellHTML() {
   return `<a class="skip-link" href="#view">Skip to content</a>
-  <header class="nav" data-nav data-theme="light">
+  <header class="nav" data-nav data-theme="light" data-deep="false">
     <div class="nav__inner">
+      <a class="nav__back" href="#/shop" data-nav-back aria-label="Back" hidden>${icon("chevronLeft")}</a>
       <a class="brand" href="#/" aria-label="Cocktail Embassy — home">
         <img src="assets/brand/mark-dark.png" alt="Cocktail Embassy">
       </a>
+      <span class="nav__title" data-nav-title aria-hidden="true"></span>
       <nav class="nav__links" aria-label="Primary">
         ${NAV_ITEMS.map(
           (item) => `<a class="nav__link" href="${item.href}" data-navlink="${item.key}">${item.label}</a>`
@@ -42,6 +68,8 @@ function shellHTML() {
       </a>
     </div>
   </header>
+
+  <div class="ticker" data-ticker aria-hidden="true">${tickerHTML()}</div>
 
   <div class="scrollline" data-scrollline aria-hidden="true"></div>
 
@@ -91,6 +119,57 @@ function footerHTML(data) {
   </div>`;
 }
 
+/* ------------------------------------------------------ opening curtain */
+
+const bootEl = document.querySelector("[data-boot]");
+const bootBarEl = document.querySelector("[data-boot-bar]");
+const bootCountEl = document.querySelector("[data-boot-count]");
+const bootStatusEl = document.querySelector("[data-boot-status]");
+const BOOT_STATUS = ["Opening the cabinet", "Cutting the light", "Setting the glass", "Welcome"];
+const BOOT_MIN = prefersReducedMotion() ? 900 : 2600;
+const bootT0 = performance.now();
+let bootValue = 0;
+let bootReady = false;
+let bootFinished = false;
+let bootStatus = -1;
+let bootFrame = 0;
+
+function bootPaint() {
+  const elapsed = performance.now() - bootT0;
+  const stage = Math.min(BOOT_STATUS.length - 1, Math.floor(elapsed / 900));
+  if (stage !== bootStatus && !bootReady) {
+    bootStatus = stage;
+    if (bootStatusEl) bootStatusEl.textContent = BOOT_STATUS[stage];
+  }
+  bootValue = bootReady
+    ? Math.min(100, bootValue + 1.6)
+    : Math.min(92, bootValue + (8 + (elapsed / 1000) * 26 - bootValue) * 0.05);
+  const shown = Math.max(0, Math.round(bootValue));
+  if (bootBarEl) bootBarEl.style.width = `${shown}%`;
+  if (bootCountEl) bootCountEl.textContent = String(shown).padStart(2, "0");
+  if (bootReady && bootValue >= 100 && elapsed >= BOOT_MIN) {
+    bootFinish();
+    return;
+  }
+  bootFrame = requestAnimationFrame(bootPaint);
+}
+
+function bootFinish() {
+  if (bootFinished) return;
+  bootFinished = true;
+  cancelAnimationFrame(bootFrame);
+  if (bootBarEl) bootBarEl.style.width = "100%";
+  if (bootCountEl) bootCountEl.textContent = "100";
+  if (bootStatusEl) bootStatusEl.textContent = BOOT_STATUS[BOOT_STATUS.length - 1];
+  document.body.classList.remove("is-booting");
+  document.body.classList.add("is-ready");
+  bootEl?.classList.add("is-done");
+  bootEl?.setAttribute("aria-busy", "false");
+  setTimeout(() => bootEl?.remove(), 1000);
+}
+
+requestAnimationFrame(bootPaint);
+
 /* ------------------------------------------------------------- router */
 
 function parseHash() {
@@ -129,8 +208,20 @@ const routeDefs = [
   { test: (s) => s[0] === "info", view: (data) => infoView(data), tab: "info", nav: "info" },
 ];
 
+/* How deep a route sits: the tab roots are one step in, a piece or a collection
+   is two. That is all the router needs to know whether a tap went forward or
+   came back, so the screen can move the way the user's thumb did. */
+function routeDepth(segments) {
+  if (!segments.length) return 0;
+  if (segments[0] === "product" || segments[0] === "collection") return 2;
+  return 1;
+}
+
+const NAV_LABELS = { home: "Cocktail Embassy", shop: "Catalogue", info: "The Embassy", request: "Trade request" };
+
 let currentRoute = null;
 let currentView = { theme: "light" };
+let lastDepth = -1;
 
 async function render() {
   const data = state.content;
@@ -146,8 +237,15 @@ async function render() {
 
   document.title = view.title || data.settings?.brand || "Cocktail Embassy";
 
+  const depth = routeDepth(segments);
+  const direction = lastDepth < 0 ? "fade" : depth > lastDepth ? "push" : depth < lastDepth ? "pop" : "fade";
+  lastDepth = depth;
+
   const main = document.getElementById("view");
-  main.innerHTML = `<div class="page">${view.html}</div>`;
+  const screen = document.createElement("div");
+  screen.className = `screen is-${direction}`;
+  screen.innerHTML = `<div class="page">${view.html}</div>`;
+  main.replaceChildren(screen);
 
   if (typeof view.mount === "function") {
     try {
@@ -158,6 +256,7 @@ async function render() {
   }
 
   updateActiveNav(def);
+  updateNavMeta(view, def, depth, segments);
   updateNavTheme(true);
   motionEngine();
 
@@ -176,6 +275,28 @@ function updateActiveNav(def) {
     if (def && el.dataset.navlink === def.nav) el.setAttribute("aria-current", "page");
     else el.removeAttribute("aria-current");
   });
+}
+
+function updateNavMeta(view, def, depth, segments) {
+  const nav = document.querySelector("[data-nav]");
+  if (!nav) return;
+  const deep = depth >= 2;
+  nav.dataset.deep = deep ? "true" : "false";
+  const back = nav.querySelector("[data-nav-back]");
+  if (back) {
+    back.hidden = !deep;
+    back.href = "#/shop";
+    back.setAttribute("aria-label", segments[0] === "collection" ? "Back to collections" : "Back to the catalogue");
+  }
+  const title = nav.querySelector("[data-nav-title]");
+  if (title) {
+    title.textContent = view.navTitle || NAV_LABELS[def?.nav] || "";
+  }
+  const ticker = document.querySelector("[data-ticker]");
+  if (ticker && state.content?.settings?.announcement && !ticker.dataset.filled) {
+    ticker.dataset.filled = "true";
+    ticker.innerHTML = tickerHTML(state.content.settings.announcement);
+  }
 }
 
 /* --------------------------------------------------------- nav styling */
@@ -315,6 +436,7 @@ async function boot() {
       <p>Please refresh in a moment.</p>
       <button class="btn" onclick="location.reload()">Retry</button>
     </section></div>`;
+    bootReady = true;
     return;
   }
 
@@ -336,7 +458,18 @@ async function boot() {
   });
 
   await render();
-  document.body.classList.add("is-ready");
+
+  // The curtain stays until the opening plate is decoded, so the first frame the
+  // visitor sees is already the finished picture — never a half-painted hero.
+  const heroImg = document.querySelector("[data-hero] img");
+  if (heroImg && typeof heroImg.decode === "function") {
+    await Promise.race([
+      heroImg.decode().catch(() => {}),
+      new Promise((resolve) => setTimeout(resolve, 1600)),
+    ]);
+  }
+
+  bootReady = true;
 
   if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
     navigator.serviceWorker.register("sw.js").catch(() => {});
