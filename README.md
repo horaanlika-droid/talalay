@@ -153,12 +153,12 @@ For each of `martini`, `goblet`, `coupe`, `highball`, `saucer`, `rocks`, `tumble
 4. **One shared setting**: seamless deep-navy studio backdrop (`#101B2E → #0A1220`), cool-white radial glow halo tracing the silhouette, faint light beam from above, dark polished floor with a soft elliptical shadow + faint mirror reflection (levitating feel of 1429/1430).
 5. Empty glass, spotless, no props, no text, no watermark; centered, whole glass visible, even margins.
 
-**Progress (2026-10-30):** approved etalon + masters ready in `brand-source/generated/`:
-`coupe`, `martini`, `goblet`, `highball`, `saucer`, `rocks` (QC passed: shape 1:1,
-thin walls, iridescence, consistent light physics). **Remaining:** generate `tumbler`,
-`footed`, `hurricane`, `cylinder` + the 4 editorial photos, then deliver webp + `-sm`
-over the existing filenames (Task 3). Generation limit is 10 images per turn — plan
-batches accordingly.
+**Progress (2026-10-30, delivered):** all 10 product masters + 4 drink photos generated,
+backdrop-normalised (corner tone ≈ srgb(3,11,23) across the set, worst deviation 17/255
+vs 39 before grading) and delivered as webp + `-sm` over the existing filenames
+(`assets/products/`, `assets/editorial/`). Masters (graded, cropped) live in
+`brand-source/generated/`. QC passed: shapes 1:1, paper-thin walls, iridescence,
+consistent single-source light physics, one backdrop family.
 
 ### Task 2 — drink / editorial photos
 
@@ -174,6 +174,40 @@ Regenerate `crystal-light`, `noir-coupe`, `sunlit-sour`, `red-vessel` (`assets/e
 ### Task 4 — futuristic, airy, intuitive UI
 
 Restyle the storefront per `IMG_1440` + `IMG_1429/1430`: dark-navy theme, floating hero product with glow, collection tile row, spec-driven product cards, sticky request/cart panel, generous negative space, spring easing. Keep the static architecture, hash routing and `content.json`-driven data. Airy = fewer boxes, more light and space.
+
+### Task 5 — more drinks in our glassware (generate)
+
+Grow the drink photography in the same house style (navy glow, thin glass, iridescence,
+consistent light physics). Suggested serves, one per glass where possible: Negroni in
+`rocks`, champagne in `saucer`, clarified martini in `martini`, soda & ice in `highball`,
+daiquiri in `coupe`, sparkling water in `goblet`, spritz in `footed`, cold brew in
+`tumbler`, virgin hurricane in `hurricane`, etched-water serve in `cylinder`. Use for
+product pages (second image), hero slides and collection covers. Deliver like Task 3
+(new files under `assets/editorial/drinks/`, referenced from `content.json`).
+
+### Task 6 — packaging placeholders (generate)
+
+* **Logo boxes** — premium matte rigid boxes with the Cocktail Embassy logo (brand marks:
+  `assets/brand/mark-dark.png`, `ce-logo-dark.png`, `ce-badge.webp`) as catalogue photo
+  placeholders for barware/inventory: Precision Jigger, Chrome Bar Spoon, Embassy
+  Signature Bitters. Box standing on the same navy glow stage, same light physics.
+* **Opaque zip-lock bags** — fully non-transparent matte zip-lock / stand-up pouches with
+  the same logo lockup for ferments & acids: Citric Acid Solution, Malic Acid Powder,
+  Lactic Acid Solution. Same navy stage; label area clean and legible.
+
+Wire the results into `content.json` as the `images` of the corresponding products
+(they currently have empty or mismatched images).
+
+### Task 7 — collections merge & archive (carried over)
+
+Merge the collection taxonomy and build an **Archive** section from the old catalogue in
+repo `horaanlika-droid/ce` (`data/catalog.json`: 10 collections — retro-asia,
+retro-asia-engraved, bullet, flowers, coupethini, replicate, levitating, shorties,
+soon-teapot, two-sips — and 25 pieces AG0001–AG0027 with full specs). Design it pleasing
+to the eye (dark navy band, tile row like reference `IMG_1440`), and make ordering trivial:
+one-click “request this piece” that pre-fills the existing request form. The overlapping
+old `levitating` collection merges into the live Levitating collection; the rest become
+archive tiles.
 
 ### Prompt template (product shot)
 
