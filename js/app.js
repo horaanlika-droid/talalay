@@ -448,19 +448,34 @@ async function boot() {
     });
   });
 
-  await render();
+  try {
+    await render();
 
-  // The curtain stays until the opening plate is decoded, so the first frame the
-  // visitor sees is already the finished picture — never a half-painted hero.
-  const heroImg = document.querySelector("[data-hero] img");
-  if (heroImg && typeof heroImg.decode === "function") {
-    await Promise.race([
-      heroImg.decode().catch(() => {}),
-      new Promise((resolve) => setTimeout(resolve, 1600)),
-    ]);
+    // The curtain stays until the opening plate is decoded, so the first frame the
+    // visitor sees is already the finished picture — never a half-painted hero.
+    // Image decoding is cosmetic: a failed or stalled decode must never block boot.
+    const heroImg = document.querySelector("[data-hero] img");
+    if (heroImg && typeof heroImg.decode === "function") {
+      await Promise.race([
+        heroImg.decode().catch(() => {}),
+        new Promise((resolve) => setTimeout(resolve, 1600)),
+      ]);
+    }
+  } catch (err) {
+    console.error("Catalogue render failed:", err);
+    const view = document.getElementById("view");
+    if (view) {
+      view.innerHTML = `<div class="wrap"><section class="section empty" style="min-height:60dvh;align-content:center">
+        ${icon("warning")}
+        <h1 class="h2" style="color:var(--ink)">Something went wrong</h1>
+        <p>Please refresh the page to try again.</p>
+        <button class="btn" onclick="location.reload()">Retry</button>
+      </section></div>`;
+    }
+  } finally {
+    // Always release the opening curtain, even if rendering or image decoding fails.
+    bootReady = true;
   }
-
-  bootReady = true;
 
   if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
     navigator.serviceWorker.register("sw.js").catch(() => {});
