@@ -350,6 +350,7 @@ One session = **3 glasses**. For each glass, produce **3 frames**:
 ## Session log & open tasks
 
 ### Session log
+- 2026-10-30: Price-list silhouettes cut & collaged without generation — `tools/cut_silhouettes.py` unmultiplies the 10 white packshots (`IMG_1661–1670`) into RGBA cutouts (`brand-source/cutouts/`), rescales to catalogue heights and composes `assets/scenes/glasses-lineup-pricelist.*`. Donor map: 1667=rocks (heavy base), 1669=hurricane (tall tube) — by shape/base, no donor map existed in repo.
 - 2026-10-30: Opening curtain sped up — `BOOT_MIN` 2600→1500 ms, fallback 6000→4000 ms (PR #13 merged).
 - 2026-10-30: Glass collage added — all 11 glasses in style 1430 (`assets/scenes/glasses-collage-1430.*`). Hero `levitating-martini` re-rendered uncropped. Committed on `arena/07eb83de-talalay`.
 
