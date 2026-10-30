@@ -76,7 +76,7 @@
       "name": "Levitating",
       "subtitle": "Cocktail Collection",
       "description": "Ultra-light crystal with a pulled stem, suspended for a unique experience.",
-      "image": "assets/editorial/crystal-light.webp",
+      "image": "assets/scenes/cover-levitating.webp",
       "sort": 1
     },
     {
@@ -84,7 +84,7 @@
       "name": "Noir",
       "subtitle": "Dark Service",
       "description": "Deep shadows, wide bowls, low light. Designed for after-dinner service.",
-      "image": "assets/editorial/noir-coupe.webp",
+      "image": "assets/scenes/cover-noir.webp",
       "sort": 2
     },
     {
@@ -92,7 +92,7 @@
       "name": "Signature",
       "subtitle": "House Editions",
       "description": "The Embassy house cuts — etched, engraved and numbered by hand.",
-      "image": "assets/editorial/sunlit-sour.webp",
+      "image": "assets/scenes/cover-signature.webp",
       "sort": 3
     },
     {
@@ -100,7 +100,7 @@
       "name": "Raw",
       "subtitle": "Studio Series",
       "description": "Unfinished textures, sandblasted surfaces and single-piece vessels.",
-      "image": "assets/editorial/red-vessel.webp",
+      "image": "assets/scenes/cover-raw.webp",
       "sort": 4
     },
     {

@@ -1,5 +1,5 @@
 /* Cocktail Embassy — offline shell (stale-while-revalidate). */
-const CACHE = "ce-shell-v3";
+const CACHE = "ce-shell-v4";
 const SHELL = [
   "./",
   "index.html",
@@ -17,6 +17,8 @@ const SHELL = [
   "assets/brand/mark-chrome.png",
   "assets/brand/favicon.png",
   "assets/products/martini.webp",
+  "assets/scenes/hero-levitating-martini.webp",
+  "assets/scenes/hero-levitating-martini-portrait.webp",
 ];
 
 self.addEventListener("install", (event) => {

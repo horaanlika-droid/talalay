@@ -46,6 +46,7 @@ UPSCALE = 2                   # → 2400×3000 / 2800×1800 delivered masters
 PIECE_H = 0.560               # piece height, fraction of the canvas
 PIECE_W = 0.820               # piece width cap
 PIECE_CY = 0.468              # piece centre, fraction of the canvas height
+PIECE_CX = 0.500              # piece centre, fraction of the canvas width
 
 GLOW_MID = np.array([24.0, 52.0, 90.0], np.float32)
 GLOW_HOT = np.array([64.0, 110.0, 164.0], np.float32)
@@ -321,7 +322,8 @@ class Stats:
 
 
 def warp(path: Path, canvas: tuple[int, int], floating: bool = False,
-         piece_h: float = PIECE_H):
+         piece_h: float = PIECE_H, piece_cx: float = PIECE_CX,
+         piece_cy: float = PIECE_CY):
     src = Image.open(path).convert("RGB")
     img = np.asarray(src, dtype=np.float32)
     h, w, _ = img.shape
@@ -377,8 +379,8 @@ def warp(path: Path, canvas: tuple[int, int], floating: bool = False,
     gw, gh = max(1, x1 - x0 + 1), max(1, y1 - y0 + 1)
     scale = min((piece_h * CH) / gh, (PIECE_W * CW) / gw)
 
-    left = (x0 + x1) / 2 - (CW * 0.5) / scale
-    top = (y0 + y1) / 2 - (PIECE_CY * CH) / scale
+    left = (x0 + x1) / 2 - (piece_cx * CW) / scale
+    top = (y0 + y1) / 2 - (piece_cy * CH) / scale
     pad = int(max(8, min(w, h) * 0.10))
     img_p = np.pad(img, ((pad, pad), (pad, pad), (0, 0)), mode="reflect")
     M_p = np.pad(outline, ((pad, pad), (pad, pad)), mode="reflect")
@@ -405,8 +407,12 @@ def warp(path: Path, canvas: tuple[int, int], floating: bool = False,
 
 def render(path: Path, out_dir: Path | None, canvas: tuple[int, int] = WORK,
            quality: int = 88, gain: float = 1.0, upscale: int = UPSCALE,
-           floating: bool = False, piece_h: float = PIECE_H) -> Stats:
-    I, Bc, M, F, scale, src_size, contact_c, cs = warp(path, canvas, floating, piece_h)
+           floating: bool = False, piece_h: float = PIECE_H,
+           piece_cx: float = PIECE_CX, piece_cy: float = PIECE_CY,
+           thumbs: bool = True, out_name: str | None = None) -> Stats:
+    I, Bc, M, F, scale, src_size, contact_c, cs = warp(
+        path, canvas, floating, piece_h, piece_cx, piece_cy
+    )
     CW, CH = canvas
     st = Stats(path.name, src_size, int(round(contact_c)), cs, scale, canvas)
     st.extra["gain"] = gain
@@ -520,10 +526,12 @@ def render(path: Path, out_dir: Path | None, canvas: tuple[int, int] = WORK,
                     np.asarray(master, np.float32) * 1.0
                     + (np.asarray(master, np.float32) - np.asarray(blurry, np.float32)) * 0.28,
                     0, 255).astype(np.uint8), "RGB")
-        master.save(out_dir / f"{path.stem}.webp", quality=quality, method=6)
-        small = res.resize((840, max(1, int(round(840 * CH / CW)))), Image.LANCZOS)
-        small.save(out_dir / f"{path.stem}-sm.webp", quality=quality, method=6)
-        st.extra["out"] = str(out_dir / f"{path.stem}.webp")
+        name = out_name or path.stem
+        master.save(out_dir / f"{name}.webp", quality=quality, method=6)
+        if thumbs:
+            small = res.resize((840, max(1, int(round(840 * CH / CW)))), Image.LANCZOS)
+            small.save(out_dir / f"{name}-sm.webp", quality=quality, method=6)
+        st.extra["out"] = str(out_dir / f"{name}.webp")
         st.extra["master"] = f"{master.width}x{master.height}"
     return st
 
