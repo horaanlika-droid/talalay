@@ -153,6 +153,13 @@ For each of `martini`, `goblet`, `coupe`, `highball`, `saucer`, `rocks`, `tumble
 4. **One shared setting**: seamless deep-navy studio backdrop (`#101B2E → #0A1220`), cool-white radial glow halo tracing the silhouette, faint light beam from above, dark polished floor with a soft elliptical shadow + faint mirror reflection (levitating feel of 1429/1430).
 5. Empty glass, spotless, no props, no text, no watermark; centered, whole glass visible, even margins.
 
+**Progress (2026-10-30):** approved etalon + masters ready in `brand-source/generated/`:
+`coupe`, `martini`, `goblet`, `highball`, `saucer`, `rocks` (QC passed: shape 1:1,
+thin walls, iridescence, consistent light physics). **Remaining:** generate `tumbler`,
+`footed`, `hurricane`, `cylinder` + the 4 editorial photos, then deliver webp + `-sm`
+over the existing filenames (Task 3). Generation limit is 10 images per turn — plan
+batches accordingly.
+
 ### Task 2 — drink / editorial photos
 
 Regenerate `crystal-light`, `noir-coupe`, `sunlit-sour`, `red-vessel` (`assets/editorial/`) into the same navy-glow world: keep vessel shapes, drink colours and layers; replace concrete/sunlight staging with the dark navy backdrop, glow halo, iridescent highlights and soft reflection. `noir-coupe` also serves as the bitters product image.
@@ -183,7 +190,11 @@ iridescence: pearl/rainbow sheen (magenta-cyan-gold) on the rim and highlights.
 Setting: seamless deep navy-blue studio backdrop (#101B2E → #0A1220), soft cool-white
 radial glow behind the glass tracing its silhouette, gentle rim light, faint light
 beam from above; glass stands on a dark polished surface with soft elliptical shadow
-and faint mirror reflection. Centered, symmetrical, entire glass visible with generous
-even margins. Photorealistic, razor sharp, high dynamic range, no props, no text,
-no watermark.
+and faint mirror reflection. Physically consistent lighting from a single soft key
+source above and slightly behind: soft elliptical contact shadow directly under the
+foot/base, centered; vertical mirror reflection exactly below the contact point,
+fading smoothly downward; highlights, rim light and iridescent glints all agree with
+that one source — no contradictory second shadow, no offset or tilted reflection.
+Centered, symmetrical, entire glass visible with generous even margins. Photorealistic,
+razor sharp, high dynamic range, no props, no text, no watermark.
 ```
