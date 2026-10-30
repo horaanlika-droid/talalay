@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-30T00:00:00Z",
+  "updatedAt": "2026-10-30T12:00:00Z",
   "settings": {
     "brand": "Cocktail Embassy",
     "tagline": "Hand-blown glassware for the modern bar.",
@@ -100,6 +100,87 @@
       "description": "Unfinished textures, sandblasted surfaces and single-piece vessels.",
       "image": "assets/editorial/red-vessel.webp",
       "sort": 4
+    },
+    {
+      "slug": "retro-asia",
+      "name": "Retro Asia",
+      "subtitle": "Archive · on request",
+      "description": "Retired house collection. Every piece is still hand-blown to order in small series — submit a request and we confirm timing and pricing.",
+      "image": "assets/archive/covers/retro-asia.webp",
+      "sort": 20,
+      "archived": true
+    },
+    {
+      "slug": "retro-asia-engraved",
+      "name": "Retro Asia Engraved",
+      "subtitle": "Archive · on request",
+      "description": "Retired house collection. Every piece is still hand-blown to order in small series — submit a request and we confirm timing and pricing.",
+      "image": "assets/archive/covers/retro-asia-engraved.webp",
+      "sort": 21,
+      "archived": true
+    },
+    {
+      "slug": "bullet",
+      "name": "Bullet",
+      "subtitle": "Archive · on request",
+      "description": "Retired house collection. Every piece is still hand-blown to order in small series — submit a request and we confirm timing and pricing.",
+      "image": "assets/archive/covers/bullet.webp",
+      "sort": 22,
+      "archived": true
+    },
+    {
+      "slug": "flowers",
+      "name": "Flowers",
+      "subtitle": "Archive · on request",
+      "description": "Retired house collection. Every piece is still hand-blown to order in small series — submit a request and we confirm timing and pricing.",
+      "image": "assets/archive/covers/flowers.webp",
+      "sort": 23,
+      "archived": true
+    },
+    {
+      "slug": "coupethini",
+      "name": "Coupethini",
+      "subtitle": "Archive · on request",
+      "description": "Retired house collection. Every piece is still hand-blown to order in small series — submit a request and we confirm timing and pricing.",
+      "image": "assets/archive/covers/coupethini.webp",
+      "sort": 24,
+      "archived": true
+    },
+    {
+      "slug": "replicate",
+      "name": "Replicate",
+      "subtitle": "Archive · on request",
+      "description": "Retired house collection. Every piece is still hand-blown to order in small series — submit a request and we confirm timing and pricing.",
+      "image": "assets/archive/covers/replicate.webp",
+      "sort": 25,
+      "archived": true
+    },
+    {
+      "slug": "shorties",
+      "name": "Shorties",
+      "subtitle": "Archive · on request",
+      "description": "Retired house collection. Every piece is still hand-blown to order in small series — submit a request and we confirm timing and pricing.",
+      "image": "assets/archive/covers/shorties.webp",
+      "sort": 26,
+      "archived": true
+    },
+    {
+      "slug": "soon-teapot",
+      "name": "Soon Teapot",
+      "subtitle": "Archive · on request",
+      "description": "Retired house collection. Every piece is still hand-blown to order in small series — submit a request and we confirm timing and pricing.",
+      "image": "assets/archive/covers/soon-teapot.webp",
+      "sort": 27,
+      "archived": true
+    },
+    {
+      "slug": "two-sips",
+      "name": "Two Sips",
+      "subtitle": "Archive · on request",
+      "description": "Retired house collection. Every piece is still hand-blown to order in small series — submit a request and we confirm timing and pricing.",
+      "image": "assets/archive/covers/two-sips.webp",
+      "sort": 28,
+      "archived": true
     }
   ],
   "products": [
@@ -109,10 +190,15 @@
       "name": "Levitating Martini",
       "subtitle": "Hand-Blown Crystal · 210 ml",
       "categorySlug": "glassware",
-      "collectionSlugs": ["levitating", "signature"],
+      "collectionSlugs": [
+        "levitating",
+        "signature"
+      ],
       "price": 42,
       "volume": "210 ml",
-      "images": ["assets/products/martini.webp"],
+      "images": [
+        "assets/products/martini.webp"
+      ],
       "description": "An ultra-delicate, elongated martini glass designed for minimal elegance. The pulled stem replicates classic proportions while keeping the piece almost weightless in the hand.",
       "specs": {
         "Capacity": "210 ml",
@@ -132,10 +218,14 @@
       "name": "Embassy Goblet",
       "subtitle": "Burgundy Goblet · 400 ml",
       "categorySlug": "glassware",
-      "collectionSlugs": ["signature"],
+      "collectionSlugs": [
+        "signature"
+      ],
       "price": 38,
       "volume": "400 ml",
-      "images": ["assets/products/goblet.webp"],
+      "images": [
+        "assets/products/goblet.webp"
+      ],
       "description": "A generous all-purpose goblet with a slim shoulder and a wide, stable foot. Our most requested piece for wine service and large-format stirred drinks.",
       "specs": {
         "Capacity": "400 ml",
@@ -155,10 +245,14 @@
       "name": "Saucer Coupe",
       "subtitle": "Double-Wall Coupe · 220 ml",
       "categorySlug": "glassware",
-      "collectionSlugs": ["noir"],
+      "collectionSlugs": [
+        "noir"
+      ],
       "price": 34,
       "volume": "220 ml",
-      "images": ["assets/products/coupe.webp"],
+      "images": [
+        "assets/products/coupe.webp"
+      ],
       "description": "A stepped coupe with an inner volume ring so the bowl reads fuller than it is. Tuned for champagne, sours and clarified milk punches.",
       "specs": {
         "Capacity": "220 ml",
@@ -178,10 +272,14 @@
       "name": "Etched Highball",
       "subtitle": "Etched Edition · 350 ml",
       "categorySlug": "glassware",
-      "collectionSlugs": ["signature"],
+      "collectionSlugs": [
+        "signature"
+      ],
       "price": 28,
       "volume": "350 ml",
-      "images": ["assets/products/highball.webp"],
+      "images": [
+        "assets/products/highball.webp"
+      ],
       "description": "A tall, slender highball decorated with a hand-etched constellation. Keeps carbonation alive and reads beautifully under bar light.",
       "specs": {
         "Capacity": "350 ml",
@@ -201,10 +299,15 @@
       "name": "Champagne Saucer",
       "subtitle": "Wide Bowl Saucer · 250 ml",
       "categorySlug": "glassware",
-      "collectionSlugs": ["noir", "levitating"],
+      "collectionSlugs": [
+        "noir",
+        "levitating"
+      ],
       "price": 32,
       "volume": "250 ml",
-      "images": ["assets/products/saucer.webp"],
+      "images": [
+        "assets/products/saucer.webp"
+      ],
       "description": "The classic saucer, re-proportioned for aroma. A wide surface and thin rim make it the glass we reach for at the end of the night.",
       "specs": {
         "Capacity": "250 ml",
@@ -224,10 +327,14 @@
       "name": "Basalt Rocks",
       "subtitle": "Heavy Base Rocks · 320 ml",
       "categorySlug": "glassware",
-      "collectionSlugs": ["raw"],
+      "collectionSlugs": [
+        "raw"
+      ],
       "price": 30,
       "volume": "320 ml",
-      "images": ["assets/products/rocks.webp"],
+      "images": [
+        "assets/products/rocks.webp"
+      ],
       "description": "A thick-bottomed rocks glass with a straight wall and a hint of weight. Built for spirit-forward serves and slow ice.",
       "specs": {
         "Capacity": "320 ml",
@@ -247,10 +354,14 @@
       "name": "Slope Tumbler",
       "subtitle": "Stacking Tumbler · 300 ml",
       "categorySlug": "glassware",
-      "collectionSlugs": ["raw"],
+      "collectionSlugs": [
+        "raw"
+      ],
       "price": 26,
       "volume": "300 ml",
-      "images": ["assets/products/tumbler.webp"],
+      "images": [
+        "assets/products/tumbler.webp"
+      ],
       "description": "A taper that stacks in the cupboard and reads clean on the table. The everyday workhorse of the Embassy range.",
       "specs": {
         "Capacity": "300 ml",
@@ -270,10 +381,14 @@
       "name": "Stemmed Tumbler",
       "subtitle": "Footed Tumbler · 330 ml",
       "categorySlug": "glassware",
-      "collectionSlugs": ["levitating"],
+      "collectionSlugs": [
+        "levitating"
+      ],
       "price": 36,
       "volume": "330 ml",
-      "images": ["assets/products/footed.webp"],
+      "images": [
+        "assets/products/footed.webp"
+      ],
       "description": "A tumbler lifted onto a low foot — the silhouette of a wine glass with the ease of a rocks. Our quiet favourite.",
       "specs": {
         "Capacity": "330 ml",
@@ -293,10 +408,14 @@
       "name": "Cylinder Hurricane",
       "subtitle": "Candle Hurricane · 380 ml",
       "categorySlug": "barware",
-      "collectionSlugs": ["raw"],
+      "collectionSlugs": [
+        "raw"
+      ],
       "price": 34,
       "volume": "380 ml",
-      "images": ["assets/products/hurricane.webp"],
+      "images": [
+        "assets/products/hurricane.webp"
+      ],
       "description": "A straight-sided hurricane that doubles as a candle vessel. Sandblasted base, polished rim, endlessly reusable.",
       "specs": {
         "Capacity": "380 ml",
@@ -316,10 +435,14 @@
       "name": "Column Tumbler",
       "subtitle": "Etched Column · 300 ml",
       "categorySlug": "glassware",
-      "collectionSlugs": ["signature"],
+      "collectionSlugs": [
+        "signature"
+      ],
       "price": 28,
       "volume": "300 ml",
-      "images": ["assets/products/cylinder.webp"],
+      "images": [
+        "assets/products/cylinder.webp"
+      ],
       "description": "A clean cylinder with a hand-etched chevron. Designed to disappear into the table and hold the light.",
       "specs": {
         "Capacity": "300 ml",
@@ -386,7 +509,9 @@
       "collectionSlugs": [],
       "price": 20,
       "volume": "250 ml",
-      "images": [],
+      "images": [
+        "assets/packaging/pouch-lactic.webp"
+      ],
       "description": "Round, dairy-soft acidity for milk-washed and dessert-adjacent drinks. Supplied with a drip-resistant cap.",
       "specs": {
         "Volume": "250 ml",
@@ -408,7 +533,9 @@
       "collectionSlugs": [],
       "price": 24,
       "volume": "15 / 30 ml",
-      "images": [],
+      "images": [
+        "assets/packaging/box-jigger.webp"
+      ],
       "description": "A machined jigger with a matte exterior and polished interior band for accurate reads under low light.",
       "specs": {
         "Capacity": "15 / 30 ml",
@@ -449,10 +576,14 @@
       "name": "Embassy Signature Bitters",
       "subtitle": "House Blend · 200 ml",
       "categorySlug": "acids",
-      "collectionSlugs": ["signature"],
+      "collectionSlugs": [
+        "signature"
+      ],
       "price": 26,
       "volume": "200 ml",
-      "images": ["assets/editorial/noir-coupe.webp"],
+      "images": [
+        "assets/editorial/noir-coupe.webp"
+      ],
       "description": "Our house aromatic blend: bitter orange, gentian and toasted oak. Two dashes finish a Martini without disturbing it.",
       "specs": {
         "Volume": "200 ml",
@@ -464,6 +595,706 @@
       "featured": true,
       "inStock": true,
       "sort": 16
+    },
+    {
+      "id": "a1",
+      "slug": "ag0015",
+      "name": "Cocktail Glass",
+      "subtitle": "Retro Asia · 140 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "retro-asia"
+      ],
+      "price": 0,
+      "volume": "140 ml",
+      "images": [
+        "assets/archive/AG0015.webp"
+      ],
+      "description": "A poised bowl for serves built on aroma — martinis, dashes and clarified classics. Thin hand-cut lip, balanced stem.",
+      "specs": {
+        "Capacity": "140 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "115 mm",
+        "Diameter": "73 mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0015"
+    },
+    {
+      "id": "a2",
+      "slug": "ag0016",
+      "name": "Rocks Glass",
+      "subtitle": "Retro Asia · 270 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "retro-asia"
+      ],
+      "price": 0,
+      "volume": "270 ml",
+      "images": [
+        "assets/archive/AG0016.webp"
+      ],
+      "description": "A weighted base and wide opening for spirits over ice, stirred cocktails and generous garnish.",
+      "specs": {
+        "Capacity": "270 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "80 mm",
+        "Diameter": "73 mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0016"
+    },
+    {
+      "id": "a3",
+      "slug": "ag0017",
+      "name": "Highball Glass",
+      "subtitle": "Retro Asia · 310 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "retro-asia"
+      ],
+      "price": 0,
+      "volume": "310 ml",
+      "images": [
+        "assets/archive/AG0017.webp"
+      ],
+      "description": "Tall, straight and cool — long drinks, sodas and builds that stay cold to the last sip.",
+      "specs": {
+        "Capacity": "310 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "110 mm",
+        "Diameter": "70 mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0017"
+    },
+    {
+      "id": "a4",
+      "slug": "ag0018",
+      "name": "Shot Glass",
+      "subtitle": "Retro Asia · 60 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "retro-asia"
+      ],
+      "price": 0,
+      "volume": "60 ml",
+      "images": [
+        "assets/archive/AG0018.webp"
+      ],
+      "description": "A precise pour in one confident measure. Stacks well, reads well, serves fast.",
+      "specs": {
+        "Capacity": "60 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "73 mm",
+        "Diameter": "30 mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0018"
+    },
+    {
+      "id": "a5",
+      "slug": "ag0011",
+      "name": "Cocktail Glass",
+      "subtitle": "Retro Asia Engraved · 140 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "retro-asia-engraved"
+      ],
+      "price": 0,
+      "volume": "140 ml",
+      "images": [
+        "assets/archive/AG0011.webp"
+      ],
+      "description": "A poised bowl for serves built on aroma — martinis, dashes and clarified classics. Thin hand-cut lip, balanced stem.",
+      "specs": {
+        "Capacity": "140 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "115 mm",
+        "Diameter": "73 mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0011"
+    },
+    {
+      "id": "a6",
+      "slug": "ag0012",
+      "name": "Rocks Glass",
+      "subtitle": "Retro Asia Engraved · 270 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "retro-asia-engraved"
+      ],
+      "price": 0,
+      "volume": "270 ml",
+      "images": [
+        "assets/archive/AG0012.webp"
+      ],
+      "description": "A weighted base and wide opening for spirits over ice, stirred cocktails and generous garnish.",
+      "specs": {
+        "Capacity": "270 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "80 mm",
+        "Diameter": "73 mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0012"
+    },
+    {
+      "id": "a7",
+      "slug": "ag0013",
+      "name": "Highball Glass",
+      "subtitle": "Retro Asia Engraved · 310 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "retro-asia-engraved"
+      ],
+      "price": 0,
+      "volume": "310 ml",
+      "images": [
+        "assets/archive/AG0013.webp"
+      ],
+      "description": "Tall, straight and cool — long drinks, sodas and builds that stay cold to the last sip.",
+      "specs": {
+        "Capacity": "310 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "110 mm",
+        "Diameter": "70 mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0013"
+    },
+    {
+      "id": "a8",
+      "slug": "ag0014",
+      "name": "Shot Glass",
+      "subtitle": "Retro Asia Engraved · 60 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "retro-asia-engraved"
+      ],
+      "price": 0,
+      "volume": "60 ml",
+      "images": [
+        "assets/archive/AG0014.webp"
+      ],
+      "description": "A precise pour in one confident measure. Stacks well, reads well, serves fast.",
+      "specs": {
+        "Capacity": "60 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "73 mm",
+        "Diameter": "30 mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0014"
+    },
+    {
+      "id": "a9",
+      "slug": "ag0008",
+      "name": "Chalet Glass",
+      "subtitle": "Bullet · 210 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "bullet"
+      ],
+      "price": 0,
+      "volume": "210 ml",
+      "images": [
+        "assets/archive/AG0008.webp"
+      ],
+      "description": "An alpine silhouette with a wide bowl — aromatics first, everything else second.",
+      "specs": {
+        "Capacity": "210 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "145 mm",
+        "Diameter": "97 mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0008"
+    },
+    {
+      "id": "a10",
+      "slug": "ag0010",
+      "name": "Rocks Glass",
+      "subtitle": "Bullet · 390 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "bullet"
+      ],
+      "price": 0,
+      "volume": "390 ml",
+      "images": [
+        "assets/archive/AG0010.webp"
+      ],
+      "description": "A weighted base and wide opening for spirits over ice, stirred cocktails and generous garnish.",
+      "specs": {
+        "Capacity": "390 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "75 mm",
+        "Diameter": "85 mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0010"
+    },
+    {
+      "id": "a11",
+      "slug": "ag0009",
+      "name": "Highball Glass",
+      "subtitle": "Bullet · 410 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "bullet"
+      ],
+      "price": 0,
+      "volume": "410 ml",
+      "images": [
+        "assets/archive/AG0009.webp"
+      ],
+      "description": "Tall, straight and cool — long drinks, sodas and builds that stay cold to the last sip.",
+      "specs": {
+        "Capacity": "410 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "133 mm",
+        "Diameter": "74 mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0009"
+    },
+    {
+      "id": "a12",
+      "slug": "ag0002",
+      "name": "Cocktail Glass",
+      "subtitle": "Flowers · 150 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "flowers"
+      ],
+      "price": 0,
+      "volume": "150 ml",
+      "images": [
+        "assets/archive/AG0002.webp"
+      ],
+      "description": "A poised bowl for serves built on aroma — martinis, dashes and clarified classics. Thin hand-cut lip, balanced stem.",
+      "specs": {
+        "Capacity": "150 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "190 mm",
+        "Diameter": "85 mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0002"
+    },
+    {
+      "id": "a13",
+      "slug": "ag0003",
+      "name": "Rocks Glass",
+      "subtitle": "Flowers · 330 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "flowers"
+      ],
+      "price": 0,
+      "volume": "330 ml",
+      "images": [
+        "assets/archive/AG0003.webp"
+      ],
+      "description": "A weighted base and wide opening for spirits over ice, stirred cocktails and generous garnish.",
+      "specs": {
+        "Capacity": "330 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "85 mm",
+        "Diameter": "95 mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0003"
+    },
+    {
+      "id": "a14",
+      "slug": "ag0001",
+      "name": "Highball Glass",
+      "subtitle": "Flowers · 370 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "flowers"
+      ],
+      "price": 0,
+      "volume": "370 ml",
+      "images": [
+        "assets/archive/AG0001.webp"
+      ],
+      "description": "Tall, straight and cool — long drinks, sodas and builds that stay cold to the last sip.",
+      "specs": {
+        "Capacity": "370 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "110 mm",
+        "Diameter": "85 mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0001"
+    },
+    {
+      "id": "a15",
+      "slug": "ag0006",
+      "name": "Coupethini",
+      "subtitle": "Coupethini · 145 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "coupethini"
+      ],
+      "price": 0,
+      "volume": "145 ml",
+      "images": [
+        "assets/archive/AG0006.webp"
+      ],
+      "description": "Between a coupe and a martini: the art of balance for aromatic serves without ice.",
+      "specs": {
+        "Capacity": "145 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "170 mm",
+        "Diameter": "80 mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0006"
+    },
+    {
+      "id": "a16",
+      "slug": "ag0004",
+      "name": "Rocks Glass",
+      "subtitle": "Replicate · 330 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "replicate"
+      ],
+      "price": 0,
+      "volume": "330 ml",
+      "images": [
+        "assets/archive/AG0004.webp"
+      ],
+      "description": "A weighted base and wide opening for spirits over ice, stirred cocktails and generous garnish.",
+      "specs": {
+        "Capacity": "330 ml",
+        "Material": "Borosilicate",
+        "Height": "80 mm",
+        "Diameter": "75 mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0004"
+    },
+    {
+      "id": "a17",
+      "slug": "ag0020",
+      "name": "Super Pony",
+      "subtitle": "Levitating · 140 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "levitating"
+      ],
+      "price": 0,
+      "volume": "140 ml",
+      "images": [
+        "assets/archive/AG0020.webp"
+      ],
+      "description": "A long-stemmed icon that floats above the bar top — for serves meant to be held up to the light.",
+      "specs": {
+        "Capacity": "140 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "208 mm",
+        "Diameter": "70 mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0020"
+    },
+    {
+      "id": "a18",
+      "slug": "ag0021",
+      "name": "Rocks Glass",
+      "subtitle": "Levitating · 300 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "levitating"
+      ],
+      "price": 0,
+      "volume": "300 ml",
+      "images": [
+        "assets/archive/AG0021.webp"
+      ],
+      "description": "A weighted base and wide opening for spirits over ice, stirred cocktails and generous garnish.",
+      "specs": {
+        "Capacity": "300 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "100 mm",
+        "Diameter": "76 mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0021"
+    },
+    {
+      "id": "a19",
+      "slug": "ag0022",
+      "name": "Highball Glass",
+      "subtitle": "Levitating · 390 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "levitating"
+      ],
+      "price": 0,
+      "volume": "390 ml",
+      "images": [
+        "assets/archive/AG0022.webp"
+      ],
+      "description": "Tall, straight and cool — long drinks, sodas and builds that stay cold to the last sip.",
+      "specs": {
+        "Capacity": "390 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "180 mm",
+        "Diameter": "58 mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0022"
+    },
+    {
+      "id": "a20",
+      "slug": "ag0023",
+      "name": "Mini Martini",
+      "subtitle": "Shorties · 150 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "shorties"
+      ],
+      "price": 0,
+      "volume": "150 ml",
+      "images": [
+        "assets/archive/AG0023.webp"
+      ],
+      "description": "The martini distilled to its essence — a short-stemmed icon for chilled, undiluted serves.",
+      "specs": {
+        "Capacity": "150 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "— mm",
+        "Diameter": "— mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0023"
+    },
+    {
+      "id": "a21",
+      "slug": "ag0024",
+      "name": "Daisy Coupe",
+      "subtitle": "Shorties · 150 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "shorties"
+      ],
+      "price": 0,
+      "volume": "150 ml",
+      "images": [
+        "assets/archive/AG0024.webp"
+      ],
+      "description": "A shallow bowl for daisies and fizzes — foam-friendly and photograph-ready.",
+      "specs": {
+        "Capacity": "150 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "— mm",
+        "Diameter": "— mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0024"
+    },
+    {
+      "id": "a22",
+      "slug": "ag0026",
+      "name": "Lil’ NORA",
+      "subtitle": "Shorties · 160 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "shorties"
+      ],
+      "price": 0,
+      "volume": "160 ml",
+      "images": [
+        "assets/archive/AG0026.webp"
+      ],
+      "description": "A gentle bowl on a whisper of a stem — small serves, big presence.",
+      "specs": {
+        "Capacity": "160 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "— mm",
+        "Diameter": "— mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0026"
+    },
+    {
+      "id": "a23",
+      "slug": "ag0025",
+      "name": "Modern Margo",
+      "subtitle": "Shorties · 200 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "shorties"
+      ],
+      "price": 0,
+      "volume": "200 ml",
+      "images": [
+        "assets/archive/AG0025.webp"
+      ],
+      "description": "A modern rim for the margarita — salt-ready, lime-forward.",
+      "specs": {
+        "Capacity": "200 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "— mm",
+        "Diameter": "— mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0025"
+    },
+    {
+      "id": "a24",
+      "slug": "ag0027",
+      "name": "Teapot",
+      "subtitle": "Soon Teapot · 500 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "soon-teapot"
+      ],
+      "price": 0,
+      "volume": "500 ml",
+      "images": [
+        "assets/archive/AG0027.webp"
+      ],
+      "description": "Crystal and walnut in magnetic balance — a brewing ritual elevated to table theatre.",
+      "specs": {
+        "Capacity": "500 ml",
+        "Material": "Lead free crystal glass and wood",
+        "Height": "— mm",
+        "Diameter": "— mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0027"
+    },
+    {
+      "id": "a25",
+      "slug": "ag0019",
+      "name": "Cocktail Glass",
+      "subtitle": "Two Sips · 85 ml",
+      "categorySlug": "archive",
+      "collectionSlugs": [
+        "two-sips"
+      ],
+      "price": 0,
+      "volume": "85 ml",
+      "images": [
+        "assets/archive/AG0019.webp"
+      ],
+      "description": "A poised bowl for serves built on aroma — martinis, dashes and clarified classics. Thin hand-cut lip, balanced stem.",
+      "specs": {
+        "Capacity": "85 ml",
+        "Material": "Lead free crystal glass",
+        "Height": "150 mm",
+        "Diameter": "90 mm",
+        "Craft": "Hand Blowing"
+      },
+      "badge": "Archive",
+      "featured": false,
+      "inStock": true,
+      "archive": true,
+      "article": "AG0019"
     }
   ]
 }

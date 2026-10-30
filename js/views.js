@@ -44,7 +44,7 @@ export function productCard(data, product) {
         <h3 class="card__name">${esc(product.name)}</h3>
         <p class="card__sub">${esc(product.subtitle || "")}</p>
       </a>
-      <p class="card__price">${esc(price(data, product.price))}</p>
+      <p class="card__price">${esc(product.archive ? "On request" : price(data, product.price))}</p>
     </div>
     <button class="card__add" type="button" data-add="${attr(product.slug)}" aria-label="Add ${attr(
     product.name
@@ -52,8 +52,23 @@ export function productCard(data, product) {
   </article>`;
 }
 
+function archiveTile(data, collection) {
+  const count = selectors.productsByCollection(data, collection.slug).filter((p) => p.archive).length;
+  return `<a class="archive-tile" href="#/collection/${attr(collection.slug)}">
+    ${
+      collection.image
+        ? `<img src="${attr(mediaUrl(collection.image))}" alt="" loading="lazy" decoding="async">`
+        : ""
+    }
+    <span class="archive-tile__body">
+      <span class="archive-tile__name">${esc(collection.name)}</span>
+      <span class="archive-tile__meta">${count} ${count === 1 ? "piece" : "pieces"} · on request</span>
+    </span>
+  </a>`;
+}
+
 function collectionTile(data, collection) {
-  const count = selectors.productsByCollection(data, collection.slug).length;
+  const count = selectors.productsByCollection(data, collection.slug).filter((p) => (collection.archived ? p.archive : !p.archive)).length;
   const img = collection.image
     ? `<img src="${attr(mediaUrl(collection.image))}" alt="${attr(collection.name)}" loading="lazy" decoding="async">`
     : "";
@@ -76,8 +91,9 @@ export function homeView(data) {
     .filter((slide) => slide.product);
   const first = slides[0];
   const featured = selectors.featured(data);
-  const grid = (featured.length ? featured : data.products).slice(0, 4);
-  const collections = data.collections.slice(0, 4);
+  const grid = (featured.length ? featured : data.products.filter((p) => !p.archive)).slice(0, 4);
+  const collections = data.collections.filter((c) => !c.archived).slice(0, 4);
+  const archived = data.collections.filter((c) => c.archived);
 
   const heroHTML = first
     ? `<section class="hero" data-hero>
@@ -174,6 +190,23 @@ export function homeView(data) {
         </div>
         <div class="hscroll">${collections.map((c) => collectionTile(data, c)).join("")}</div>
       </section>
+
+      ${
+        archived.length
+          ? `<section class="archive-band" aria-labelledby="archive-title">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow" style="color:rgba(255,255,255,.55)">The archive</p>
+              <h2 class="h2" id="archive-title" style="margin-top:8px;color:#fff">Retired collections, still callable.</h2>
+            </div>
+            <a class="btn btn--light" href="#/archive">Full archive ${icon("arrowRight")}</a>
+          </div>
+          <div class="archive-row">${archived.map((c) => archiveTile(data, c)).join("")}</div>
+        </div>
+      </section>`
+          : ""
+      }
 
       <section class="section" aria-labelledby="featured-title">
         <div class="section-head">
@@ -425,7 +458,7 @@ export function shopView(data, params = {}) {
       const clear = root.querySelector("[data-shop-clear]");
 
       function compute() {
-        let list = data.products.slice();
+        let list = data.products.filter((p) => !p.archive);
         if (current.cat !== "all") list = list.filter((p) => p.categorySlug === current.cat);
         const q = current.q.trim().toLowerCase();
         if (q) {
@@ -589,7 +622,7 @@ export function productView(data, slug) {
         <h1 class="pdp__title">${esc(product.name)}</h1>
         <p class="muted" style="margin:0;font-size:15px">${esc(product.subtitle || "")}</p>
         <div class="pdp__price-row">
-          <span class="pdp__price">${esc(price(data, product.price))}</span>
+          <span class="pdp__price">${esc(product.archive ? "On request" : price(data, product.price))}</span>
           ${stockLabel(product.inStock)}
         </div>
         <p class="pdp__price-note">${esc(data.settings.priceNote || "")}</p>
@@ -603,9 +636,9 @@ export function productView(data, slug) {
           <output data-qty-value>1</output>
           <button type="button" data-qty-plus aria-label="Increase quantity">${icon("plus")}</button>
         </div>
-        <button class="btn" type="button" data-add="${attr(product.slug)}" data-add-qty>Add to request ${icon(
-    "bag"
-  )}</button>
+        <button class="btn" type="button" data-add="${attr(product.slug)}" data-add-qty>${
+    product.archive ? "Request this piece" : "Add to request"
+  } ${icon("bag")}</button>
       </div>
 
       ${specs.length ? `<div class="specs">${specs
@@ -702,7 +735,10 @@ export function productView(data, slug) {
 export function collectionView(data, slug) {
   const collection = selectors.collectionBySlug(data, slug);
   if (!collection) return null;
+  if (collection.archived) return archiveView(data, slug);
   const products = selectors.productsByCollection(data, slug);
+  const live = products.filter((p) => !p.archive);
+  const arch = products.filter((p) => p.archive);
   const html = `<section class="hero-mini">
       ${collection.image ? `<div class="hero-mini__bg"><img src="${attr(mediaUrl(collection.image))}" alt=""></div>` : ""}
       <div class="hero-mini__inner">
@@ -716,21 +752,90 @@ export function collectionView(data, slug) {
     <div class="wrap">
       <section class="section">
         <div class="section-head">
-          <p class="result-count">${products.length} ${products.length === 1 ? "piece" : "pieces"}</p>
+          <p class="result-count">${live.length} ${live.length === 1 ? "piece" : "pieces"}</p>
           ${arrowLink("#/shop", "Full catalogue")}
         </div>
         ${
-          products.length
-            ? `<div class="grid">${products.map((p) => productCard(data, p)).join("")}</div>`
+          live.length
+            ? `<div class="grid">${live.map((p) => productCard(data, p)).join("")}</div>`
+            : arch.length
+            ? ""
             : `<div class="empty">${icon("sparkle")}<p style="margin:0">This collection is being restocked.</p></div>`
         }
       </section>
+      ${
+        arch.length
+          ? `<section class="section section--tight">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">From the archive</p>
+            <h2 class="h2" style="margin-top:8px">Retired ${esc(collection.name)} pieces</h2>
+          </div>
+        </div>
+        <p class="muted" style="margin:-6px 0 18px;font-size:14px">Out of the current catalogue, still hand-blown on request.</p>
+        <div class="grid">${arch.map((p) => productCard(data, p)).join("")}</div>
+      </section>`
+          : ""
+      }
     </div>`;
   return {
     title: `${collection.name} — ${data.settings.brand || "Cocktail Embassy"}`,
     html,
     theme: "dark-top",
   };
+}
+
+/* ---------------------------------------------------------------- request */
+
+export function archiveView(data, slug) {
+  const archived = data.collections.filter((c) => c.archived);
+  const brand = data.settings?.brand || "Cocktail Embassy";
+  if (!slug) {
+    const html = `<section class="hero-mini hero-mini--navy">
+      <div class="hero-mini__inner">
+        <p class="eyebrow" style="color:rgba(255,255,255,.55)">Archive</p>
+        <h1 class="h1">Retired collections.</h1>
+        <p class="lede" style="color:rgba(255,255,255,.72);max-width:54ch;margin:0">Earlier seasons of the Embassy — nine houses of shapes we still blow to order. Pick a collection, choose a piece and submit a request: we confirm timing and pricing within one business day.</p>
+      </div>
+    </section>
+    <div class="wrap">
+      <section class="section">
+        <div class="grid grid--tiles">${archived.map((c) => collectionTile(data, c)).join("")}</div>
+      </section>
+    </div>`;
+    return { title: `Archive — ${brand}`, html, theme: "dark-top" };
+  }
+  const collection = selectors.collectionBySlug(data, slug);
+  if (!collection || !collection.archived) return null;
+  const products = selectors.productsByCollection(data, slug).filter((p) => p.archive);
+  const html = `<section class="hero-mini">
+      ${
+        collection.image
+          ? `<div class="hero-mini__bg"><img src="${attr(mediaUrl(collection.image))}" alt=""></div>`
+          : ""
+      }
+      <div class="hero-mini__inner">
+        <p class="eyebrow" style="color:rgba(255,255,255,.55)">${esc(collection.subtitle || "Archive")}</p>
+        <h1 class="h1">${esc(collection.name)}</h1>
+        <p class="lede" style="color:rgba(255,255,255,.72);max-width:54ch;margin:0">${esc(
+          collection.description || ""
+        )}</p>
+      </div>
+    </section>
+    <div class="wrap">
+      <section class="section">
+        <div class="section-head">
+          <p class="result-count">${products.length} ${products.length === 1 ? "piece" : "pieces"} · on request</p>
+          ${arrowLink("#/archive", "All archive")}
+        </div>
+        ${
+          products.length
+            ? `<div class="grid">${products.map((p) => productCard(data, p)).join("")}</div>`
+            : `<div class="empty">${icon("sparkle")}<p style="margin:0">This archive house is being catalogued.</p></div>`
+        }
+      </section>
+    </div>`;
+  return { title: `${collection.name} archive — ${brand}`, html, theme: "dark-top" };
 }
 
 /* ---------------------------------------------------------------- request */
@@ -784,6 +889,11 @@ export function requestView(data) {
           <div class="summary__row summary__row--total"><span>Estimated</span><span class="num">${esc(
             price(data, total)
           )}</span></div>
+          ${
+            lines.some((l) => l.product.archive)
+              ? `<p class="muted" style="margin:10px 0 0;font-size:13px">Archive pieces are quoted individually — we confirm pricing with your request.</p>`
+              : ""
+          }
           <p class="muted" style="font-size:11.5px;margin:0">${esc(settings.priceNote || "")}</p>
         </div>
 
@@ -931,7 +1041,7 @@ export function lineItem(data, line, removable) {
     <div>
       <a href="#/product/${attr(p.slug)}"><div class="line-item__name">${esc(p.name)}</div></a>
       <div class="line-item__sub">${esc(p.subtitle || "")}</div>
-      <div class="line-item__price">${esc(price(data, p.price * line.qty))}</div>
+      <div class="line-item__price">${esc(p.archive ? "On request" : price(data, p.price * line.qty))}</div>
     </div>
     <div class="line-item__right">
       <div class="qty qty--sm">

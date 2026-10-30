@@ -8,6 +8,7 @@ import {
   shopView,
   productView,
   collectionView,
+  archiveView,
   requestView,
   infoView,
   notFoundView,
@@ -66,6 +67,7 @@ function footerHTML(data) {
       <h4>Catalogue</h4>
       ${data.categories.map((cat) => `<a href="#/shop?c=${attr(cat.slug)}">${esc(cat.name)}</a>`).join("")}
       <a href="#/shop">All pieces</a>
+      <a href="#/archive">Archive</a>
     </div>
     <div class="footer__col">
       <h4>Contact</h4>
@@ -107,6 +109,12 @@ const routeDefs = [
   {
     test: (s) => s[0] === "collection" && s[1],
     view: (data, p, params, s) => collectionView(data, s[1]),
+    tab: "shop",
+    nav: "shop",
+  },
+  {
+    test: (s) => s[0] === "archive",
+    view: (data, p, params, s) => archiveView(data, s[1]),
     tab: "shop",
     nav: "shop",
   },
