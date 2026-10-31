@@ -69,6 +69,8 @@ export function normalize(raw) {
     price: Number(p.price) || 0,
     images: Array.isArray(p.images) ? p.images.filter(Boolean) : p.image ? [p.image] : [],
     specs: p.specs && typeof p.specs === "object" ? p.specs : {},
+    article: (p.specs && p.specs.Code) || p.article || "",
+    volumeMl: Number(String(p.volume || "").replace(/[^\d.]/g, "")) || 0,
     sort: Number.isFinite(p.sort) ? p.sort : i,
     featured: !!p.featured,
     inStock: p.inStock !== false,

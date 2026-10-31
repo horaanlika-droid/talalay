@@ -31,17 +31,17 @@ export function cardMedia(product, sizes = "") {
 
 /* Whole-scene hero plates — room, glow and glass baked into one raster file by
    tools/render_scenes.py. The page never stacks a glass over a backdrop. */
-const HERO_SCENES = new Set([
+/* The opening plate is the piece itself: its catalogue plate already carries the
+   deep-black stage, so it blends into the page instead of sitting in a picture
+   frame. No separate wide render can drift away from the product photography. */
+const HERO_PLATES = new Set([
   "levitating-martini",
   "etched-highball",
   "champagne-saucer",
   "levitating-super-pony",
 ]);
 
-function heroScene(product, portrait) {
-  if (HERO_SCENES.has(product.slug)) {
-    return `assets/scenes/hero-${product.slug}${portrait ? "-portrait" : ""}.webp`;
-  }
+function heroScene(product) {
   return mediaUrl(product.images?.[0] || "");
 }
 
@@ -91,6 +91,7 @@ function productCard(data, product) {
     </a>
     <div class="card__body">
       <a href="#/product/${attr(product.slug)}">
+        ${product.article ? `<span class="card__article mono">${esc(product.article)}</span>` : ""}
         <h3 class="card__name">${esc(product.name)}</h3>
         <p class="card__sub">${esc(product.subtitle || "")}</p>
       </a>
@@ -134,10 +135,9 @@ export function homeView(data) {
 
   const heroHTML = first
     ? `<section class="hero" data-hero>
-      <picture class="hero__art${HERO_SCENES.has(first.product.slug) ? "" : " hero__art--plain"}" aria-hidden="true">
-        <source media="(min-width: 900px)" srcset="${attr(heroScene(first.product, false))}">
-        <img data-hero-art src="${attr(heroScene(first.product, true))}" alt="" fetchpriority="high" decoding="async">
-      </picture>
+      <div class="hero__art" aria-hidden="true">
+        <img data-hero-art src="${attr(heroScene(first.product))}" alt="" fetchpriority="high" decoding="async">
+      </div>
       <div class="hero__inner">
         <p class="hero__kicker" data-hero-kicker>${esc(first.kicker || "The house")}</p>
         <div class="hero__titleWrap">
@@ -246,7 +246,6 @@ function mountHero(root, slides) {
     kicker: hero.querySelector("[data-hero-kicker]"),
     title: hero.querySelector("[data-hero-title]"),
     art: hero.querySelector("[data-hero-art]"),
-    artSource: hero.querySelector(".hero__art source"),
     name: hero.querySelector("[data-hero-name]"),
     sub: hero.querySelector("[data-hero-sub]"),
     priceEl: hero.querySelector("[data-hero-price]"),
@@ -287,23 +286,19 @@ function mountHero(root, slides) {
       animating = false;
     };
 
-    const wide = heroScene(slide.product, false);
-    const portrait = heroScene(slide.product, true);
-    const picture = hero.querySelector(".hero__art");
-    if (picture) picture.classList.toggle("hero__art--plain", !HERO_SCENES.has(slide.product.slug));
-    if (wide && portrait && els.art) {
-      // One plate per slide: wait for the wide file, then swap both variants.
+    const plate = heroScene(slide.product);
+    if (plate && els.art) {
+      // Decode the next plate before showing it, so the swap never flashes.
       let settled = false;
       const swap = () => {
         if (settled) return;
         settled = true;
-        if (els.artSource) els.artSource.srcset = wide;
-        els.art.src = portrait;
+        els.art.src = plate;
         setTimeout(apply, 190);
       };
       const pre = new Image();
       pre.onload = pre.onerror = swap;
-      pre.src = wide;
+      pre.src = plate;
       setTimeout(swap, 1500);
     } else {
       setTimeout(apply, 190);
@@ -374,13 +369,19 @@ const SORTS = [
   { id: "price-asc", label: "Price: low to high" },
   { id: "price-desc", label: "Price: high to low" },
   { id: "name", label: "Name: A–Z" },
+  { id: "volume", label: "Volume: small to large" },
+  { id: "new", label: "Newest first" },
 ];
 
 export function shopView(data, params = {}) {
   const activeCat = params.c || "all";
   const sort = SORTS.some((s) => s.id === params.sort) ? params.sort : "featured";
   const query = params.q || "";
+  const onlyNew = params.new === "1";
+  const inStock = params.stock === "1";
+  const maxPrice = Number(params.max) > 0 ? Number(params.max) : 0;
   const category = selectors.categoryBySlug(data, activeCat);
+  const ceiling = Math.ceil(Math.max(...data.products.map((p) => p.price), 1) / 10) * 10;
 
   const heading = category ? category.name : "The catalogue";
   const subheading = category ? category.blurb : "Crystal, barware and cocktail acids — hand-blown, trade-ready.";
@@ -416,9 +417,10 @@ export function shopView(data, params = {}) {
               }">${esc(c.name)}</button>`
           )
           .join("")}
-        <button class="chip chip--ghost" type="button" data-open-sort>${icon(
-          "sliders"
-        )}<span data-sort-label>${esc(SORTS.find((s) => s.id === sort).label)}</span></button>
+        <button class="chip chip--ghost" type="button" data-open-filters>${icon("sliders")}<span data-filter-label>Filters</span></button>
+        <button class="chip chip--ghost" type="button" data-open-sort>${icon("sort")}<span data-sort-label>${esc(
+          SORTS.find((s) => s.id === sort).label
+        )}</span></button>
       </div>
     </div>
 
@@ -430,7 +432,7 @@ export function shopView(data, params = {}) {
     title: `${heading} — ${data.settings.brand || "Cocktail Embassy"}`,
     html,
     mount(root) {
-      let current = { cat: activeCat, sort, q: query };
+      let current = { cat: activeCat, sort, q: query, onlyNew, inStock, maxPrice };
       const grid = root.querySelector("[data-shop-grid]");
       const count = root.querySelector("[data-shop-count]");
       const search = root.querySelector("[data-shop-search]");
@@ -439,10 +441,13 @@ export function shopView(data, params = {}) {
       function compute() {
         let list = data.products.slice();
         if (current.cat !== "all") list = list.filter((p) => p.categorySlug === current.cat);
+        if (current.onlyNew) list = list.filter((p) => p.badge === "New");
+        if (current.inStock) list = list.filter((p) => p.inStock);
+        if (current.maxPrice) list = list.filter((p) => p.price <= current.maxPrice);
         const q = current.q.trim().toLowerCase();
         if (q) {
           list = list.filter((p) =>
-            [p.name, p.subtitle, p.description, p.categorySlug]
+            [p.name, p.subtitle, p.description, p.categorySlug, p.article]
               .join(" ")
               .toLowerCase()
               .includes(q)
@@ -457,6 +462,12 @@ export function shopView(data, params = {}) {
             break;
           case "name":
             list.sort((a, b) => a.name.localeCompare(b.name));
+            break;
+          case "volume":
+            list.sort((a, b) => a.volumeMl - b.volumeMl || a.sort - b.sort);
+            break;
+          case "new":
+            list.sort((a, b) => Number(b.badge === "New") - Number(a.badge === "New") || a.sort - b.sort);
             break;
           default:
             list.sort((a, b) => Number(b.featured) - Number(a.featured) || a.sort - b.sort);
@@ -474,11 +485,17 @@ export function shopView(data, params = {}) {
           : `<div class="empty">${icon("search")}<p style="margin:0;font-weight:600;color:var(--ink)">Nothing matches that search</p>
              <p style="margin:0;font-size:14px">Try a different word, or browse the full catalogue.</p>
              <button class="btn btn--ghost btn--sm" type="button" data-reset>Reset filters</button></div>`;
+        const activeFilters = Number(current.onlyNew) + Number(current.inStock) + Number(current.maxPrice > 0);
+        const filterLabel = root.querySelector("[data-filter-label]");
+        if (filterLabel) filterLabel.textContent = activeFilters ? `Filters · ${activeFilters}` : "Filters";
         const url = new URL(location.href);
         const hashParams = new URLSearchParams();
         if (current.cat !== "all") hashParams.set("c", current.cat);
         if (current.sort !== "featured") hashParams.set("sort", current.sort);
         if (current.q) hashParams.set("q", current.q);
+        if (current.onlyNew) hashParams.set("new", "1");
+        if (current.inStock) hashParams.set("stock", "1");
+        if (current.maxPrice) hashParams.set("max", String(current.maxPrice));
         const qs = hashParams.toString();
         const nextHash = `#/shop${qs ? `?${qs}` : ""}`;
         if (url.hash !== nextHash) history.replaceState(null, "", nextHash);
@@ -506,13 +523,63 @@ export function shopView(data, params = {}) {
           render();
         }
         if (e.target.closest("[data-reset]")) {
-          current = { cat: "all", sort: "featured", q: "" };
+          current = { cat: "all", sort: "featured", q: "", onlyNew: false, inStock: false, maxPrice: 0 };
           search.value = "";
           clear.hidden = true;
           root.querySelectorAll("[data-chip]").forEach((c) =>
             c.setAttribute("aria-pressed", String(c.dataset.chip === "all"))
           );
           render();
+        }
+        if (e.target.closest("[data-open-filters]")) {
+          const flag = (on) => (on ? "is-on" : "");
+          const marks = (on) => (on ? icon("check") : "");
+          const ceilings = [50, 100, 200, ceiling].filter((v, i, a) => a.indexOf(v) === i);
+          openSheet({
+            title: "Filters",
+            body: `<div class="sortlist">
+              <button class="sortlist__row" type="button" data-flag="onlyNew">
+                <span>Only new pieces</span><span class="sortlist__check">${marks(current.onlyNew)}</span>
+              </button>
+              <button class="sortlist__row" type="button" data-flag="inStock">
+                <span>Only in stock</span><span class="sortlist__check">${marks(current.inStock)}</span>
+              </button>
+              <div class="sortlist__row sortlist__row--static"><span>Price up to <b data-price-value>${current.maxPrice ? price(data, current.maxPrice) : "any"}</b></span></div>
+              <div class="filters__prices">${ceilings
+                .map(
+                  (v) =>
+                    `<button class="chip" type="button" data-max="${v}" aria-pressed="${
+                      current.maxPrice === v
+                    }">${esc(price(data, v))}</button>`
+                )
+                .join("")}<button class="chip" type="button" data-max="0" aria-pressed="${
+                current.maxPrice === 0
+              }">Any</button></div>
+            </div>`,
+            onMount(sheetEl) {
+              sheetEl.addEventListener("click", (ev) => {
+                const flagBtn = ev.target.closest("[data-flag]");
+                if (flagBtn) {
+                  const key = flagBtn.dataset.flag;
+                  current[key] = !current[key];
+                  flagBtn.querySelector(".sortlist__check").innerHTML = marks(current[key]);
+                  flagBtn.classList.toggle("is-on", current[key]);
+                  render();
+                  return;
+                }
+                const maxBtn = ev.target.closest("[data-max]");
+                if (maxBtn) {
+                  current.maxPrice = Number(maxBtn.dataset.max);
+                  sheetEl.querySelectorAll("[data-max]").forEach((b) =>
+                    b.setAttribute("aria-pressed", String(b === maxBtn))
+                  );
+                  const label = sheetEl.querySelector("[data-price-value]");
+                  if (label) label.textContent = current.maxPrice ? price(data, current.maxPrice) : "any";
+                  render();
+                }
+              });
+            },
+          });
         }
         if (e.target.closest("[data-open-sort]")) {
           openSheet({
@@ -588,6 +655,7 @@ export function productView(data, slug) {
           <a href="#/shop?c=${attr(product.categorySlug)}" style="text-transform:inherit">${esc(
     category ? category.name : "Catalogue"
   )}</a>
+          ${product.article ? `<span aria-hidden="true"> · </span><span class="mono">${esc(product.article)}</span>` : ""}
         </div>
         <h1 class="pdp__title">${esc(product.name)}</h1>
         <p class="muted" style="margin:0;font-size:15px">${esc(product.subtitle || "")}</p>

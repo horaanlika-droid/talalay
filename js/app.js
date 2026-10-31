@@ -446,15 +446,15 @@ async function boot() {
   // Preload the hero plates after first paint — each is one finished raster
   // picture (room + glow + glass), so the carousel never flashes a frame.
   requestAnimationFrame(() => {
-    [
-      "assets/scenes/hero-levitating-martini.webp",
-      "assets/scenes/hero-levitating-martini-portrait.webp",
-      "assets/scenes/hero-etched-highball.webp",
-      "assets/scenes/hero-champagne-saucer.webp",
-    ].forEach((src) => {
-      const img = new Image();
-      img.src = src;
-    });
+    // Warm the opening plates: the catalogue plates themselves, one per hero slide.
+    const slides = (data.settings?.hero || []).slice(0, 3);
+    slides
+      .map((slide) => (data.products.find((p) => p.slug === slide.productSlug) || {}).images?.[0])
+      .filter(Boolean)
+      .forEach((src) => {
+        const img = new Image();
+        img.src = src;
+      });
   });
 
   try {

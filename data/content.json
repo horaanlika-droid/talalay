@@ -1,6 +1,6 @@
 {
-  "version": 5,
-  "updatedAt": "2026-10-31T12:00:00Z",
+  "version": 6,
+  "updatedAt": "2026-10-31T16:00:00Z",
   "settings": {
     "brand": "Cocktail Embassy",
     "tagline": "Hand-blown glassware for the modern bar.",
@@ -131,7 +131,8 @@
         "Material": "Lead-free hand-blown crystal",
         "Height": "185 mm",
         "Care": "Hand wash",
-        "Origin": "Hand-blown in China"
+        "Origin": "Hand-blown in China",
+        "Code": "AG0005"
       },
       "badge": "Signature",
       "featured": true,
@@ -158,7 +159,8 @@
         "Height": "110 mm",
         "Care": "Hand wash",
         "Packing": "6 per case",
-        "Origin": "Hand-blown in China"
+        "Origin": "Hand-blown in China",
+        "Code": "AG0007"
       },
       "featured": false,
       "id": "p02",
@@ -184,7 +186,8 @@
         "Height": "120 mm",
         "Care": "Hand wash",
         "Packing": "6 per case",
-        "Origin": "Hand-blown in China"
+        "Origin": "Hand-blown in China",
+        "Code": "AG0014"
       },
       "badge": "New",
       "featured": false,
@@ -296,7 +299,8 @@
         "Height": "135 mm",
         "Care": "Hand wash",
         "Packing": "6 per case",
-        "Origin": "Hand-blown in China"
+        "Origin": "Hand-blown in China",
+        "Code": "AG0028"
       },
       "featured": true,
       "id": "p07",
@@ -322,7 +326,8 @@
         "Height": "150 mm",
         "Care": "Hand wash",
         "Packing": "6 per case",
-        "Origin": "Hand-blown in China"
+        "Origin": "Hand-blown in China",
+        "Code": "AG0029"
       },
       "featured": false,
       "id": "p08",
@@ -348,7 +353,8 @@
         "Height": "155 mm",
         "Care": "Hand wash",
         "Packing": "6 per case",
-        "Origin": "Hand-blown in China"
+        "Origin": "Hand-blown in China",
+        "Code": "AG0030"
       },
       "badge": "Etched",
       "featured": false,
@@ -375,7 +381,8 @@
         "Height": "100 mm",
         "Care": "Hand wash",
         "Packing": "6 per case",
-        "Origin": "Hand-blown in China"
+        "Origin": "Hand-blown in China",
+        "Code": "AG0031"
       },
       "featured": false,
       "id": "p10",
@@ -401,7 +408,8 @@
         "Height": "95 mm",
         "Care": "Dishwasher safe",
         "Packing": "6 per case",
-        "Origin": "Hand-blown in China"
+        "Origin": "Hand-blown in China",
+        "Code": "AG0032"
       },
       "featured": true,
       "id": "p11",
@@ -427,7 +435,8 @@
         "Height": "100 mm",
         "Care": "Dishwasher safe",
         "Packing": "6 per case",
-        "Origin": "Hand-blown in China"
+        "Origin": "Hand-blown in China",
+        "Code": "AG0033"
       },
       "featured": false,
       "id": "p12",
@@ -452,7 +461,8 @@
         "Material": "Hand-blown crystal",
         "Height": "170 mm",
         "Care": "Hand wash",
-        "Origin": "Hand-blown in China"
+        "Origin": "Hand-blown in China",
+        "Code": "AG0034"
       },
       "featured": false,
       "id": "p13",
@@ -1225,7 +1235,7 @@
       "specs": {
         "Weight": "1000 g",
         "Grade": "Food grade",
-        "Code": "AG0001"
+        "Code": "PC0002"
       },
       "id": "p42",
       "sort": 42,
