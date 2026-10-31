@@ -24,13 +24,14 @@ const NAV_ITEMS = [
 /* ------------------------------------------------------------ ticker */
 
 const TICKER_LINES = [
-  "Hand-blown crystal",
-  "Bars & hotels",
-  "Trade pricing",
-  "Small-batch editions",
-  "Made in Europe",
-  "Worldwide dispatch",
-  "Dubai",
+  "Hand-blown crystal · Europe",
+  "52 pieces · 17 collections",
+  "Trade prices in AED",
+  "Bars · hotels · studios",
+  "Dubai · HoReCa supply",
+  "Worldwide delivery from Dubai",
+  "Dispatch in 2–4 days",
+  "Breakage replaced free",
 ];
 
 function tickerHTML(announcement = "") {
