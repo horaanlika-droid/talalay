@@ -1022,7 +1022,15 @@ async def handle_lines_bulk(message: Message, state: FSMContext) -> None:
 
 
 # -------------------------------------------------------------------- requests
-STATUS_LABELS = {"new": "🆕 new", "processing": "🚚 in progress", "done": "✅ done", "cancelled": "🗑 cancelled"}
+STATUS_LABELS = {
+    "new": "🆕 new",
+    "confirmed": "✅ confirmed",
+    "packing": "📦 packing",
+    "shipped": "🚚 shipped",
+    "delivered": "🏁 delivered",
+    "cancelled": "🗑 cancelled",
+}
+STATUS_FLOW = [("confirmed", "✅ Confirm"), ("packing", "📦 Packing"), ("shipped", "🚚 Shipped"), ("delivered", "🏁 Delivered")]
 
 
 def requests_text_kb(status: str = "new", page: int = 0) -> tuple[str, InlineKeyboardMarkup]:
@@ -1052,14 +1060,22 @@ def requests_text_kb(status: str = "new", page: int = 0) -> tuple[str, InlineKey
     rows.append(
         [
             ("🆕 New", "req:list:new:0"),
-            ("🚚 Progress", "req:list:processing:0"),
-            ("✅ Done", "req:list:done:0"),
+            ("✅ Confirmed", "req:list:confirmed:0"),
+            ("📦 Packing", "req:list:packing:0"),
+        ]
+    )
+    rows.append(
+        [
+            ("🚚 Shipped", "req:list:shipped:0"),
+            ("🏁 Delivered", "req:list:delivered:0"),
+            ("🗑 Cancelled", "req:list:cancelled:0"),
         ]
     )
     rows.append([("📚 All", "req:list:all:0"), ("⬅️ Menu", "menu")])
     text = (
-        "🧾  Requests\n\n"
-        f"New: {counts['new']}  ·  In progress: {counts['processing']}  ·  Done: {counts['done']}\n\n"
+        "🧾  Orders\n\n"
+        f"New: {counts['new']}  ·  Confirmed: {counts['confirmed']}  ·  Packing: {counts['packing']}\n"
+        f"Shipped: {counts['shipped']}  ·  Delivered: {counts['delivered']}\n\n"
         f"Showing: {status}"
     )
     return text, kb(rows)
@@ -1072,23 +1088,39 @@ def request_detail(r: dict) -> tuple[str, InlineKeyboardMarkup]:
     lines.append(f"✉️ {r['email']}")
     if r["phone"]:
         lines.append(f"📞 {r['phone']}")
-    if r["country"]:
-        lines.append(f"🌍 {r['country']}")
+    where = ", ".join(part for part in (r.get("city"), r.get("country")) if part)
+    if where:
+        lines.append(f"🌍 {where}")
+    if r.get("address"):
+        lines.append(f"📍 {r['address']}")
+    if r.get("taxId"):
+        lines.append(f"🧾 TRN/VAT {r['taxId']}")
+    if r.get("delivery"):
+        lines.append(f"🚚 Delivery: {r['delivery']}")
+    if r.get("payment"):
+        lines.append(f"💳 Payment: {r['payment']}")
+    if r.get("shipping"):
+        lines.append(f"➕ Shipping: {money(float(r['shipping']))}")
     lines.append(f"🕒 {r['createdAt']}")
     lines.append("")
     lines.append("Items:")
     for item in r["items"]:
         lines.append(f"  {item.get('qty', 1)} × {item.get('name', item.get('slug'))} — {money(float(item.get('sum', 0)))}")
     lines.append("")
-    lines.append(f"Total: {money(r['total'])} {r['currency']}")
+    total = float(r["total"]) + float(r.get("shipping") or 0)
+    lines.append(f"Goods: {money(r['total'])}")
+    if r.get("shipping"):
+        lines.append(f"Shipping: {money(float(r['shipping']))}")
+    lines.append(f"Total: {money(total)} {r['currency']}")
     if r["note"]:
         lines.append("")
         lines.append(f"Note: {r['note']}")
-    rows = [
-        [("✅ Mark done", f"req:status:{r['id']}:done"), ("🚚 In progress", f"req:status:{r['id']}:processing")],
-        [("✉️ Reply by email", f"req:mail:{r['id']}"), ("🗑 Cancel", f"req:status:{r['id']}:cancelled")],
-        [("⬅️ Requests", "req:list:new:0")],
-    ]
+    rows: list[list[tuple[str, str]]] = []
+    step = [row for row in STATUS_FLOW if row[0] != r["status"]][:2]
+    if step:
+        rows.append([(label, f"req:status:{r['id']}:{value}") for value, label in step])
+    rows.append([("✉️ Reply by email", f"req:mail:{r['id']}"), ("🗑 Cancel", f"req:status:{r['id']}:cancelled")])
+    rows.append([("⬅️ Requests", "req:list:new:0")])
     return "\n".join(lines), kb(rows)
 
 

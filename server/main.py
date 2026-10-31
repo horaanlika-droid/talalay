@@ -33,6 +33,12 @@ class RequestIn(BaseModel):
     email: str = Field(min_length=3, max_length=160)
     phone: str = Field(default="", max_length=60)
     country: str = Field(default="", max_length=80)
+    city: str = Field(default="", max_length=80)
+    address: str = Field(default="", max_length=240)
+    taxId: str = Field(default="", max_length=40)
+    delivery: str = Field(default="", max_length=32)
+    payment: str = Field(default="", max_length=32)
+    shipping: float | None = None
     note: str = Field(default="", max_length=2000)
     items: list[RequestItem] = Field(min_length=1, max_length=100)
     total: float | None = None
@@ -123,6 +129,26 @@ async def content() -> JSONResponse:
     return JSONResponse(db.get_content())
 
 
+def _shipping_for(settings: dict, delivery: str, subtotal: float) -> float:
+    """Shipping the office will invoice for this order.
+
+    The method list lives in settings, so the shop owner can change a fee from
+    the bot without a deploy. Free above the threshold, free on pickup; a method
+    with fee 0 and no threshold means "quoted later" and adds nothing here.
+    """
+    methods = settings.get("deliveryMethods") or []
+    method = next((m for m in methods if m.get("id") == delivery), None)
+    if not method:
+        return 0.0
+    fee = float(method.get("fee") or 0)
+    threshold = float(settings.get("freeShippingFrom") or 0)
+    if method.get("id") == "pickup" or fee <= 0:
+        return 0.0
+    if threshold and subtotal >= threshold:
+        return 0.0
+    return fee
+
+
 @app.post("/api/requests", response_model=RequestOut)
 async def create_request(payload: RequestIn) -> RequestOut:
     products = {p["slug"]: p for p in db.list_products()}
@@ -143,6 +169,10 @@ async def create_request(payload: RequestIn) -> RequestOut:
         )
         total += price * item.qty
 
+    settings = db.all_settings()
+    subtotal = round(total if total else float(payload.total or 0), 2)
+    shipping = _shipping_for(settings, payload.delivery, subtotal)
+
     record = db.create_request(
         {
             "name": payload.name.strip(),
@@ -150,9 +180,15 @@ async def create_request(payload: RequestIn) -> RequestOut:
             "email": payload.email.strip(),
             "phone": payload.phone.strip(),
             "country": payload.country.strip(),
+            "city": payload.city.strip(),
+            "address": payload.address.strip(),
+            "taxId": payload.taxId.strip(),
+            "delivery": payload.delivery.strip(),
+            "payment": payload.payment.strip(),
+            "shipping": shipping,
             "note": payload.note.strip(),
             "items": items,
-            "total": round(total if total else float(payload.total or 0), 2),
+            "total": subtotal,
             "currency": payload.currency,
         }
     )
