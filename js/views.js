@@ -45,6 +45,24 @@ function heroScene(product) {
   return mediaUrl(product.images?.[0] || "");
 }
 
+/* The opening stage: a wide plate for tablets and desktop, a tall one for the
+   phone, both of the same piece on the same black. Because the room inside the
+   photograph is the room the page is painted in, the picture can run edge to
+   edge on any screen without a frame, a letterbox or a seam. */
+function heroPicture(product, first = false) {
+  const lead = first ? 'fetchpriority="high"' : 'loading="lazy"';
+  if (HERO_PLATES.has(product.slug)) {
+    // tall screens (phone and iPad held upright) take the portrait plate, wide
+    // screens take the wide one — the piece is never cropped by the ratio
+    return `<picture>
+      <source media="(max-aspect-ratio: 1/1)" srcset="assets/scenes/hero-${attr(product.slug)}-portrait.webp">
+      <img src="assets/scenes/hero-${attr(product.slug)}.webp" alt="" ${lead} decoding="async">
+    </picture>`;
+  }
+  // a plain catalogue plate is 4:5 and must be shown whole, never cropped
+  return `<picture class="is-plain"><img src="${attr(heroScene(product))}" alt="" ${lead} decoding="async"></picture>`;
+}
+
 // The kinetic row under the hero. Live copy comes from settings.marquee; text
 // wrapped in *asterisks* is set in italic, the way the house voice stresses a
 // word. Anything else is printed straight.
@@ -140,7 +158,11 @@ export function homeView(data) {
   const heroHTML = first
     ? `<section class="hero" data-hero>
       <div class="hero__art" aria-hidden="true">
-        <img data-hero-art src="${attr(heroScene(first.product))}" alt="" fetchpriority="high" decoding="async">
+        <div class="hero__track" data-hero-track>
+          ${slides
+            .map((slide, i) => `<div class="hero__slide" data-hero-slide="${i}">${heroPicture(slide.product, i === 0)}</div>`)
+            .join("")}
+        </div>
       </div>
       <div class="hero__inner">
         <p class="hero__kicker" data-hero-kicker>${esc(first.kicker || "The house")}</p>
@@ -246,10 +268,11 @@ export function homeView(data) {
 function mountHero(root, slides) {
   const hero = root.querySelector("[data-hero]");
   if (!hero || slides.length === 0) return;
+  const track = hero.querySelector("[data-hero-track]");
+  const count = slides.length;
   const els = {
     kicker: hero.querySelector("[data-hero-kicker]"),
     title: hero.querySelector("[data-hero-title]"),
-    art: hero.querySelector("[data-hero-art]"),
     name: hero.querySelector("[data-hero-name]"),
     sub: hero.querySelector("[data-hero-sub]"),
     priceEl: hero.querySelector("[data-hero-price]"),
@@ -257,112 +280,122 @@ function mountHero(root, slides) {
     cta: hero.querySelector("[data-hero-cta]"),
     dots: [...hero.querySelectorAll("[data-hero-dot]")],
   };
-  let index = 0;
-  let timer;
-  let animating = false;
-
   const data = window.__CE_DATA__;
   const fmt = (v) => (data ? selectors.price(data, v) : v);
 
-  function show(next) {
-    if (animating || next === index) return;
-    const slide = slides[next];
+  let index = 0;
+  let timer = null;
+  let dragging = false;
+  let startX = 0;
+  let dx = 0;
+  let metaTimer = null;
+
+  function place(offset = 0, animate = true) {
+    if (!track) return;
+    track.classList.toggle("is-dragging", !animate);
+    track.style.transform = `translate3d(calc(${-index * 100}% + ${offset}px), 0, 0)`;
+  }
+
+  function paintMeta(i) {
+    const slide = slides[i];
     if (!slide) return;
-    animating = true;
-    index = next;
+    els.kicker.textContent = slide.kicker || "The house";
+    els.title.textContent = slide.title || slide.name;
+    els.name.textContent = slide.name;
+    els.sub.textContent = slide.subtitle || "";
+    els.priceEl.textContent = fmt(slide.product.price);
+    els.copy.textContent = slide.copy || slide.product.description;
+    els.cta.setAttribute("href", `#/product/${slide.product.slug}`);
+  }
+
+  /* The window moves the way the thumb moved: the strip follows the pointer, and
+     on release it glides to whichever plate is nearer. */
+  function go(next, animate = true) {
+    index = ((next % count) + count) % count;
+    place(0, animate);
     els.dots.forEach((d, i) => {
-      d.classList.toggle("is-active", i === next);
-      d.setAttribute("aria-selected", String(i === next));
+      d.classList.toggle("is-active", i === index);
+      d.setAttribute("aria-selected", String(i === index));
     });
-
-    const node = hero;
-    node.classList.add("is-changing");
-
-    const apply = () => {
-      els.kicker.textContent = slide.kicker || "The house";
-      els.title.textContent = slide.title || slide.name;
-      els.name.textContent = slide.name;
-      els.sub.textContent = slide.subtitle || "";
-      els.priceEl.textContent = fmt(slide.product.price);
-      els.copy.textContent = slide.copy || slide.product.description;
-      els.cta.setAttribute("href", `#/product/${slide.product.slug}`);
-      requestAnimationFrame(() => node.classList.remove("is-changing"));
-      animating = false;
-    };
-
-    const plate = heroScene(slide.product);
-    if (plate && els.art) {
-      // Decode the next plate before showing it, so the swap never flashes.
-      let settled = false;
-      const swap = () => {
-        if (settled) return;
-        settled = true;
-        els.art.src = plate;
-        setTimeout(apply, 190);
-      };
-      const pre = new Image();
-      pre.onload = pre.onerror = swap;
-      pre.src = plate;
-      setTimeout(swap, 1500);
-    } else {
-      setTimeout(apply, 190);
-    }
+    clearTimeout(metaTimer);
+    metaTimer = setTimeout(() => paintMeta(index), animate ? 170 : 0);
   }
 
   function start() {
     stop();
-    if (slides.length < 2) return;
-    timer = setInterval(() => show((index + 1) % slides.length), 7000);
+    if (count < 2) return;
+    timer = setInterval(() => go(index + 1), 7000);
   }
   function stop() {
     clearInterval(timer);
+    timer = null;
   }
 
+  const threshold = () => Math.min(140, Math.max(46, hero.clientWidth * 0.16));
+
+  function begin(e) {
+    if (e.button !== undefined && e.button !== 0) return;
+    if (e.target.closest("a, button")) return;
+    dragging = true;
+    startX = e.clientX;
+    dx = 0;
+    stop();
+    hero.classList.add("is-dragging");
+    hero.setPointerCapture?.(e.pointerId);
+  }
+  function move(e) {
+    if (!dragging) return;
+    dx = e.clientX - startX;
+    if (Math.abs(dx) > 4) place(dx, false);
+  }
+  function finish() {
+    if (!dragging) return;
+    dragging = false;
+    hero.classList.remove("is-dragging");
+    const limit = threshold();
+    if (dx <= -limit) go(index + 1);
+    else if (dx >= limit) go(index - 1);
+    else go(index);
+    dx = 0;
+    start();
+  }
+
+  hero.addEventListener("pointerdown", begin);
+  hero.addEventListener("pointermove", move);
+  hero.addEventListener("pointerup", finish);
+  hero.addEventListener("pointercancel", finish);
+  hero.addEventListener("pointerleave", () => dragging && finish());
+
+  /* keyboard and the arrow buttons drive the same strip */
+  hero.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight") go(index + 1);
+    if (e.key === "ArrowLeft") go(index - 1);
+  });
   els.dots.forEach((dot, i) =>
     dot.addEventListener("click", () => {
-      show(i);
+      go(i);
       start();
     })
   );
   hero.querySelector("[data-hero-next]")?.addEventListener("click", () => {
-    show((index + 1) % slides.length);
+    go(index + 1);
     start();
   });
   hero.querySelector("[data-hero-prev]")?.addEventListener("click", () => {
-    show((index - 1 + slides.length) % slides.length);
+    go(index - 1);
     start();
   });
-
-  // swipe
-  let startX = 0;
-  let startY = 0;
-  hero.addEventListener(
-    "touchstart",
-    (e) => {
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      stop();
-    },
-    { passive: true }
-  );
-  hero.addEventListener(
-    "touchend",
-    (e) => {
-      const dx = e.changedTouches[0].clientX - startX;
-      const dy = e.changedTouches[0].clientY - startY;
-      if (Math.abs(dx) > 46 && Math.abs(dx) > Math.abs(dy) * 1.4) {
-        show(dx < 0 ? (index + 1) % slides.length : (index - 1 + slides.length) % slides.length);
-      }
-      start();
-    },
-    { passive: true }
-  );
 
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) stop();
     else start();
   });
 
+  place(0, false);
+  els.dots.forEach((d, i) => {
+    d.classList.toggle("is-active", i === 0);
+    d.setAttribute("aria-selected", String(i === 0));
+  });
   start();
 }
 

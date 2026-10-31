@@ -4,25 +4,21 @@
   "settings": {
     "brand": "Cocktail Embassy",
     "tagline": "Hand-blown glassware for the modern bar.",
-    "announcement": "Trade catalogue · 52 pieces in 17 collections · AED per piece · Worldwide delivery from Dubai",
+    "announcement": "Trade catalogue · 52 pieces · prices in AED · worldwide delivery",
     "ticker": [
-      "Hand-blown crystal · China",
-      "52 pieces · 17 collections",
-      "Trade prices in AED",
-      "Bars · hotels · studios",
-      "Dubai · HoReCa supply",
       "Worldwide delivery from Dubai",
+      "52 pieces · six categories",
+      "Trade prices in AED",
+      "bartending.solution.uae@gmail.com",
+      "+971 56 238 8262",
+      "Telegram @arttalalay",
       "Dispatch in 2–4 days",
       "Breakage replaced free"
     ],
     "marquee": [
-      "Hand-blown *crystal*",
-      "52 pieces · 17 collections",
-      "Bars, hotels & *studios*",
-      "Trade prices in *AED*",
-      "Dubai",
-      "Worldwide *delivery*",
-      "Breakage replaced *free*"
+      "Worldwide delivery",
+      "The toughest glassware, ready for hard service",
+      "Acids, enzymes and top-grade inventory"
     ],
     "currency": "AED",
     "locale": "en-AE",

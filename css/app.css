@@ -3330,3 +3330,174 @@ body.is-booting .ticker {
   -webkit-backdrop-filter: saturate(150%) blur(14px);
   backdrop-filter: saturate(150%) blur(14px);
 }
+
+/* ==========================================================================
+   Pass 2026-11-01 — white frames, convex glass, faster running line
+   ========================================================================== */
+
+/* One framed plate everywhere a picture is the subject: a white hairline and a
+   rounded corner, so the photograph reads as a print on the black room instead
+   of a hole in the page. The plate itself is untouched — the frame sits outside
+   it and the black inside the frame is the same black as the room. */
+.card__media,
+.tile__media,
+.split__media,
+.pdp__figure,
+.line-item__media,
+.pdp__thumb {
+  border: 1px solid rgba(255, 255, 255, 0.86);
+  border-radius: 16px;
+  overflow: hidden;
+  background: #000;
+}
+.card__media,
+.tile__media,
+.split__media {
+  margin: 8px;
+}
+.card__media img,
+.tile__media img,
+.split__media img,
+.pdp__figure img,
+.line-item__media img {
+  border-radius: 0;
+}
+.pdp__figure {
+  padding: 0;
+}
+.pdp__thumb {
+  border-radius: 12px;
+  margin: 0;
+  border-color: rgba(255, 255, 255, 0.55);
+}
+.pdp__thumb.is-active,
+.pdp__thumb:hover {
+  border-color: #fff;
+}
+/* the frame is the only thing between the plate and the room: no grey behind it */
+.tile::after,
+.line-item__media::after {
+  display: none;
+}
+.tile::after {
+  content: none;
+}
+.line-item__media {
+  background: #000;
+}
+
+/* Windows are glass with a slight convexity: the highlight sits on the upper
+   inside edge and a thin shaded lip runs along the bottom, so the pane curves
+   away from the eye — still fully transparent, nothing painted over the photo. */
+.card,
+.tile,
+.summary,
+.info-card,
+.line-item,
+.searchbar,
+.chip,
+.qty {
+  background-image: linear-gradient(
+    168deg,
+    rgba(255, 255, 255, 0.10) 0%,
+    rgba(255, 255, 255, 0.035) 26%,
+    rgba(255, 255, 255, 0.012) 58%,
+    rgba(255, 255, 255, 0.045) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.26),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 18px 34px -22px rgba(255, 255, 255, 0.18),
+    var(--glass-drop);
+}
+.card,
+.tile {
+  border-radius: 20px;
+}
+.card:hover,
+.tile:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.10),
+    inset 0 18px 34px -20px rgba(255, 255, 255, 0.22),
+    0 22px 44px -26px rgba(0, 0, 0, 0.9);
+}
+
+/* The big running line: uppercase, one lap every 26 s, so it reads as a band of
+   news rather than a slow crawl. Smaller type on small screens. */
+.kinetic__row {
+  text-transform: uppercase;
+  /* a little quicker than the original lap, still readable in passing */
+  animation-duration: 34s;
+  font-size: clamp(26px, 5.8vw, 78px);
+  letter-spacing: -0.02em;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.42);
+}
+.kinetic__row em {
+  letter-spacing: -0.02em;
+}
+@media (prefers-reduced-motion: reduce) {
+  .kinetic__row {
+    animation: none;
+  }
+}
+
+/* The opening strip: one plate per window, laid side by side, moved by thumb.
+   Every plate carries the same black room as the page, so the strip can run
+   edge to edge — on a phone, on an iPad, on a desktop — with no frame and no
+   letterbox. */
+.hero__art {
+  overflow: hidden;
+}
+.hero__art img {
+  padding: 0;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+.hero__art picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.hero__track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.58s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+  touch-action: pan-y;
+  cursor: grab;
+}
+.hero.is-dragging .hero__track {
+  cursor: grabbing;
+}
+.hero__track.is-dragging {
+  transition: none;
+}
+.hero__slide {
+  position: relative;
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+.hero__slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+@media (min-width: 900px) {
+  /* the wide plate owns the full width of the screen, the way a stage shot should */
+  .hero__art {
+    inset: 0;
+  }
+  .hero__slide img {
+    object-position: 50% 46%;
+  }
+}
+.hero__slide picture.is-plain img {
+  object-fit: contain;
+  padding: clamp(24px, 8vw, 90px);
+}

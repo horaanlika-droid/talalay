@@ -44,46 +44,60 @@ W = 420
 FINDINGS = [
     "## Что найдено",
     "",
-    "### 1. Фон — чистый",
+    "### 1. Фон — глубокий чёрный, без серого",
     "",
-    "Все 34 карточки и 8 hero-кадров стоят на мастер-фоне `#000000`. За бокалами нет",
-    "серого облака: мягкий свет за предметом снят, остались только кромки, гравировка и",
-    "собственное свечение стекла. Проверка — `python3 tools/master_stage.py --check`",
-    "(углы кадра 0,0,0 на каждой пластине).",
+    "Мягкое серое облако за предметом снято на всех кадрах: оно низкочастотное,",
+    "измеряется сильным блюром и вычитается, остаток дымки срезается. Углы каждой",
+    "пластины — `0,0,0`, проверка: `python3 tools/master_stage.py --check`.",
     "",
-    "### 2. Форма — где фото и прайс расходятся",
+    "### 2. Глоу",
     "",
-    "Референс прайса главнее. По парам (`docs/audit-glass-pairs.png`) видно:",
+    "Вокруг стекла добавлено контролируемое серебряное свечение. Оно собрано только",
+    "из света, который уже есть в кадре (кромки, ножка, гравировка), поэтому повторяет",
+    "реальный силуэт; чёрный остаётся чёрным, гаснет к краю кадра и не превращается",
+    "в облако. Параметры — `GLOW_STRENGTH` / `GLOW_RADIUS` в `tools/master_stage.py`.",
     "",
-    "* `retro-asia-rocks-glass` — фото на 17 % выше референса при той же ширине;",
-    "* `cylinder-hurricane` — фото высокий узкий цилиндр, референс приземистее и шире;",
-    "* `etched-highball` — фото уже референса;",
-    "* `stemmed-tumbler` (ref `footed`) — у фото чаша уже, ножка длиннее;",
-    "* `saucer-coupe` — силуэт сходится, но стекло темнее: свет на пластине ниже,",
-    "  чем у остальных чёрных мастеров.",
+    "### 3. Форма — сверка с прайсом",
     "",
-    "Совпадают: `levitating-martini`, `champagne-saucer` (+4 %), `embassy-goblet`,",
-    "`basalt-rocks`, `slope-tumbler`, `column-tumbler`, `retro-asia-shot` (+7 %),",
-    "`bullet-*`, `flowers-*`, `shorties-*`, `teapot`, `two-sips`.",
+    "Пара на `docs/audit-glass-pairs.png` нормирована: обе стороны обрезаны по предмету",
+    "и приведены к одной высоте, поэтому сравнение идёт по силуэту и толщине, а не по",
+    "кадрированию. Совпадают (24 позиции): `levitating-martini`, `embassy-goblet`,",
+    "`column-tumbler`, `levitating-rocks-glass`, `levitating-highball-glass`,",
+    "`retro-asia-shot-glass`, `retro-asia-engraved-*`, `bullet-highball-glass`,",
+    "`flowers-*`, `shorties-*`, `teapot-teapot`, `two-sips-cocktail-glass`,",
+    "`replicate-rocks-glass`, `bullet-rocks-glass`.",
     "",
-    "Геометрию нельзя ни перерисовать, ни растянуть — это прямое требование. Поэтому",
-    "расхождения выше чинятся только одним способом: у этих четырёх позиций нужен",
-    "мастер с того же изделия, что в прайсе. Скажи — и я возьму пластину прямо из",
-    "нарезки прайса (`brand-source/navy-refs/`) и прогоню её через мастер-фон: форма",
-    "будет ровно прайсовой, без единого нового пикселя геометрии.",
+    "### 4. Где фото расходится с прайсом — 10 позиций",
     "",
-    "### 3. Толщина стекла и дно",
+    "| Позиция | Что видно в паре |",
+    "| --- | --- |",
+    "| `stemmed-tumbler` | фото уже и выше референса `footed`: чаша узкая, ножка длинная |",
+    "| `saucer-coupe` | фото глубже и уже; референс — широкая неглубокая чаша |",
+    "| `champagne-saucer` | фото глубже референса, у прайса блюдце плоское и шире |",
+    "| `etched-highball` | фото заметно уже референса при той же высоте |",
+    "| `cylinder-hurricane` | фото высокий узкий цилиндр, референс приземистее и шире |",
+    "| `retro-asia-rocks-glass` | фото примерно на 17 % выше референса |",
+    "| `basalt-rocks` | фото круглее и шире, у прайса стенка прямее |",
+    "| `slope-tumbler` | у фото сильнее расход кверху, у референса стенка ровнее |",
+    "| `bullet-chalet-glass` | у фото чаша шире и глубже, у прайса уже и выше |",
+    "| `coupethini-coupethini` | у фото чаша уже, ножка длиннее |",
     "",
-    "Стенка на всех кадрах тонкая и прозрачная, как в референсе; синий прежде давал",
-    "не толщину, а цвет. Дно: у `flowers-rocks`, `coupethini`, `shorties-mini-martini`",
-    "на рендере была светящаяся плита под дном — её больше нет, посадка на линию",
-    "контакта, дно читается тонким.",
+    "Геометрию нельзя ни растянуть, ни перерисовать — это прямое требование. Эти десять",
+    "чинятся только мастером с того же изделия, что в прайсе: нарезка прайса есть в",
+    "`brand-source/navy-refs/`, но она мелкая (≈300 px по предмету), поэтому в мастер",
+    "2400×3000 она не годится без апскейла. Нужен кадр с изделия.",
     "",
-    "### 4. Про измерение",
+    "### 5. Толщина стекла и дно",
     "",
-    "Стекло прозрачное, автоматическая маска силуэта на нём срывается, поэтому h/w",
-    "печатается только там, где два независимых метода дали одно и то же; иначе «—».",
-    "Число — поддержка для глаз, приговор ставится по паре фото/референс.",
+    "Стенка тонкая и прозрачная на всех кадрах, у референсов такая же; двойная линия",
+    "кромки на фото и на прайсе совпадает по порядку величины. Дна-плиты нет ни на",
+    "одной пластине: посадка на линию контакта, дно тонкое.",
+    "",
+    "### 6. Как читать цифры",
+    "",
+    "Стекло прозрачное, одна автоматическая маска врёт всегда, поэтому h/w печатается",
+    "только там, где два независимых метода (band и edge) сошлись; иначе «—».",
+    "Приговор ставится по паре, а цифра — поддержка.",
 ]
 
 
@@ -189,6 +203,30 @@ def backdrop(path: Path) -> tuple[str, float]:
     lead = float(np.mean(b - (r + g) / 2))
     share = float(np.mean((b - r > 16) & (b - g > 8)) * 100)
     return ("black", lead) if lead < 4 and share < 6 else (f"blue {share:.0f}%", lead)
+
+
+def _trim_ref(img: Image.Image) -> Image.Image:
+    """A reference sheet is a crop pasted on a canvas — the flat border is not the piece."""
+    g = np.asarray(img.convert("L")).astype(np.float32)
+    cs, rs = g.std(0), g.std(1)
+    xs, ys = np.where(cs > 3)[0], np.where(rs > 3)[0]
+    if not len(xs) or not len(ys):
+        return img
+    return img.crop((int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1))
+
+
+def _trim_piece(img: Image.Image) -> Image.Image:
+    """Crop a plate to the light it carries: the piece and its contact shadow."""
+    a = np.asarray(img.convert("L")).astype(np.float32)
+    m = a > 6
+    xs, ys = np.where(m.any(axis=0))[0], np.where(m.any(axis=1))[0]
+    if not len(xs) or not len(ys):
+        return img
+    pad = int(0.04 * img.width)
+    return img.crop(
+        (max(0, int(xs.min()) - pad), max(0, int(ys.min()) - pad),
+         min(img.width, int(xs.max()) + pad), min(img.height, int(ys.max()) + pad))
+    )
 
 
 def _hw(entry: dict, kind: str) -> float | None:
@@ -300,28 +338,33 @@ def main() -> None:
         print("written", out)
 
     if args.pairs:
-        tw, th, cols = 150, 300, 5
+        # Both sides are cropped to the piece and set to the same height, so the
+        # eye compares shape and wall thickness instead of framing.
+        tw, th, cols = 190, 300, 5
         rws = (len(pairs) + cols - 1) // cols
-        sheet = Image.new("RGB", (cols * tw * 2, rws * (th + 26)), (10, 10, 10))
+        sheet = Image.new("RGB", (cols * tw * 2, rws * (th + 24)), (0, 0, 0))
         draw = ImageDraw.Draw(sheet)
         for i, (slug, ref_name, photo_path, ref_path) in enumerate(pairs):
-            x, y = (i % cols) * tw * 2, (i // cols) * (th + 26)
-            for j, src in enumerate((photo_path, ref_path)):
+            x, y = (i % cols) * tw * 2, (i // cols) * (th + 24)
+            for j, (src, is_ref) in enumerate(((photo_path, False), (ref_path, True))):
                 im = Image.open(src).convert("RGB")
-                im.thumbnail((tw - 6, th - 6), Image.LANCZOS)
+                if is_ref:
+                    im = _trim_ref(im)
+                else:
+                    im = _trim_piece(im)
+                im.thumbnail((tw - 10, th - 10), Image.LANCZOS)
                 sheet.paste(im, (x + j * tw + (tw - im.width) // 2, y + (th - im.height) // 2))
                 draw.rectangle(
                     [x + j * tw, y, x + (j + 1) * tw - 1, y + th - 1],
-                    outline=(255, 90, 90) if j == 0 else (90, 220, 255),
+                    outline=(255, 92, 92) if j == 0 else (92, 214, 255),
                 )
-            draw.text((x + 4, y + th + 5), slug[:34], fill=(235, 235, 235))
-            draw.text((x + tw + 4, y + th + 5), f"ref: {ref_name[:24]}", fill=(150, 210, 255))
+            draw.text((x + 5, y + th + 5), slug[:34], fill=(235, 235, 235))
+            draw.text((x + tw + 5, y + th + 5), f"ref: {ref_name[:24]}", fill=(150, 210, 255))
         out = Path(args.pairs)
         out = out if out.is_absolute() else ROOT / out
         out.parent.mkdir(parents=True, exist_ok=True)
         sheet.save(out)
         print("pairs", out)
-
 
 if __name__ == "__main__":
     main()
