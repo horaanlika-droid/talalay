@@ -949,6 +949,33 @@ main {
   }
 }
 
+/* categories — a two-column shelf, never a sideways carousel */
+.catgrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.catgrid .tile__media {
+  aspect-ratio: 1 / 1;
+}
+.catgrid .tile__eyebrow {
+  font-size: 9.5px;
+}
+.catgrid .tile__inner {
+  padding: 11px 12px 13px;
+}
+.catgrid .tile__name {
+  font-size: 15px;
+}
+@media (min-width: 760px) {
+  .catgrid {
+    gap: 14px;
+  }
+  .catgrid .tile__media {
+    aspect-ratio: 4 / 3;
+  }
+}
+
 /* collection tile */
 .tile {
   position: relative;
@@ -3056,4 +3083,250 @@ body.is-booting .ticker {
   background: var(--surface);
   border: 1px solid var(--hairline);
   box-shadow: none;
+}
+
+/* ==========================================================================
+   Liquid glass — panels become translucent frosted windows (iOS 26 language)
+   on top of the matte black room. The room stays #000; only the windows lift,
+   so the black keeps its depth and the glass reads as a window, not a glow.
+   ========================================================================== */
+:root {
+  --glass-fill: rgba(255, 255, 255, 0.055);
+  --glass-fill-2: rgba(255, 255, 255, 0.085);
+  --glass-fill-3: rgba(255, 255, 255, 0.12);
+  --glass-edge: rgba(255, 255, 255, 0.13);
+  --glass-edge-strong: rgba(255, 255, 255, 0.22);
+  --glass-spec: inset 0 1px 0 rgba(255, 255, 255, 0.20), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --glass-drop: 0 22px 48px -26px rgba(0, 0, 0, 0.9);
+  --glass-blur: saturate(165%) blur(26px);
+  --glass-r: 18px;
+}
+
+/* one recipe, applied everywhere a surface holds content */
+.card,
+.tile,
+.summary,
+.info-card,
+.line-item,
+.searchbar,
+.chip,
+.qty,
+.field__input,
+.field__area,
+.field__select,
+.pdp__thumb {
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--glass-r);
+  box-shadow: var(--glass-spec);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+
+.card,
+.tile,
+.summary,
+.info-card {
+  box-shadow: var(--glass-spec), var(--glass-drop);
+}
+
+.card:hover,
+.tile:hover,
+.line-item:hover,
+.chip:hover {
+  background: var(--glass-fill-2);
+  border-color: var(--glass-edge-strong);
+}
+
+.chip[aria-pressed="true"] {
+  background: var(--glass-fill-3);
+  border-color: rgba(255, 255, 255, 0.34);
+  color: #fff;
+}
+
+.searchbar {
+  border-radius: var(--radius-pill);
+  padding-left: 2px;
+}
+.field__input,
+.field__area,
+.field__select {
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.045);
+}
+.field__input:focus,
+.field__area:focus,
+.field__select:focus {
+  border-color: rgba(255, 255, 255, 0.34);
+  box-shadow: var(--glass-spec), 0 0 0 4px rgba(255, 255, 255, 0.06);
+}
+
+/* the chrome floats as glass: bar, capsule tab bar, sheets, toast */
+.nav {
+  background: rgba(10, 10, 10, 0.44);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+.nav.is-solid,
+.nav[data-theme="dark"].is-solid {
+  background: rgba(10, 10, 10, 0.66);
+}
+
+.tabbar {
+  left: 12px;
+  right: 12px;
+  bottom: calc(10px + var(--safe-bottom));
+  height: var(--tabbar-h);
+  padding-bottom: 0;
+  border: 1px solid var(--glass-edge);
+  border-radius: 24px;
+  background: rgba(18, 18, 18, 0.52);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-spec), 0 20px 44px -24px rgba(0, 0, 0, 0.9);
+}
+.tabbar .tab {
+  border-radius: 0;
+}
+.tab[aria-current="page"] {
+  color: #fff;
+}
+
+.scrim {
+  background: rgba(0, 0, 0, 0.44);
+  -webkit-backdrop-filter: saturate(150%) blur(18px);
+  backdrop-filter: saturate(150%) blur(18px);
+}
+.sheet {
+  background: rgba(22, 22, 22, 0.58);
+  border: 1px solid var(--glass-edge);
+  border-bottom: 0;
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-spec), 0 -26px 70px -30px rgba(0, 0, 0, 0.95);
+}
+@media (min-width: 760px) {
+  .sheet {
+    border-bottom: 1px solid var(--glass-edge);
+    border-radius: 24px;
+  }
+}
+.sheet__grab {
+  background: rgba(255, 255, 255, 0.24);
+}
+.toast {
+  background: rgba(28, 28, 28, 0.62);
+  border: 1px solid var(--glass-edge);
+  box-shadow: var(--glass-spec), var(--glass-drop);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+
+/* the media inside a glass card keeps a clean edge to the window frame */
+.card__media,
+.tile__media {
+  border-radius: calc(var(--glass-r) - 1px) calc(var(--glass-r) - 1px) 0 0;
+  overflow: hidden;
+}
+
+/* opaque fallback — no blur support, or the reader asked for less transparency */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .card,
+  .tile,
+  .summary,
+  .info-card,
+  .line-item,
+  .searchbar,
+  .chip,
+  .qty,
+  .field__input,
+  .field__area,
+  .field__select,
+  .pdp__thumb {
+    background: #141414;
+  }
+  .nav,
+  .tabbar,
+  .sheet,
+  .toast {
+    background: #101010;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .card,
+  .tile,
+  .summary,
+  .info-card,
+  .line-item,
+  .searchbar,
+  .chip,
+  .qty,
+  .field__input,
+  .field__area,
+  .field__select,
+  .pdp__thumb {
+    background: #141414;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .nav,
+  .tabbar,
+  .sheet,
+  .toast {
+    background: #101010;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* fixed chrome that also floats as glass */
+.pdp__actions {
+  left: 12px;
+  right: 12px;
+  bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 20px);
+  padding: 10px;
+  border: 1px solid var(--glass-edge);
+  border-radius: 22px;
+  background: rgba(20, 20, 20, 0.55);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-spec), 0 20px 44px -24px rgba(0, 0, 0, 0.9);
+}
+.rail {
+  background: rgba(20, 20, 20, 0.55);
+  border-color: var(--glass-edge);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-spec), var(--glass-drop);
+}
+.ticker {
+  background: rgba(12, 12, 12, 0.5);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+.toast {
+  bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 30px);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .pdp__actions,
+  .rail {
+    background: #101010;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .ticker {
+    background: #0c0c0c;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* small controls need less blur than a panel — same glass, lighter cost */
+.chip,
+.qty,
+.pdp__thumb {
+  -webkit-backdrop-filter: saturate(150%) blur(14px);
+  backdrop-filter: saturate(150%) blur(14px);
 }

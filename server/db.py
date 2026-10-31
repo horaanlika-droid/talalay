@@ -41,6 +41,18 @@ DEFAULT_SETTINGS: dict[str, Any] = {
     "priceNote": "Prices exclude VAT & shipping",
     "requestNote": "No online payment — submit a request and our team confirms availability, shipping and final invoicing within one business day.",
     "shippingNote": "Dispatch in 2–4 business days.",
+    "freeShippingFrom": 750,
+    "shippingCost": 45,
+    "deliveryMethods": [
+        {"id": "courier", "name": "Courier · Dubai", "note": "Next business day", "fee": 45},
+        {"id": "freight", "name": "Freight · GCC & worldwide", "note": "Quoted per pallet", "fee": 0},
+        {"id": "pickup", "name": "Pickup · our warehouse", "note": "Free, by appointment", "fee": 0},
+    ],
+    "paymentMethods": [
+        {"id": "transfer", "name": "Bank transfer", "note": "Invoice on confirmation"},
+        {"id": "card", "name": "Card link", "note": "Secure link by email"},
+        {"id": "account", "name": "Trade account", "note": "Net 30 for approved accounts"},
+    ],
     "returnsNote": "Breakage in transit is replaced free of charge.",
     "about": "",
     "contacts": {
@@ -116,6 +128,12 @@ CREATE TABLE IF NOT EXISTS requests (
     email TEXT DEFAULT '',
     phone TEXT DEFAULT '',
     country TEXT DEFAULT '',
+    city TEXT DEFAULT '',
+    address TEXT DEFAULT '',
+    tax_id TEXT DEFAULT '',
+    delivery TEXT DEFAULT '',
+    payment TEXT DEFAULT '',
+    shipping REAL DEFAULT 0,
     note TEXT DEFAULT '',
     items TEXT DEFAULT '[]',
     total REAL DEFAULT 0,
@@ -133,10 +151,32 @@ CREATE TABLE IF NOT EXISTS staff (
 """
 
 
+ORDER_STATUSES = ("new", "confirmed", "packing", "shipped", "delivered", "cancelled")
+
+ORDER_COLUMNS = {
+    "city": "TEXT DEFAULT ''",
+    "address": "TEXT DEFAULT ''",
+    "tax_id": "TEXT DEFAULT ''",
+    "delivery": "TEXT DEFAULT ''",
+    "payment": "TEXT DEFAULT ''",
+    "shipping": "REAL DEFAULT 0",
+}
+
+
+def _migrate(conn: sqlite3.Connection) -> None:
+    """Add order columns to a database that was created before they existed."""
+    have = {row["name"] for row in conn.execute("PRAGMA table_info(requests)").fetchall()}
+    for column, decl in ORDER_COLUMNS.items():
+        if column not in have:
+            conn.execute(f"ALTER TABLE requests ADD COLUMN {column} {decl}")
+    conn.commit()
+
+
 def init_db(seed: bool = True) -> None:
     conn = get_conn()
     with _lock:
         conn.executescript(SCHEMA)
+        _migrate(conn)
         conn.commit()
         has_settings = conn.execute("SELECT COUNT(*) c FROM settings").fetchone()["c"]
     if seed and has_settings == 0:
@@ -504,8 +544,9 @@ def create_request(payload: dict) -> dict:
             try:
                 cur = conn.execute(
                     """INSERT INTO requests(reference, created_at, name, company, email, phone, country,
+                                            city, address, tax_id, delivery, payment, shipping,
                                             note, items, total, currency, status)
-                       VALUES(?,?,?,?,?,?,?,?,?,?,?, 'new')""",
+                       VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, 'new')""",
                     (
                         reference,
                         created,
@@ -514,6 +555,12 @@ def create_request(payload: dict) -> dict:
                         payload.get("email", ""),
                         payload.get("phone", ""),
                         payload.get("country", ""),
+                        payload.get("city", ""),
+                        payload.get("address", ""),
+                        payload.get("taxId", ""),
+                        payload.get("delivery", ""),
+                        payload.get("payment", ""),
+                        float(payload.get("shipping") or 0),
                         payload.get("note", ""),
                         _json(items),
                         float(payload.get("total") or 0),
@@ -540,6 +587,12 @@ def _request_to_dict(row: sqlite3.Row) -> dict:
         "email": row["email"],
         "phone": row["phone"],
         "country": row["country"],
+        "city": row["city"],
+        "address": row["address"],
+        "taxId": row["tax_id"],
+        "delivery": row["delivery"],
+        "payment": row["payment"],
+        "shipping": row["shipping"],
         "note": row["note"],
         "items": _loads(row["items"], []),
         "total": row["total"],
@@ -575,7 +628,7 @@ def set_request_status(request_id: int, status: str) -> None:
 def request_counts() -> dict[str, int]:
     conn = get_conn()
     rows = conn.execute("SELECT status, COUNT(*) c FROM requests GROUP BY status").fetchall()
-    counts = {"new": 0, "processing": 0, "done": 0, "cancelled": 0}
+    counts = {status: 0 for status in ORDER_STATUSES}
     for row in rows:
         counts[row["status"]] = row["c"]
     counts["total"] = sum(counts.values())

@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "updatedAt": "2026-10-31T16:00:00Z",
   "settings": {
     "brand": "Cocktail Embassy",
@@ -73,7 +73,46 @@
     },
     "shippingNote": "Dispatch from Dubai in 2–4 business days. Worldwide delivery — pallet and mixed-case orders quoted individually.",
     "returnsNote": "Breakage in transit is replaced free of charge — send photos within 48 hours of delivery.",
-    "about": "Cocktail Embassy is a HoReCa supplier based in Dubai — crystal blown by hand in China, barware and cocktail acids for bars and restaurants, delivered worldwide. Every piece is selected for balance in the hand and clarity on the bar."
+    "about": "Cocktail Embassy is a HoReCa supplier based in Dubai — crystal blown by hand in China, barware and cocktail acids for bars and restaurants, delivered worldwide. Every piece is selected for balance in the hand and clarity on the bar.",
+    "freeShippingFrom": 750,
+    "shippingCost": 45,
+    "deliveryMethods": [
+      {
+        "id": "courier",
+        "name": "Courier · Dubai",
+        "note": "Next business day",
+        "fee": 45
+      },
+      {
+        "id": "freight",
+        "name": "Freight · GCC & worldwide",
+        "note": "Quoted per pallet",
+        "fee": 0
+      },
+      {
+        "id": "pickup",
+        "name": "Pickup · our warehouse",
+        "note": "Free, by appointment",
+        "fee": 0
+      }
+    ],
+    "paymentMethods": [
+      {
+        "id": "transfer",
+        "name": "Bank transfer",
+        "note": "Invoice on confirmation"
+      },
+      {
+        "id": "card",
+        "name": "Card link",
+        "note": "Secure link by email"
+      },
+      {
+        "id": "account",
+        "name": "Trade account",
+        "note": "Net 30 for approved accounts"
+      }
+    ]
   },
   "categories": [
     {
@@ -104,13 +143,15 @@
       "slug": "acids",
       "name": "Acids & Essentials",
       "blurb": "Acids, enzymes, eco straws",
-      "sort": 5
+      "sort": 5,
+      "cover": "assets/categories/acids.webp"
     },
     {
       "slug": "essences",
       "name": "Essences",
       "blurb": "Ten flavours, dosed by the drop",
-      "sort": 6
+      "sort": 6,
+      "cover": "assets/categories/essences.webp"
     }
   ],
   "products": [
