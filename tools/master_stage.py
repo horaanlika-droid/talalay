@@ -11,9 +11,11 @@ silhouette, its engraving, its wall and its base:
     stage   the light is neutralised to silver and the backdrop is crushed to the
             master black (#000000), so the whole catalogue shares one backdrop and
             one glass tone — no blue, no teal, no per-plate cast
-    room    the pool of light that used to sit behind the piece is flattened out,
-            so the stage behind the glass is deep black and nothing else: no halo,
-            no glow, no grey cloud — only the piece and its own edges
+    room    the pool of light that used to sit behind the piece is flattened out
+            and the residual haze is clipped, so the stage is deep black
+    glow    a controlled silver halo is bloomed from the piece's own highlights
+            and screened back around it — light that reads as the glass glowing on
+            black, never as a grey cloud, and it fades to pure black at the frame
     check   corner values are printed so a stray plate is caught
 
     python3 tools/master_stage.py --check                 # report, change nothing
@@ -36,6 +38,11 @@ MASTER_BG = (0, 0, 0)          # == --bg in css/app.css; the plate and the page 
 AMBIENT_CUT = 0.90             # how much of the soft pool behind the piece is removed
 AMBIENT_SIGMA = 0.05           # blur used to find it, as a fraction of the frame width
 DETAIL_GAIN = 1.55             # rims, engraving and edges come back brighter than they left
+HAZE_FLOOR = 3.0               # residual studio haze below this is clipped to black
+GLOW_STRENGTH = 1.60           # how hard the halo blooms around the piece
+GLOW_RADIUS = 0.10             # halo reach, as a fraction of the frame width
+GLOW_FLOOR = 0.06              # only light above this share of the peak blooms
+GLOW_TINT = (232, 238, 248)    # cool silver — the stage light, never a colour
 
 
 def _border_median(a: np.ndarray) -> np.ndarray:
@@ -79,6 +86,41 @@ def flatten_ambient(a: np.ndarray, strength: float = AMBIENT_CUT, sigma: float =
     return np.clip(a * ratio, 0, 255)
 
 
+def add_glow(a: np.ndarray, strength: float = GLOW_STRENGTH, radius: float = GLOW_RADIUS) -> np.ndarray:
+    """Bloom a silver halo out of the piece itself.
+
+    The halo is made only from light already in the frame — the rims, the stem, the
+    engraved dots — so it traces the real silhouette. It is screened on top of the
+    black stage: the black stays black, only the air next to the glass picks up a
+    little light. It is computed on a small copy and scaled back, because a blur of
+    that reach on a 2400 px plate is a minute of work for the same picture.
+    """
+    lum = a.max(axis=2)
+    peak = float(lum.max())
+    if peak < 1.0:
+        return a
+
+    step = max(2, int(round(a.shape[1] / 400)))
+    small = lum[::step, ::step]
+    src = np.clip((small - GLOW_FLOOR * peak) / max(1.0, peak * (1.0 - GLOW_FLOOR)), 0, 1) ** 1.6
+    sigma = max(2.0, radius * small.shape[1])
+    halo_small = ndi.gaussian_filter(src, sigma=sigma) * strength
+
+    # the halo lives around the piece, not over it, and dies before the frame edge
+    ys, xs = np.where(small > 0.16 * peak)
+    cy, cx = (ys.mean() / small.shape[0], xs.mean() / small.shape[1]) if len(ys) else (0.5, 0.5)
+    yy, xx = np.mgrid[0 : small.shape[0], 0 : small.shape[1]]
+    halo_small *= np.exp(-(((xx / small.shape[1] - cx) / 0.46) ** 2 + ((yy / small.shape[0] - cy) / 0.46) ** 2))
+
+    halo = np.asarray(
+        Image.fromarray(np.clip(halo_small, 0, 0.85).astype(np.float32), mode="F").resize(
+            (a.shape[1], a.shape[0]), Image.BILINEAR
+        )
+    )
+    halo = halo[..., None] * np.array(GLOW_TINT, dtype=np.float32) / 255.0
+    return 255.0 - (255.0 - a) * (255.0 - halo * 255.0) / 255.0
+
+
 def to_master(a: np.ndarray) -> np.ndarray:
     """Crush the backdrop to the exact master black, keeping the falloff above it."""
     k = float(_border_median(a).max()) + 1.0
@@ -87,15 +129,33 @@ def to_master(a: np.ndarray) -> np.ndarray:
     return out
 
 
-def process(path: Path, write: bool, silver: bool = True) -> dict:
+def glow_only(a: np.ndarray) -> np.ndarray:
+    """Add the halo to a plate whose stage is already the master black."""
+    a = np.clip(a - HAZE_FLOOR, 0, 255)
+    a[a.max(axis=2) < 1.0] = 0
+    return add_glow(a)
+
+
+def process(path: Path, write: bool, silver: bool = True, glow: bool = True, glow_only_mode: bool = False) -> dict:
     img = Image.open(path).convert("RGB")
     a = np.asarray(img).astype(np.float32)
     before = _border_median(a)
+    if glow_only_mode:
+        a = glow_only(a) if glow else a
+        out = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
+        if write:
+            (out.save(path, "WEBP", quality=90, method=6) if path.suffix.lower() == ".webp"
+             else out.save(path, "PNG", optimize=True))
+        return {"path": path, "before": before, "after": _border_median(np.asarray(out).astype(np.float32)), "img": out}
     if silver:
         a = to_silver(a)
     a = neutralise(a)
     a = flatten_ambient(a)
+    a = np.clip(a - HAZE_FLOOR, 0, 255)
+    a[a.max(axis=2) < 1.0] = 0
     a = to_master(a)
+    if glow:
+        a = add_glow(a)
     out = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
     after = _border_median(np.asarray(out).astype(np.float32))
     if write:
@@ -113,6 +173,8 @@ def main() -> None:
     ap.add_argument("--sheet", default="")
     ap.add_argument("--no-silver", action="store_true", help="keep the original cast")
     ap.add_argument("--out", default="", help="copy the result here instead of rewriting in place")
+    ap.add_argument("--no-glow", action="store_true", help="flat stage, no halo")
+    ap.add_argument("--glow-only", action="store_true", help="stage is already the master black; just add the halo")
     args = ap.parse_args()
 
     pattern = args.glob or "brand-source/black/*.png"
@@ -125,11 +187,13 @@ def main() -> None:
         out_dir.mkdir(parents=True, exist_ok=True)
     rows = []
     for path in paths:
-        row = process(path, write=False, silver=not args.no_silver)
+        row = process(path, write=False, silver=not args.no_silver, glow=not args.no_glow,
+                      glow_only_mode=args.glow_only)
         if out_dir:
             row["img"].save(out_dir / (path.stem + ".png"), "PNG", optimize=True)
         elif not args.check:
-            row = process(path, write=True, silver=not args.no_silver)
+            row = process(path, write=True, silver=not args.no_silver, glow=not args.no_glow,
+                          glow_only_mode=args.glow_only)
         rows.append(row)
 
     for r in rows:

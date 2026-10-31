@@ -45,6 +45,11 @@ globalThis.location = { hash: "", pathname: "/" };
 globalThis.requestAnimationFrame = () => 0;
 
 const raw = JSON.parse(await readFile(join(root, "data/content.json"), "utf8"));
+// the app boots itself on import and asks for the catalogue: answer from disk
+globalThis.fetch = async (url) =>
+  String(url).includes("content.json")
+    ? { ok: true, json: async () => raw }
+    : { ok: false, status: 404, json: async () => ({}) };
 const api = await import(join(root, "js/api.js"));
 const views = await import(join(root, "js/views.js"));
 
@@ -71,6 +76,16 @@ for (const product of data.products) {
   ok(`product ${product.slug}`, view && view.html.includes("pdp__title"));
 }
 
+const app = await import(join(root, "js/app.js"));
+const tick = app.tickerHTML(data.settings || {});
+ok("ticker carries contacts", /@|\+971/.test(tick));
+ok("ticker drops the country line", !/china/i.test(tick));
+const heroSlides = (home.html.match(/data-hero-slide=/g) || []).length;
+ok("hero carousel = slides", heroSlides === (data.settings.hero || []).length && heroSlides > 1);
+ok("hero uses one plate per window", (home.html.match(/hero__slide/g) || []).length >= heroSlides);
+ok("hero plates are full-bleed sources", home.html.includes("hero-levitating-martini.webp"));
+const marquee = (home.html.match(/kinetic__row/g) || []).length;
+ok("big running line present", marquee === 1);
 ok("request renders", views.requestView(data).html.length > 500);
 ok("info renders", views.infoView(data).html.length > 500);
 

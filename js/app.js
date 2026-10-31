@@ -24,12 +24,11 @@ const NAV_ITEMS = [
 // Shown only until the catalogue answers, or when the owner has cleared the
 // running lines in the back office. The live copy is settings.ticker.
 const FALLBACK_TICKER = [
-  "Hand-blown crystal · China",
+  "Worldwide delivery from Dubai",
   "52 pieces · six categories",
   "Trade prices in AED",
-  "Bars · hotels · studios",
-  "Dubai · HoReCa supply",
-  "Worldwide delivery from Dubai",
+  "bartending.solution.uae@gmail.com",
+  "+971 56 238 8262",
   "Dispatch in 2–4 days",
   "Breakage replaced free",
 ];
