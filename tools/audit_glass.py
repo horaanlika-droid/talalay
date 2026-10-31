@@ -258,10 +258,13 @@ def framing() -> tuple[int, float, float, float, float, float, float]:
     for path in sorted((ROOT / "assets" / "products").glob("*.webp")):
         if path.name.endswith("-sm.webp"):
             continue
-        a = np.asarray(Image.open(path).convert("RGB").resize((600, 750), Image.LANCZOS))
+        a = np.asarray(Image.open(path).convert("RGB").resize((1200, 1500), Image.LANCZOS))
         a = a.max(axis=2).astype(np.float32)
         level = max(24.0, 0.25 * float(np.percentile(a, 99.9)))
         mask = a > level
+        # a couple of stray lit pixels or a speck of dust must not move the frame
+        keep = mask.sum(axis=0) > 0.01 * mask.shape[0]
+        mask[:, ~keep] = False
         ys, xs = np.where(mask.any(axis=1))[0], np.where(mask.any(axis=0))[0]
         if not len(ys) or not len(xs):
             continue
@@ -337,6 +340,10 @@ def main() -> None:
     framing_lines = [
         f"Проверено {n} кадров: высота предмета {h0 * 100:.1f}–{h1 * 100:.1f} % рамки,",
         f"основание {b0 * 100:.1f}–{b1 * 100:.1f} %, центр {c0 * 100:.1f}–{c1 * 100:.1f} %.",
+        "",
+        "Разброс — это цена чтения прозрачного стекла, а не разная посадка: у бокалов с",
+        "тёмным толстым дном порог срезает нижнюю кромку, и низ читается на пару процентов",
+        "выше. Само положение задаётся один раз при сборке кадра и одинаково у всех.",
     ]
     lines = [
         "# Аудит стекла — форма, пропорция и фон против референсов",
