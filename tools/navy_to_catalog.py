@@ -30,6 +30,7 @@ CONTACT_Y = 0.80                     # base line of every navy plate
 
 # product photo  →  navy master
 MAP = {
+    # core ten
     "martini": "martini",
     "saucer": "saucer",
     "footed": "footed",
@@ -40,6 +41,15 @@ MAP = {
     "rocks": "rocks",
     "tumbler": "tumbler",
     "hurricane": "hurricane",
+    # archive shapes, second pass (2026-10-31)
+    "retro-asia-cocktail-glass": "retro-asia-cocktail",
+    "retro-asia-rocks-glass": "retro-asia-rocks",
+    "retro-asia-highball-glass": "retro-asia-highball",
+    "retro-asia-shot-glass": "retro-asia-shot",
+    "retro-asia-engraved-cocktail-glass": "retro-asia-engraved-cocktail",
+    "retro-asia-engraved-rocks-glass": "retro-asia-engraved-rocks",
+    "retro-asia-engraved-highball-glass": "retro-asia-engraved-highball",
+    "bullet-rocks-glass": "bullet-rocks",
 }
 
 

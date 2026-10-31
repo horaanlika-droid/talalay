@@ -12,6 +12,13 @@ Live site: **https://horaanlika-droid.github.io/talalay/**
 
 ---
 
+## Design reference — 1697–1702 (master)
+
+`IMG_1697.png … IMG_1702.png` в корне репозитория — **главный референс по дизайну**.
+Любая визуальная работа сверяется с ними первым делом: свет, тени, отражение,
+текстура стекла, глубина нави, посадка предмета на поверхность. Подробный разбор
+и список того, чего в этом стиле не бывает, — `docs/design-reference.md`.
+
 ## The storefront
 
 Plain static files — no build step, no dependencies. Hash routing (`#/shop`, `#/product/…`)
@@ -415,8 +422,11 @@ One session = **3 glasses**. For each glass, produce **3 frames**:
 - [x] Добить упаковку: 10 эссенций, 5 банок кислот, 2 тюбинга, коробка — через `tools/pack_labels.py`.
 - [x] Нарезать `-sm` и подключить в каталог (`tools/navy_to_catalog.py`).
 - [x] Обновить `data/image-audit.json`.
-- [ ] Снять оставшиеся 14 форм каталога (Retro Asia, Bullet, Flowers, Shorties, Replika, Two Sips,
-      Teapot, Super Pony) — референс-карточки готовы в `brand-source/navy-refs/`.
+- [x] Архив, часть 1: Retro Asia (4 формы), Retro Asia Engraved (3), Bullet Rocks — снято,
+      подключено в каталог (18 кадров в сете).
+- [ ] Архив, часть 2: Bullet Chalet, Bullet Highball, Flowers (3), Coupethini,
+      Replicate Rocks, Shorties (4), Two Sips, Teapot, Super Pony, Levitating Rocks/Highball —
+      референс-карточки готовы в `brand-source/navy-refs/`.
 - [ ] Обложки для остальных 10 коллекций (`assets/archive/covers/*`).
 - [ ] Дой-пак `pack-pouch` — нужен чистый мастер под `pack_labels.py`.
 
