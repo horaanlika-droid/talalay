@@ -1,10 +1,29 @@
 {
-  "version": 4,
-  "updatedAt": "2026-10-30T12:00:00Z",
+  "version": 5,
+  "updatedAt": "2026-10-31T12:00:00Z",
   "settings": {
     "brand": "Cocktail Embassy",
     "tagline": "Hand-blown glassware for the modern bar.",
     "announcement": "Trade catalogue · 52 pieces in 17 collections · AED per piece · Worldwide delivery from Dubai",
+    "ticker": [
+      "Hand-blown crystal · China",
+      "52 pieces · 17 collections",
+      "Trade prices in AED",
+      "Bars · hotels · studios",
+      "Dubai · HoReCa supply",
+      "Worldwide delivery from Dubai",
+      "Dispatch in 2–4 days",
+      "Breakage replaced free"
+    ],
+    "marquee": [
+      "Hand-blown *crystal*",
+      "52 pieces · 17 collections",
+      "Bars, hotels & *studios*",
+      "Trade prices in *AED*",
+      "Dubai",
+      "Worldwide *delivery*",
+      "Breakage replaced *free*"
+    ],
     "currency": "AED",
     "locale": "en-AE",
     "priceNote": "Prices per piece, AED, exclude VAT & shipping",
@@ -54,7 +73,7 @@
     },
     "shippingNote": "Dispatch from Dubai in 2–4 business days. Worldwide delivery — pallet and mixed-case orders quoted individually.",
     "returnsNote": "Breakage in transit is replaced free of charge — send photos within 48 hours of delivery.",
-    "about": "Cocktail Embassy is a HoReCa supplier based in Dubai — hand-blown crystal, barware and cocktail acids for bars and restaurants, delivered worldwide. Every piece is selected for balance in the hand and clarity on the bar."
+    "about": "Cocktail Embassy is a HoReCa supplier based in Dubai — crystal blown by hand in China, barware and cocktail acids for bars and restaurants, delivered worldwide. Every piece is selected for balance in the hand and clarity on the bar."
   },
   "categories": [
     {
@@ -231,7 +250,7 @@
         "Material": "Lead-free hand-blown crystal",
         "Height": "185 mm",
         "Care": "Hand wash",
-        "Origin": "Hand-blown in Europe"
+        "Origin": "Hand-blown in China"
       },
       "badge": "Signature",
       "featured": true,
@@ -260,7 +279,8 @@
         "Material": "Hand-blown crystal",
         "Height": "110 mm",
         "Care": "Hand wash",
-        "Packing": "6 per case"
+        "Packing": "6 per case",
+        "Origin": "Hand-blown in China"
       },
       "featured": false,
       "id": "p02",
@@ -288,7 +308,8 @@
         "Material": "Hand-blown crystal",
         "Height": "120 mm",
         "Care": "Hand wash",
-        "Packing": "6 per case"
+        "Packing": "6 per case",
+        "Origin": "Hand-blown in China"
       },
       "badge": "New",
       "featured": false,
@@ -319,7 +340,8 @@
         "Craft": "Hand blowing",
         "Height": "208 mm",
         "Diameter": "70 mm",
-        "Code": "AG0020"
+        "Code": "AG0020",
+        "Origin": "Hand-blown in China"
       },
       "badge": "New",
       "featured": true,
@@ -350,7 +372,8 @@
         "Craft": "Hand blowing",
         "Height": "100 mm",
         "Diameter": "76 mm",
-        "Code": "AG0021"
+        "Code": "AG0021",
+        "Origin": "Hand-blown in China"
       },
       "featured": false,
       "id": "p05",
@@ -380,7 +403,8 @@
         "Craft": "Hand blowing",
         "Height": "180 mm",
         "Diameter": "58 mm",
-        "Code": "AG0022"
+        "Code": "AG0022",
+        "Origin": "Hand-blown in China"
       },
       "featured": false,
       "id": "p06",
@@ -408,7 +432,8 @@
         "Material": "Hand-blown crystal",
         "Height": "135 mm",
         "Care": "Hand wash",
-        "Packing": "6 per case"
+        "Packing": "6 per case",
+        "Origin": "Hand-blown in China"
       },
       "featured": true,
       "id": "p07",
@@ -436,7 +461,8 @@
         "Material": "Hand-blown crystal",
         "Height": "150 mm",
         "Care": "Hand wash",
-        "Packing": "6 per case"
+        "Packing": "6 per case",
+        "Origin": "Hand-blown in China"
       },
       "featured": false,
       "id": "p08",
@@ -464,7 +490,8 @@
         "Material": "Etched crystal",
         "Height": "155 mm",
         "Care": "Hand wash",
-        "Packing": "6 per case"
+        "Packing": "6 per case",
+        "Origin": "Hand-blown in China"
       },
       "badge": "Etched",
       "featured": false,
@@ -493,7 +520,8 @@
         "Material": "Etched crystal",
         "Height": "100 mm",
         "Care": "Hand wash",
-        "Packing": "6 per case"
+        "Packing": "6 per case",
+        "Origin": "Hand-blown in China"
       },
       "featured": false,
       "id": "p10",
@@ -521,7 +549,8 @@
         "Material": "Pressed crystal",
         "Height": "95 mm",
         "Care": "Dishwasher safe",
-        "Packing": "6 per case"
+        "Packing": "6 per case",
+        "Origin": "Hand-blown in China"
       },
       "featured": true,
       "id": "p11",
@@ -549,7 +578,8 @@
         "Material": "Pressed crystal",
         "Height": "100 mm",
         "Care": "Dishwasher safe",
-        "Packing": "6 per case"
+        "Packing": "6 per case",
+        "Origin": "Hand-blown in China"
       },
       "featured": false,
       "id": "p12",
@@ -576,7 +606,8 @@
         "Capacity": "380 ml",
         "Material": "Hand-blown crystal",
         "Height": "170 mm",
-        "Care": "Hand wash"
+        "Care": "Hand wash",
+        "Origin": "Hand-blown in China"
       },
       "featured": false,
       "id": "p13",
@@ -606,7 +637,8 @@
         "Craft": "Hand blowing",
         "Height": "115 mm",
         "Diameter": "73 mm",
-        "Code": "AG0015"
+        "Code": "AG0015",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": false,
       "id": "p14",
@@ -636,7 +668,8 @@
         "Craft": "Hand blowing",
         "Height": "80 mm",
         "Diameter": "73 mm",
-        "Code": "AG0016"
+        "Code": "AG0016",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": false,
       "id": "p15",
@@ -666,7 +699,8 @@
         "Craft": "Hand blowing",
         "Height": "110 mm",
         "Diameter": "70 mm",
-        "Code": "AG0017"
+        "Code": "AG0017",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": false,
       "id": "p16",
@@ -696,7 +730,8 @@
         "Craft": "Hand blowing",
         "Height": "73 mm",
         "Diameter": "30 mm",
-        "Code": "AG0018"
+        "Code": "AG0018",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": false,
       "id": "p17",
@@ -726,7 +761,8 @@
         "Craft": "Hand blowing",
         "Height": "115 mm",
         "Diameter": "73 mm",
-        "Code": "AG0011"
+        "Code": "AG0011",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": false,
       "id": "p18",
@@ -756,7 +792,8 @@
         "Craft": "Hand blowing",
         "Height": "80 mm",
         "Diameter": "73 mm",
-        "Code": "AG0012"
+        "Code": "AG0012",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": false,
       "id": "p19",
@@ -786,7 +823,8 @@
         "Craft": "Hand blowing",
         "Height": "110 mm",
         "Diameter": "70 mm",
-        "Code": "AG0013"
+        "Code": "AG0013",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": false,
       "id": "p20",
@@ -816,7 +854,8 @@
         "Craft": "Hand blowing",
         "Height": "145 mm",
         "Diameter": "97 mm",
-        "Code": "AG0008"
+        "Code": "AG0008",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": false,
       "id": "p21",
@@ -846,7 +885,8 @@
         "Craft": "Hand blowing",
         "Height": "75 mm",
         "Diameter": "85 mm",
-        "Code": "AG0010"
+        "Code": "AG0010",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": false,
       "id": "p22",
@@ -876,7 +916,8 @@
         "Craft": "Hand blowing",
         "Height": "133 mm",
         "Diameter": "74 mm",
-        "Code": "AG0009"
+        "Code": "AG0009",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": false,
       "id": "p23",
@@ -906,7 +947,8 @@
         "Craft": "Hand blowing",
         "Height": "190 mm",
         "Diameter": "85 mm",
-        "Code": "AG0002"
+        "Code": "AG0002",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": false,
       "id": "p24",
@@ -936,7 +978,8 @@
         "Craft": "Hand blowing",
         "Height": "85 mm",
         "Diameter": "95 mm",
-        "Code": "AG0003"
+        "Code": "AG0003",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": false,
       "id": "p25",
@@ -966,7 +1009,8 @@
         "Craft": "Hand blowing",
         "Height": "110 mm",
         "Diameter": "85 mm",
-        "Code": "AG0001"
+        "Code": "AG0001",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": false,
       "id": "p26",
@@ -996,7 +1040,8 @@
         "Craft": "Hand blowing",
         "Height": "170 mm",
         "Diameter": "80 mm",
-        "Code": "AG0006"
+        "Code": "AG0006",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": false,
       "id": "p27",
@@ -1026,7 +1071,8 @@
         "Craft": "Hand blowing",
         "Height": "80 mm",
         "Diameter": "75 mm",
-        "Code": "AG0004"
+        "Code": "AG0004",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": false,
       "id": "p28",
@@ -1054,7 +1100,8 @@
         "Capacity": "150 ml",
         "Material": "Lead-free crystal",
         "Craft": "Hand blowing",
-        "Code": "AG0023"
+        "Code": "AG0023",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": false,
       "id": "p29",
@@ -1082,7 +1129,8 @@
         "Capacity": "150 ml",
         "Material": "Lead-free crystal",
         "Craft": "Hand blowing",
-        "Code": "AG0024"
+        "Code": "AG0024",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": false,
       "id": "p30",
@@ -1110,7 +1158,8 @@
         "Capacity": "160 ml",
         "Material": "Lead-free crystal",
         "Craft": "Hand blowing",
-        "Code": "AG0026"
+        "Code": "AG0026",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": false,
       "id": "p31",
@@ -1138,7 +1187,8 @@
         "Capacity": "200 ml",
         "Material": "Lead-free crystal",
         "Craft": "Hand blowing",
-        "Code": "AG0025"
+        "Code": "AG0025",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": false,
       "id": "p32",
@@ -1165,7 +1215,8 @@
       "specs": {
         "Capacity": "500 ml",
         "Material": "Crystal and wood, magnetic system",
-        "Code": "AG0027"
+        "Code": "AG0027",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": true,
       "id": "p33",
@@ -1195,7 +1246,8 @@
         "Craft": "Hand blowing",
         "Height": "150 mm",
         "Diameter": "90 mm",
-        "Code": "AG0019"
+        "Code": "AG0019",
+        "Origin": "Hand-blown in China"
       },
       "comingSoon": true,
       "id": "p34",
@@ -1223,7 +1275,8 @@
         "Length": "210 mm",
         "Diameter": "5 mm",
         "Material": "Sugar cane",
-        "Code": "ST0003"
+        "Code": "ST0003",
+        "Origin": "Hand-blown in China"
       },
       "id": "p35",
       "sort": 35,
@@ -1251,7 +1304,8 @@
         "Length": "210 mm",
         "Diameter": "5 mm",
         "Material": "Coffee",
-        "Code": "ST0002"
+        "Code": "ST0002",
+        "Origin": "Hand-blown in China"
       },
       "id": "p36",
       "sort": 36,

@@ -14,6 +14,13 @@ Live site: **https://horaanlika-droid.github.io/talalay/**
 
 ## Design reference — 1697–1702 (master)
 
+> **31 Oct 2026 — stage is now DEEP MATTE BLACK.** Lighting law unchanged; the navy
+> backdrop is retired. Plates are **never re-rendered**: each accepted master in
+> `brand-source/` goes through an edit that swaps only the backdrop to true black
+> `#000000` (≤ `#0e0e0e` haze) and neutralises the blue cast. Shape, engraving, wall
+> and base thickness stay 100 % those of the price list — checked by edge
+> correlation (≥ 0.98). Results land in `brand-source/black/`.
+
 `IMG_1697.png … IMG_1702.png` в корне репозитория — **главный референс по дизайну**.
 Любая визуальная работа сверяется с ними первым делом: свет, тени, отражение,
 текстура стекла, глубина нави, посадка предмета на поверхность. Подробный разбор
@@ -73,8 +80,15 @@ Everything the storefront shows is editable from the bot — no code, no redeplo
 
 * **Products** — name, subtitle, description, price, volume, badge, category,
   collections, featured flag, in-stock flag, photos (send a photo to upload).
-* **Collections** — the four tiles on the home page, each with a cover photo.
+* **Collections** — the tiles on the home page and the collection pages: name,
+  subtitle, description, cover photo (upload or clear), the order the tiles appear
+  in, and which pieces belong to each collection (tap a piece to add or remove it).
 * **Categories** — filters in the shop (`Glassware`, `Acids & Other`).
+* **Running lines** — the two strips that carry live copy across the top of every
+  page (`ticker`) and under the hero on the home page (`marquee`). Add, edit, delete,
+  reorder or paste a whole list at a time; `♻️ House copy` puts the built-in lines
+  back. On the marquee, `*word*` prints in italic. Both fall back to the bundled
+  copy if a list is emptied.
 * **Site & content** — brand, tagline, announcement bar, about paragraph, price note,
   request note, shipping and returns copy, currency, locale, all contact details,
   and the hero slides (which piece, headline, kicker, copy).
@@ -427,8 +441,38 @@ One session = **3 glasses**. For each glass, produce **3 frames**:
 - [ ] Архив, часть 2: Bullet Chalet, Bullet Highball, Flowers (3), Coupethini,
       Replicate Rocks, Shorties (4), Two Sips, Teapot, Super Pony, Levitating Rocks/Highball —
       референс-карточки готовы в `brand-source/navy-refs/`.
-- [ ] Обложки для остальных 10 коллекций (`assets/archive/covers/*`).
 - [ ] Дой-пак `pack-pouch` — нужен чистый мастер под `pack_labels.py`.
+
+### Смена курса (31.10.2026): чёрный матовый фон + механика магазина
+
+Владелец изменил задание. Коллекции со витрины убираем, механику берём из
+соседнего репозитория **`horaanlika-droid/posudnayalavka`** (Telegram Mini App магазин),
+но в нашем стиле.
+
+**Фото.** Фон — глубокий матовый чёрный (не синий). Форма, гравировка, толщина
+стенки и дна — **100 % с наших бокалов** из прайса и `brand-source/`. Поэтому кадры не
+переснимаются, а перекладываются: наш принятый мастер → image-edit, меняется только фон
+и убирается синий оттенок в стекле. Проверка — корреляция краёв ≥ 0.98.
+Пайплайн и его обоснование — `docs/design-reference.md`, выход — `brand-source/black/`.
+
+- [x] `martini`, `retro-asia-engraved-{cocktail,rocks,highball}` — переложены на чёрный.
+- [ ] Остальные 14 принятых мастеров (`saucer`, `coupe`, `footed`, `goblet`, `highball`,
+      `cylinder`, `rocks`, `tumbler`, `hurricane`, `retro-asia-{cocktail,rocks,highball,shot}`,
+      `bullet-rocks`) — по 10 кадров за ход, лимит генераций.
+- [ ] Архив, часть 2 — снимать в прежнем свете, затем тоже переложить на чёрный.
+- [ ] Обложки коллекций и упаковка — тот же чёрный фон, когда витрина переедет.
+
+**Магазин (в духе `posudnayalavka`, но наш бренд, английский, AED).**
+
+- [ ] Убрать коллекции из витрины, схемы данных и бота; навигация — 7 категорий
+      (хайболы, rocks, коктейльные, винные, графины, чайная, наборы) по нашим позициям.
+- [ ] Карточка: артикул, объём, характеристики, «похожие», метки hit/new.
+- [ ] Каталог: поиск, сортировка (цена/объём/название), фильтры (новинки, в наличии, цена).
+- [ ] Корзина, оформление заказа, статусы (new → paid → packing → shipped → delivered),
+      кабинет, избранное, чат поддержки.
+- [ ] Бот-админка: заказы, поддержка, каталог, категории, магазин и контакты, статистика,
+      рассылка.
+- [ ] Онлайн-оплата (ЮKassa) — отдельным шагом, если понадобится.
 
 ---
 

@@ -74,6 +74,10 @@ class UploadPhoto(StatesGroup):
     photo = State()
 
 
+class LinesInput(StatesGroup):
+    bulk = State()
+
+
 class Search(StatesGroup):
     query = State()
 
@@ -653,9 +657,8 @@ async def cb_collections(call: CallbackQuery) -> None:
     await call.answer()
 
 
-@router.callback_query(F.data.startswith("coll:view:"))
-async def cb_collection_view(call: CallbackQuery) -> None:
-    slug = call.data.split(":", 2)[2]
+async def show_collection(call: CallbackQuery, slug: str) -> None:
+    """One collection screen — reached from the list, a reorder or a cover change."""
     c = next((x for x in db.list_collections() if x["slug"] == slug), None)
     if not c:
         await call.answer("Not found", show_alert=True)
@@ -668,12 +671,19 @@ async def cb_collection_view(call: CallbackQuery) -> None:
             [
                 [("✏️ Name", f"coll:edit:{slug}:name"), ("📝 Subtitle", f"coll:edit:{slug}:subtitle")],
                 [("📄 Description", f"coll:edit:{slug}:description")],
-                [("🖼 Cover photo", f"coll:img:{slug}")],
+                [("🖼 Cover photo", f"coll:img:{slug}"), ("🚫 No cover", f"coll:cover:clear:{slug}")],
+                [("📦 Pieces in it", f"coll:pick:{slug}")],
+                [("⬆️ Up", f"coll:sort:{slug}:up"), ("⬇️ Down", f"coll:sort:{slug}:down")],
                 [("🗑 Delete", f"coll:del:{slug}"), ("⬅️ Collections", "coll:list")],
             ]
         ),
     )
     await call.answer()
+
+
+@router.callback_query(F.data.startswith("coll:view:"))
+async def cb_collection_view(call: CallbackQuery) -> None:
+    await show_collection(call, call.data.split(":", 2)[2])
 
 
 @router.callback_query(F.data.startswith("coll:edit:"))
@@ -692,6 +702,93 @@ async def cb_collection_image(call: CallbackQuery, state: FSMContext) -> None:
     await state.update_data(kind="collection", slug=slug)
     await call.message.answer("🖼 Send the cover photo for this collection.")
     await call.answer()
+
+
+@router.callback_query(F.data.startswith("coll:cover:clear:"))
+async def cb_collection_cover_clear(call: CallbackQuery) -> None:
+    slug = call.data.split(":", 3)[3]
+    collection = next((c for c in db.list_collections() if c["slug"] == slug), None)
+    if collection:
+        db.upsert_collection(
+            slug=slug,
+            name=collection["name"],
+            subtitle=collection["subtitle"],
+            description=collection["description"],
+            image="",
+            sort=collection["sort"],
+        )
+    await call.answer("Cover cleared")
+    await show_collection(call, slug)
+
+
+@router.callback_query(F.data.startswith("coll:sort:"))
+async def cb_collection_sort(call: CallbackQuery) -> None:
+    _, _, slug, direction = call.data.split(":")
+    items = db.list_collections()
+    index = next((i for i, c in enumerate(items) if c["slug"] == slug), None)
+    if index is None:
+        await call.answer("Not found", show_alert=True)
+        return
+    swap = index - 1 if direction == "up" else index + 1
+    if 0 <= swap < len(items):
+        items[index], items[swap] = items[swap], items[index]
+        for position, item in enumerate(items, start=1):
+            db.upsert_collection(
+                slug=item["slug"],
+                name=item["name"],
+                subtitle=item["subtitle"],
+                description=item["description"],
+                image=item["image"],
+                sort=position,
+            )
+        await call.answer("Moved")
+    else:
+        await call.answer("Already at the edge")
+    await show_collection(call, slug)
+
+
+@router.callback_query(F.data.startswith("coll:pick:"))
+async def cb_collection_pick(call: CallbackQuery) -> None:
+    slug = call.data.split(":", 2)[2]
+    collection = next((c for c in db.list_collections() if c["slug"] == slug), None)
+    if not collection:
+        await call.answer("Not found", show_alert=True)
+        return
+    rows: list[list[tuple[str, str]]] = []
+    current = 0
+    for product in db.list_products():
+        inside = slug in product["collectionSlugs"]
+        current += 1 if inside else 0
+        rows.append(
+            [
+                (
+                    f"{'✅' if inside else '▫️'} {clip(product['name'], 30)}",
+                    f"coll:tog:{slug}:{product['slug']}",
+                )
+            ]
+        )
+    rows.append([("⬅️ Back", f"coll:view:{slug}")])
+    await safe_edit(
+        call.message,
+        f"📦 {collection['name']}\n\n"
+        f"Pieces in this collection: {current}. Tap a piece to add or remove it — "
+        "the change shows on the site straight away.",
+        kb(rows),
+    )
+    await call.answer()
+
+
+@router.callback_query(F.data.startswith("coll:tog:"))
+async def cb_collection_toggle(call: CallbackQuery) -> None:
+    _, _, slug, product_slug = call.data.split(":")
+    product = db.get_product(product_slug)
+    if product:
+        current = [c for c in product["collectionSlugs"] if c != slug]
+        if slug not in product["collectionSlugs"]:
+            current.append(slug)
+        db.set_product_collections(product_slug, current)
+        await call.answer("Added" if slug in current else "Removed")
+    await cb_collection_pick(call)
 
 
 @router.callback_query(F.data.startswith("coll:del:"))
@@ -738,6 +835,7 @@ CONTACT_FIELDS = [
 def settings_kb() -> InlineKeyboardMarkup:
     rows = [[(label, f"set:edit:{key}")] for key, label, _ in SETTING_FIELDS]
     rows.insert(0, [("📇  Contacts", "set:contacts"), ("🖼  Hero slides", "set:hero")])
+    rows.insert(0, [("📣  Running lines", "set:lines")])
     rows.append([("👥  Staff access", "set:staff")])
     rows.append([("⬅️  Menu", "menu")])
     return kb(rows)
@@ -753,6 +851,7 @@ async def cb_settings(call: CallbackQuery) -> None:
         f"Announcement: {clip(s['announcement'], 60) or '—'}\n"
         f"Currency: {s['currency']}   ·   Locale: {s['locale']}\n"
         f"Hero slides: {len(s.get('hero') or [])}\n"
+        f"Running lines: {len(s.get('ticker') or [])} ticker · {len(s.get('marquee') or [])} marquee\n"
         f"Email: {s.get('contacts', {}).get('email') or '—'}\n\n"
         "Tap a field to change it."
     )
@@ -950,6 +1049,194 @@ async def cb_hero_delete(call: CallbackQuery) -> None:
         slides.pop()
         db.set_setting("hero", slides)
     await cb_hero(call)
+
+
+
+# ------------------------------------------------------------- running lines
+LINE_TRACKS = {
+    "ticker": "Top ticker (the strip under the navigation)",
+    "marquee": "Home marquee (the kinetic row under the hero)",
+}
+LINE_CODES = {"t": "ticker", "m": "marquee"}
+
+
+def line_list(track: str) -> list[str]:
+    value = db.get_setting(track, []) or []
+    if isinstance(value, str):
+        value = value.splitlines()
+    return [str(v).strip() for v in value if str(v).strip()]
+
+
+def save_lines(track: str, lines: list[str]) -> None:
+    db.set_setting(track, [line for line in lines if line.strip()])
+
+
+def lines_text_kb() -> tuple[str, InlineKeyboardMarkup]:
+    rows: list[list[tuple[str, str]]] = []
+    out = ["📣  Running lines", "", "Both strips carry your own copy — nothing here is fixed."]
+    for code, track in LINE_CODES.items():
+        lines = line_list(track)
+        out += ["", f"{LINE_TRACKS[track]} — {len(lines)}"]
+        if not lines:
+            out.append("   (empty — the house copy is showing)")
+        for i, line in enumerate(lines):
+            out.append(f"   {i + 1}. {clip(line, 70)}")
+            rows.append([(f"{code.upper()}{i + 1} · {clip(line, 26)}", f"ln:v:{code}:{i}")])
+        rows.append([(f"➕ Add to {track}", f"ln:a:{code}"), (f"📄 Paste {track}", f"ln:b:{code}")])
+        rows.append([(f"♻️ House copy ({track})", f"ln:r:{code}")])
+    out += ["", "Tap a line to edit, move or delete it. On the marquee, *word* prints in italic."]
+    rows.append([("⬅️ Back", "set:menu")])
+    return "\n".join(out), kb(rows)
+
+
+async def render_lines(message: Message, note: str = "") -> None:
+    text, markup = lines_text_kb()
+    await message.answer((note + "\n\n" if note else "") + text, reply_markup=markup)
+
+
+@router.callback_query(F.data == "set:lines")
+async def cb_lines(call: CallbackQuery) -> None:
+    text, markup = lines_text_kb()
+    await safe_edit(call.message, text, markup)
+    await call.answer()
+
+
+@router.callback_query(F.data.startswith("ln:v:"))
+async def cb_line_view(call: CallbackQuery) -> None:
+    _, _, code, index = call.data.split(":")
+    track = LINE_CODES.get(code)
+    lines = line_list(track) if track else []
+    i = int(index)
+    if not (0 <= i < len(lines)):
+        await call.answer("That line is gone", show_alert=True)
+        text, markup = lines_text_kb()
+        await safe_edit(call.message, text, markup)
+        return
+    await safe_edit(
+        call.message,
+        f"📣  {LINE_TRACKS[track]} · line {i + 1}\n\n{lines[i]}",
+        kb(
+            [
+                [("✏️ Edit", f"ln:e:{code}:{i}")],
+                [("⬆️ Move up", f"ln:u:{code}:{i}"), ("⬇️ Move down", f"ln:d:{code}:{i}")],
+                [("🗑 Delete", f"ln:x:{code}:{i}")],
+                [("⬅️ Running lines", "set:lines")],
+            ]
+        ),
+    )
+    await call.answer()
+
+
+@router.callback_query(F.data.startswith("ln:a:"))
+async def cb_line_add(call: CallbackQuery, state: FSMContext) -> None:
+    code = call.data.split(":")[2]
+    track = LINE_CODES.get(code)
+    if not track:
+        await call.answer("Unknown strip", show_alert=True)
+        return
+    await state.set_state(EditText.value)
+    await state.update_data(kind="line", track=track, index=None)
+    await call.message.answer(f"➕ New line for {LINE_TRACKS[track]}.\n\nSend the text. /cancel to abort.")
+    await call.answer()
+
+
+@router.callback_query(F.data.startswith("ln:e:"))
+async def cb_line_edit(call: CallbackQuery, state: FSMContext) -> None:
+    _, _, code, index = call.data.split(":")
+    track = LINE_CODES.get(code)
+    if not track:
+        await call.answer("Unknown strip", show_alert=True)
+        return
+    await state.set_state(EditText.value)
+    await state.update_data(kind="line", track=track, index=int(index))
+    await call.message.answer("✏️ Send the new text for this line. /cancel to abort.")
+    await call.answer()
+
+
+@router.callback_query(F.data.startswith("ln:b:"))
+async def cb_line_bulk(call: CallbackQuery, state: FSMContext) -> None:
+    code = call.data.split(":")[2]
+    track = LINE_CODES.get(code)
+    if not track:
+        await call.answer("Unknown strip", show_alert=True)
+        return
+    await state.set_state(LinesInput.bulk)
+    await state.update_data(track=track)
+    await call.message.answer(
+        f"📄 Paste the whole {track}, one line per message row.\n\n"
+        "Send it as one message — every new row becomes one line, in order. /cancel to abort."
+    )
+    await call.answer()
+
+
+@router.callback_query(F.data.startswith("ln:u:"))
+async def cb_line_up(call: CallbackQuery) -> None:
+    _, _, code, index = call.data.split(":")
+    await _move_line(call, code, int(index), -1)
+
+
+@router.callback_query(F.data.startswith("ln:d:"))
+async def cb_line_down(call: CallbackQuery) -> None:
+    _, _, code, index = call.data.split(":")
+    await _move_line(call, code, int(index), +1)
+
+
+async def _move_line(call: CallbackQuery, code: str, index: int, delta: int) -> None:
+    track = LINE_CODES.get(code)
+    lines = line_list(track) if track else []
+    target = index + delta
+    if 0 <= index < len(lines) and 0 <= target < len(lines):
+        lines[index], lines[target] = lines[target], lines[index]
+        save_lines(track, lines)
+        await call.answer("Moved")
+    else:
+        await call.answer("Already at the edge")
+    text, markup = lines_text_kb()
+    await safe_edit(call.message, text, markup)
+
+
+@router.callback_query(F.data.startswith("ln:x:"))
+async def cb_line_delete(call: CallbackQuery) -> None:
+    _, _, code, index = call.data.split(":")
+    track = LINE_CODES.get(code)
+    lines = line_list(track) if track else []
+    i = int(index)
+    if 0 <= i < len(lines):
+        lines.pop(i)
+        save_lines(track, lines)
+        await call.answer("Deleted")
+    else:
+        await call.answer("Already gone")
+    text, markup = lines_text_kb()
+    await safe_edit(call.message, text, markup)
+
+
+@router.callback_query(F.data.startswith("ln:r:"))
+async def cb_line_reset(call: CallbackQuery) -> None:
+    code = call.data.split(":")[2]
+    track = LINE_CODES.get(code)
+    if track:
+        save_lines(track, list(db.DEFAULT_SETTINGS.get(track, [])))
+    await call.answer("House copy restored")
+    text, markup = lines_text_kb()
+    await safe_edit(call.message, text, markup)
+
+
+@router.message(LinesInput.bulk, F.text)
+async def handle_lines_bulk(message: Message, state: FSMContext) -> None:
+    data = await state.get_data()
+    await state.clear()
+    track = data.get("track")
+    if track not in LINE_TRACKS:
+        await message.answer("Nothing to update.", reply_markup=main_menu_kb())
+        return
+    lines = [row.strip() for row in (message.text or "").splitlines()]
+    saved = [row for row in lines if row]
+    if not saved:
+        await message.answer("That was empty — nothing changed.", reply_markup=main_menu_kb())
+        return
+    save_lines(track, saved)
+    await render_lines(message, f"Saved {len(saved)} lines on the {track}.")
 
 
 # -------------------------------------------------------------------- requests
@@ -1151,6 +1438,23 @@ async def handle_edit_text(message: Message, state: FSMContext) -> None:
         await message.answer("Saved.\n\n" + text, reply_markup=markup)
         return
 
+    if kind == "line":
+        track = data.get("track")
+        index = data.get("index")
+        lines = line_list(track) if track in LINE_TRACKS else []
+        if not raw:
+            await message.answer("Empty line ignored — nothing changed.", reply_markup=main_menu_kb())
+            return
+        if index is None:
+            lines.append(raw)
+        elif 0 <= int(index) < len(lines):
+            lines[int(index)] = raw
+        else:
+            lines.append(raw)
+        save_lines(track, lines)
+        await render_lines(message, "Saved.")
+        return
+
     if kind == "setting":
         if field == "currency":
             raw = raw.upper()[:3]
@@ -1186,7 +1490,8 @@ def _settings_summary() -> str:
         f"Brand: {s['brand']}\n"
         f"Tagline: {clip(s['tagline'], 60)}\n"
         f"Announcement: {clip(s['announcement'], 60) or '—'}\n"
-        f"Currency: {s['currency']}   ·   Locale: {s['locale']}"
+        f"Currency: {s['currency']}   ·   Locale: {s['locale']}\n"
+        f"Running lines: {len(s.get('ticker') or [])} ticker · {len(s.get('marquee') or [])} marquee"
     )
 
 

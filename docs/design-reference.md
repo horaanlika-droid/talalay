@@ -1,4 +1,21 @@
-# Design reference — 1697–1702 (главный)
+# Design reference — 1697–1702 (master)
+
+> **Update 31 Oct 2026 — background is now DEEP MATTE BLACK.**
+> The lighting law from 1697–1702 still stands (diffuse backlight, two asymmetric
+> edge strips, top panel on the rim, black flags, thin silver-white contour, soft
+> contact shadow, one continuous falloff, no horizon). What changed is the stage:
+> the navy backdrop is retired. Every plate sits on **true black `#000000`,
+> at most `#0e0e0e` of neutral haze directly behind the piece** — matte, no blue,
+> no navy, no cyan anywhere in the frame, no blue cast inside the glass.
+>
+> **Fidelity is absolute.** Shape, engraving, wall thickness and base thickness
+> must be 100 % those of the pieces in the price list and in `brand-source/`.
+> Plates are therefore **not re-rendered**: each accepted navy master is taken
+> through an image *edit* whose only job is to swap the backdrop and neutralise
+> the blue cast. The glass is untouched — verified by edge correlation between
+> the master and the result (≥ 0.98). Output stage: `brand-source/black/`.
+> A fresh text-to-image render is only allowed for a shape that has no master at
+> all, and that render then becomes the master for every later edit.
 
 > **Правило дома.** Кадры `IMG_1697.png … IMG_1702.png` в корне репозитория —
 > **главный референс по дизайну**. Любая визуальная работа (фото предмета,

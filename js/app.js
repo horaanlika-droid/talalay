@@ -23,8 +23,10 @@ const NAV_ITEMS = [
 
 /* ------------------------------------------------------------ ticker */
 
-const TICKER_LINES = [
-  "Hand-blown crystal · Europe",
+// Shown only until the catalogue answers, or when the owner has cleared the
+// running lines in the back office. The live copy is settings.ticker.
+const FALLBACK_TICKER = [
+  "Hand-blown crystal · China",
   "52 pieces · 17 collections",
   "Trade prices in AED",
   "Bars · hotels · studios",
@@ -34,8 +36,22 @@ const TICKER_LINES = [
   "Breakage replaced free",
 ];
 
-function tickerHTML(announcement = "") {
-  const words = [announcement, ...TICKER_LINES].filter(Boolean);
+/** A settings value may arrive as a list or as one newline-separated block. */
+export function linesOf(value) {
+  if (Array.isArray(value)) return value.map((v) => String(v).trim()).filter(Boolean);
+  if (typeof value === "string") {
+    return value
+      .split(/\r?\n/)
+      .map((v) => v.trim())
+      .filter(Boolean);
+  }
+  return [];
+}
+
+export function tickerHTML(settings = {}) {
+  const announcement = String(settings.announcement || "").trim();
+  const custom = linesOf(settings.ticker);
+  const words = [announcement, ...(custom.length ? custom : FALLBACK_TICKER)].filter(Boolean);
   const lap = words
     .map(
       (word, i) =>
@@ -44,6 +60,16 @@ function tickerHTML(announcement = "") {
     .join("");
   // the row is carried twice: one lap is exactly half the track, so the loop is seamless
   return `<div class="ticker__track" data-ticker-track>${lap}${lap}</div>`;
+}
+
+/** Repaint the top bar from live settings — called once the catalogue lands. */
+function paintTicker(settings) {
+  const ticker = document.querySelector("[data-ticker]");
+  if (!ticker) return;
+  const signature = JSON.stringify([settings?.announcement || "", settings?.ticker || []]);
+  if (ticker.dataset.signature === signature) return;
+  ticker.dataset.signature = signature;
+  ticker.innerHTML = tickerHTML(settings || {});
 }
 
 /* --------------------------------------------------------------- shell */
@@ -284,11 +310,7 @@ function updateNavMeta(view, def, depth, segments) {
   if (title) {
     title.textContent = view.navTitle || NAV_LABELS[def?.nav] || "";
   }
-  const ticker = document.querySelector("[data-ticker]");
-  if (ticker && state.content?.settings?.announcement && !ticker.dataset.filled) {
-    ticker.dataset.filled = "true";
-    ticker.innerHTML = tickerHTML(state.content.settings.announcement);
-  }
+  if (state.content?.settings) paintTicker(state.content.settings);
 }
 
 /* --------------------------------------------------------- nav styling */
@@ -433,6 +455,7 @@ async function boot() {
   }
 
   window.__CE_DATA__ = data;
+  paintTicker(data.settings || {});
   document.querySelector("[data-footer]").innerHTML = footerHTML(data);
 
   // Preload the hero plates after first paint — each is one finished raster
