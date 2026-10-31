@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Cocktail Embassy — navy masters into the catalogue.
+"""Cocktail Embassy — studio masters into the catalogue.
 
-`brand-source/navy/*.png` are 2:3 studio plates shot in the 1697-1702 style.
+`brand-source/black/*.png` (deep-black stage) and `brand-source/navy/*.png`
+(earlier navy stage) are 2:3 studio plates; the black one wins when both exist.
 The storefront wants 4:5 (2400×3000 masters, 840×1050 thumbs), so the plate is
 re-framed by extending the smooth backdrop sideways — the piece is never
 resampled, cropped or moved.
@@ -20,13 +21,20 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parent.parent
-SRC = ROOT / "brand-source" / "navy"
+NAVY = ROOT / "brand-source" / "navy"
+BLACK = ROOT / "brand-source" / "black"
 OUT = ROOT / "assets" / "products"
 AUDIT = ROOT / "data" / "image-audit.json"
 
 MASTER = (2400, 3000)
 THUMB = (840, 1050)
-CONTACT_Y = 0.80                     # base line of every navy plate
+CONTACT_Y = 0.80                     # base line of every plate, navy or black
+
+
+def master_for(name: str) -> Path:
+    """Deep-black plate wins; the navy plate is the fallback until it is re-staged."""
+    black = BLACK / f"{name}.png"
+    return black if black.exists() else NAVY / f"{name}.png"
 
 # product photo  →  navy master
 MAP = {
@@ -81,7 +89,8 @@ def main() -> None:
     audit = json.loads(AUDIT.read_text())
     thumbs = []
     for name, master in MAP.items():
-        img = Image.open(SRC / f"{master}.png").convert("RGB")
+        source = master_for(master)
+        img = Image.open(source).convert("RGB")
         plate = to_4x5(img)
         if not args.preview:
             plate.save(OUT / f"{name}.webp", "WEBP", quality=88, method=6)
@@ -95,8 +104,8 @@ def main() -> None:
     audit["updatedAt"] = "2026-10-31"
     audit["_comment"] = (
         "Contact line of every catalogue photo, as a fraction of image height. "
-        "The navy-studio plates (2026-10-31) all share one base line at 0.80; "
-        "below it is the studio floor, contact shadow and mirror reflection."
+        "Every plate (navy studio, then deep-black stage) shares one base line "
+        "at 0.80; below it is the studio floor, contact shadow and reflection."
     )
     if not args.preview:
         AUDIT.write_text(json.dumps(audit, indent=2, ensure_ascii=False) + "\n")

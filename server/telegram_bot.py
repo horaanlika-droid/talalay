@@ -1,6 +1,6 @@
 """Telegram back office for Cocktail Embassy.
 
-Everything the storefront shows — products, categories, collections, hero slides,
+Everything the storefront shows — products, categories, hero slides,
 contact details and copy — is edited here and served to the site via /api/content.
 
 Run with the API (see main.py) or standalone: `python telegram_bot.py`.
@@ -58,10 +58,6 @@ class EditText(StatesGroup):
 
 
 class NewCategory(StatesGroup):
-    name = State()
-
-
-class NewCollection(StatesGroup):
     name = State()
 
 
@@ -156,7 +152,7 @@ def main_menu_text() -> str:
     out_of_stock = sum(1 for p in products if not p["inStock"])
     return (
         "🏛  COCKTAIL EMBASSY — back office\n\n"
-        f"Pieces: {len(products)}   ·   Categories: {len(db.list_categories())}   ·   Collections: {len(db.list_collections())}\n"
+        f"Pieces: {len(products)}   ·   Categories: {len(db.list_categories())}\n"
         f"New requests: {counts['new']}   ·   Out of stock: {out_of_stock}\n\n"
         "Everything you change here appears on the website within seconds."
     )
@@ -166,7 +162,7 @@ def main_menu_kb() -> InlineKeyboardMarkup:
     counts = db.request_counts()
     return kb(
         [
-            [("📦  Products", "prod:list:0"), ("🎨  Collections", "coll:list")],
+            [("📦  Products", "prod:list:0"), ("🗂  Categories", "cat:list")],
             [("🗂  Categories", "cat:list"), ("⚙️  Site & content", "set:menu")],
             [(f"🧾  Requests · {counts['new']} new", "req:list:new:0")],
             [("📊  Overview", "stats"), ("❓  Help", "help")],
@@ -262,8 +258,7 @@ async def cb_help(call: CallbackQuery) -> None:
     await safe_edit(
         call.message,
         "How this works\n\n"
-        "• Products — add pieces, change price, copy, photos, stock and collections.\n"
-        "• Collections — the four tiles on the home page.\n"
+        "• Products — add pieces, change price, copy, photos, stock and category.\n"
         "• Categories — Glassware / Barware / Acids & Other.\n"
         "• Site & content — brand name, hero slides, announcement, contacts, legal notes.\n"
         "• Requests — every request sent from the website lands here.\n\n"
@@ -285,7 +280,6 @@ async def cb_stats(call: CallbackQuery) -> None:
         "📊  Overview\n",
         f"Pieces: {len(products)}   ·   In stock: {sum(1 for p in products if p['inStock'])}",
         f"Featured: {sum(1 for p in products if p['featured'])}   ·   Categories: {len(db.list_categories())}",
-        f"Collections: {len(db.list_collections())}\n",
         f"Requests — new: {counts['new']} · in progress: {counts['processing']} · done: {counts['done']}\n",
     ]
     if recent:
@@ -357,14 +351,12 @@ async def render_product(message: Message, slug: str) -> None:
         await safe_edit(message, "That piece no longer exists.", kb([[("⬅️  Products", "prod:list:0")]]))
         return
     category = next((c["name"] for c in db.list_categories() if c["slug"] == p["categorySlug"]), "—")
-    collection_names = ", ".join(p["collectionSlugs"]) or "—"
     text = (
         f"📦  {p['name']}\n"
         f"{p['subtitle'] or '—'}\n\n"
         f"Price: {money(p['price'])}\n"
         f"Volume: {p['volume'] or '—'}\n"
         f"Category: {category}\n"
-        f"Collections: {collection_names}\n"
         f"Badge: {p['badge'] or '—'}\n"
         f"Featured: {'yes' if p['featured'] else 'no'}   ·   In stock: {'yes' if p['inStock'] else 'no'}\n"
         f"Photos: {len(p['images'])}\n\n"
@@ -376,7 +368,7 @@ async def render_product(message: Message, slug: str) -> None:
             [("✏️ Name", f"prod:edit:{slug}:name"), ("💶 Price", f"prod:edit:{slug}:price")],
             [("📝 Subtitle", f"prod:edit:{slug}:subtitle"), ("📐 Volume", f"prod:edit:{slug}:volume")],
             [("📄 Description", f"prod:edit:{slug}:description"), ("🏷 Badge", f"prod:edit:{slug}:badge")],
-            [("🗂 Category", f"prod:cat:{slug}"), ("🎨 Collections", f"prod:coll:{slug}")],
+            [("🗂 Category", f"prod:cat:{slug}")],
             [
                 (
                     ("⭐ Featured: on" if p["featured"] else "☆ Featured: off"),
@@ -474,44 +466,6 @@ async def cb_product_category_set(call: CallbackQuery) -> None:
     await call.answer("Category updated")
 
 
-@router.callback_query(F.data.startswith("prod:coll:"))
-async def cb_product_collections(call: CallbackQuery) -> None:
-    slug = call.data.split(":", 2)[2]
-    p = db.get_product(slug)
-    if not p:
-        await call.answer("Not found", show_alert=True)
-        return
-    rows = [
-        [
-            (
-                ("✅ " if c["slug"] in p["collectionSlugs"] else "▫️ ") + c["name"],
-                f"prod:coll:set:{slug}:{c['slug']}",
-            )
-        ]
-        for c in db.list_collections()
-    ]
-    rows.append([("⬅️ Back", f"prod:view:{slug}")])
-    await safe_edit(
-        call.message,
-        f"🎨 Collections for {p['name']}\n\nTap to toggle. A piece can sit in several collections.",
-        kb(rows),
-    )
-    await call.answer()
-
-
-@router.callback_query(F.data.startswith("prod:coll:set:"))
-async def cb_product_collections_set(call: CallbackQuery) -> None:
-    _, _, _, slug, collection = call.data.split(":")
-    p = db.get_product(slug)
-    if not p:
-        await call.answer("Not found", show_alert=True)
-        return
-    current = p["collectionSlugs"]
-    updated = [c for c in current if c != collection]
-    if collection not in current:
-        updated.append(collection)
-    db.set_product_collections(slug, updated)
-    await cb_product_collections(call)
 
 
 @router.callback_query(F.data.startswith("prod:img:"))
@@ -632,178 +586,6 @@ async def cb_category_delete(call: CallbackQuery) -> None:
 async def cb_category_new(call: CallbackQuery, state: FSMContext) -> None:
     await state.set_state(NewCategory.name)
     await call.message.answer("🗂 New category\n\nSend the name (e.g. Glassware).")
-    await call.answer()
-
-
-# ----------------------------------------------------------------- collections
-def collections_text_kb() -> tuple[str, InlineKeyboardMarkup]:
-    collections = db.list_collections()
-    rows: list[list[tuple[str, str]]] = []
-    for c in collections:
-        count = sum(1 for p in db.list_products() if c["slug"] in p["collectionSlugs"])
-        rows.append([(f"{clip(c['name'], 20)} · {count}", f"coll:view:{c['slug']}")])
-    rows.append([("➕  New collection", "coll:new")])
-    rows.append([("⬅️  Menu", "menu")])
-    return (
-        f"🎨  Collections ({len(collections)})\n\nThe collection tiles on the home page and the collection pages.",
-        kb(rows),
-    )
-
-
-@router.callback_query(F.data == "coll:list")
-async def cb_collections(call: CallbackQuery) -> None:
-    text, markup = collections_text_kb()
-    await safe_edit(call.message, text, markup)
-    await call.answer()
-
-
-async def show_collection(call: CallbackQuery, slug: str) -> None:
-    """One collection screen — reached from the list, a reorder or a cover change."""
-    c = next((x for x in db.list_collections() if x["slug"] == slug), None)
-    if not c:
-        await call.answer("Not found", show_alert=True)
-        return
-    await safe_edit(
-        call.message,
-        f"🎨 {c['name']}\n{c['subtitle'] or '—'}\n\n{clip(c['description'], 300) or 'No description.'}\n\n"
-        f"Cover: {c['image'] or 'not set'}",
-        kb(
-            [
-                [("✏️ Name", f"coll:edit:{slug}:name"), ("📝 Subtitle", f"coll:edit:{slug}:subtitle")],
-                [("📄 Description", f"coll:edit:{slug}:description")],
-                [("🖼 Cover photo", f"coll:img:{slug}"), ("🚫 No cover", f"coll:cover:clear:{slug}")],
-                [("📦 Pieces in it", f"coll:pick:{slug}")],
-                [("⬆️ Up", f"coll:sort:{slug}:up"), ("⬇️ Down", f"coll:sort:{slug}:down")],
-                [("🗑 Delete", f"coll:del:{slug}"), ("⬅️ Collections", "coll:list")],
-            ]
-        ),
-    )
-    await call.answer()
-
-
-@router.callback_query(F.data.startswith("coll:view:"))
-async def cb_collection_view(call: CallbackQuery) -> None:
-    await show_collection(call, call.data.split(":", 2)[2])
-
-
-@router.callback_query(F.data.startswith("coll:edit:"))
-async def cb_collection_edit(call: CallbackQuery, state: FSMContext) -> None:
-    _, _, slug, field = call.data.split(":")
-    await state.set_state(EditText.value)
-    await state.update_data(kind="collection", slug=slug, field=field)
-    await call.message.answer("Send the new value. /cancel to abort.")
-    await call.answer()
-
-
-@router.callback_query(F.data.startswith("coll:img:"))
-async def cb_collection_image(call: CallbackQuery, state: FSMContext) -> None:
-    slug = call.data.split(":", 2)[2]
-    await state.set_state(UploadPhoto.photo)
-    await state.update_data(kind="collection", slug=slug)
-    await call.message.answer("🖼 Send the cover photo for this collection.")
-    await call.answer()
-
-
-@router.callback_query(F.data.startswith("coll:cover:clear:"))
-async def cb_collection_cover_clear(call: CallbackQuery) -> None:
-    slug = call.data.split(":", 3)[3]
-    collection = next((c for c in db.list_collections() if c["slug"] == slug), None)
-    if collection:
-        db.upsert_collection(
-            slug=slug,
-            name=collection["name"],
-            subtitle=collection["subtitle"],
-            description=collection["description"],
-            image="",
-            sort=collection["sort"],
-        )
-    await call.answer("Cover cleared")
-    await show_collection(call, slug)
-
-
-@router.callback_query(F.data.startswith("coll:sort:"))
-async def cb_collection_sort(call: CallbackQuery) -> None:
-    _, _, slug, direction = call.data.split(":")
-    items = db.list_collections()
-    index = next((i for i, c in enumerate(items) if c["slug"] == slug), None)
-    if index is None:
-        await call.answer("Not found", show_alert=True)
-        return
-    swap = index - 1 if direction == "up" else index + 1
-    if 0 <= swap < len(items):
-        items[index], items[swap] = items[swap], items[index]
-        for position, item in enumerate(items, start=1):
-            db.upsert_collection(
-                slug=item["slug"],
-                name=item["name"],
-                subtitle=item["subtitle"],
-                description=item["description"],
-                image=item["image"],
-                sort=position,
-            )
-        await call.answer("Moved")
-    else:
-        await call.answer("Already at the edge")
-    await show_collection(call, slug)
-
-
-@router.callback_query(F.data.startswith("coll:pick:"))
-async def cb_collection_pick(call: CallbackQuery) -> None:
-    slug = call.data.split(":", 2)[2]
-    collection = next((c for c in db.list_collections() if c["slug"] == slug), None)
-    if not collection:
-        await call.answer("Not found", show_alert=True)
-        return
-    rows: list[list[tuple[str, str]]] = []
-    current = 0
-    for product in db.list_products():
-        inside = slug in product["collectionSlugs"]
-        current += 1 if inside else 0
-        rows.append(
-            [
-                (
-                    f"{'✅' if inside else '▫️'} {clip(product['name'], 30)}",
-                    f"coll:tog:{slug}:{product['slug']}",
-                )
-            ]
-        )
-    rows.append([("⬅️ Back", f"coll:view:{slug}")])
-    await safe_edit(
-        call.message,
-        f"📦 {collection['name']}\n\n"
-        f"Pieces in this collection: {current}. Tap a piece to add or remove it — "
-        "the change shows on the site straight away.",
-        kb(rows),
-    )
-    await call.answer()
-
-
-@router.callback_query(F.data.startswith("coll:tog:"))
-async def cb_collection_toggle(call: CallbackQuery) -> None:
-    _, _, slug, product_slug = call.data.split(":")
-    product = db.get_product(product_slug)
-    if product:
-        current = [c for c in product["collectionSlugs"] if c != slug]
-        if slug not in product["collectionSlugs"]:
-            current.append(slug)
-        db.set_product_collections(product_slug, current)
-        await call.answer("Added" if slug in current else "Removed")
-    await cb_collection_pick(call)
-
-
-@router.callback_query(F.data.startswith("coll:del:"))
-async def cb_collection_delete(call: CallbackQuery) -> None:
-    slug = call.data.split(":", 2)[2]
-    db.delete_collection(slug)
-    text, markup = collections_text_kb()
-    await safe_edit(call.message, "Deleted.\n\n" + text, markup)
-    await call.answer("Deleted")
-
-
-@router.callback_query(F.data == "coll:new")
-async def cb_collection_new(call: CallbackQuery, state: FSMContext) -> None:
-    await state.set_state(NewCollection.name)
-    await call.message.answer("🎨 New collection\n\nSend the name (e.g. Levitating).")
     await call.answer()
 
 
@@ -1003,7 +785,7 @@ async def cb_hero_set(call: CallbackQuery) -> None:
         {
             "productSlug": slug,
             "name": product["name"],
-            "subtitle": product["subtitle"] or "The collection",
+            "subtitle": product["subtitle"] or "The house",
             "copy": slides[index].get("copy") or product["description"][:150],
         }
     )
@@ -1031,7 +813,7 @@ async def cb_hero_add(call: CallbackQuery) -> None:
     slides.append(
         {
             "productSlug": product["slug"],
-            "kicker": "The collection",
+            "kicker": "The house",
             "title": product["name"].split(" ")[0],
             "name": product["name"],
             "subtitle": product["subtitle"] or "",
@@ -1420,41 +1202,6 @@ async def handle_edit_text(message: Message, state: FSMContext) -> None:
         await message.answer("Saved.\n\n" + text, reply_markup=markup)
         return
 
-    if kind == "collection":
-        slug = data["slug"]
-        collection = next((c for c in db.list_collections() if c["slug"] == slug), None)
-        if collection:
-            payload = dict(collection)
-            payload[field] = raw
-            db.upsert_collection(
-                slug=slug,
-                name=payload["name"],
-                subtitle=payload["subtitle"],
-                description=payload["description"],
-                image=payload["image"],
-                sort=payload["sort"],
-            )
-        text, markup = collections_text_kb()
-        await message.answer("Saved.\n\n" + text, reply_markup=markup)
-        return
-
-    if kind == "line":
-        track = data.get("track")
-        index = data.get("index")
-        lines = line_list(track) if track in LINE_TRACKS else []
-        if not raw:
-            await message.answer("Empty line ignored — nothing changed.", reply_markup=main_menu_kb())
-            return
-        if index is None:
-            lines.append(raw)
-        elif 0 <= int(index) < len(lines):
-            lines[int(index)] = raw
-        else:
-            lines.append(raw)
-        save_lines(track, lines)
-        await render_lines(message, "Saved.")
-        return
-
     if kind == "setting":
         if field == "currency":
             raw = raw.upper()[:3]
@@ -1506,17 +1253,6 @@ async def handle_new_category(message: Message, state: FSMContext) -> None:
     text, markup = categories_text_kb()
     await message.answer(f"Category “{name}” created.\n\n" + text, reply_markup=markup)
 
-
-@router.message(NewCollection.name, F.text)
-async def handle_new_collection(message: Message, state: FSMContext) -> None:
-    name = (message.text or "").strip()
-    await state.clear()
-    if not name:
-        await message.answer("Send a name.")
-        return
-    db.upsert_collection(slug=db.unique_slug("collections", db.slugify(name)), name=name, sort=db.next_sort("collection"))
-    text, markup = collections_text_kb()
-    await message.answer(f"Collection “{name}” created.\n\n" + text, reply_markup=markup)
 
 
 @router.message(NewProduct.name, F.text)
@@ -1583,22 +1319,6 @@ async def handle_photo(message: Message, state: FSMContext, bot: Bot) -> None:
         db.set_product_images(slug, images)
         await message.answer(f"Photo added ({len(images)} total).")
         await render_product(message, slug)
-        return
-
-    if kind == "collection":
-        collection = next((c for c in db.list_collections() if c["slug"] == slug), None)
-        if collection:
-            db.upsert_collection(
-                slug=slug,
-                name=collection["name"],
-                subtitle=collection["subtitle"],
-                description=collection["description"],
-                image=url,
-                sort=collection["sort"],
-            )
-        await message.answer("Cover updated.")
-        text, markup = collections_text_kb()
-        await message.answer(text, reply_markup=markup)
         return
 
 

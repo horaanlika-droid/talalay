@@ -68,18 +68,15 @@ export function normalize(raw) {
     ...p,
     price: Number(p.price) || 0,
     images: Array.isArray(p.images) ? p.images.filter(Boolean) : p.image ? [p.image] : [],
-    collectionSlugs: Array.isArray(p.collectionSlugs) ? p.collectionSlugs : [],
     specs: p.specs && typeof p.specs === "object" ? p.specs : {},
     sort: Number.isFinite(p.sort) ? p.sort : i,
     featured: !!p.featured,
     inStock: p.inStock !== false,
   }));
   const categories = (data.categories || []).map((c, i) => ({ sort: i, ...c }));
-  const collections = (data.collections || []).map((c, i) => ({ sort: i, ...c }));
   return {
     settings,
     categories: categories.sort((a, b) => a.sort - b.sort),
-    collections: collections.sort((a, b) => a.sort - b.sort),
     products: products.sort((a, b) => a.sort - b.sort),
   };
 }
@@ -185,19 +182,11 @@ export async function submitRequest(payload) {
 export const selectors = {
   productBySlug: (data, slug) => data.products.find((p) => p.slug === slug),
   categoryBySlug: (data, slug) => data.categories.find((c) => c.slug === slug),
-  collectionBySlug: (data, slug) => data.collections.find((c) => c.slug === slug),
   productsByCategory: (data, slug) => data.products.filter((p) => p.categorySlug === slug),
-  productsByCollection: (data, slug) =>
-    data.products.filter((p) => p.collectionSlugs.includes(slug)),
   featured: (data) => data.products.filter((p) => p.featured),
   related: (data, product, limit = 4) =>
     data.products
-      .filter(
-        (p) =>
-          p.slug !== product.slug &&
-          (p.categorySlug === product.categorySlug ||
-            p.collectionSlugs.some((c) => product.collectionSlugs.includes(c)))
-      )
+      .filter((p) => p.slug !== product.slug && p.categorySlug === product.categorySlug)
       .slice(0, limit),
   price: (data, value) => {
     const settings = data.settings || {};

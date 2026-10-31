@@ -1,5 +1,5 @@
 {
-  "_comment": "Contact line of every catalogue photo, as a fraction of image height. The navy-studio plates (2026-10-31) all share one base line at 0.80; below it is the studio floor, contact shadow and mirror reflection.",
+  "_comment": "Contact line of every catalogue photo, as a fraction of image height. Every plate (navy studio, then deep-black stage) shares one base line at 0.80; below it is the studio floor, contact shadow and reflection.",
   "updatedAt": "2026-10-31",
   "products": {
     "coupe.webp": 0.8,
