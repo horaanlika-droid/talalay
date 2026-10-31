@@ -949,6 +949,33 @@ main {
   }
 }
 
+/* categories — a two-column shelf, never a sideways carousel */
+.catgrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.catgrid .tile__media {
+  aspect-ratio: 1 / 1;
+}
+.catgrid .tile__eyebrow {
+  font-size: 9.5px;
+}
+.catgrid .tile__inner {
+  padding: 11px 12px 13px;
+}
+.catgrid .tile__name {
+  font-size: 15px;
+}
+@media (min-width: 760px) {
+  .catgrid {
+    gap: 14px;
+  }
+  .catgrid .tile__media {
+    aspect-ratio: 4 / 3;
+  }
+}
+
 /* collection tile */
 .tile {
   position: relative;

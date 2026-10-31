@@ -105,11 +105,15 @@ function productCard(data, product) {
 
 function categoryTile(data, category) {
   const items = selectors.productsByCategory(data, category.slug);
-  const lead = items.find((p) => p.images && p.images.length) || items[0];
-  const img =
-    lead && lead.images && lead.images[0]
-      ? `<img src="${attr(mediaUrl(lead.images[0]))}" alt="" loading="lazy" decoding="async">`
-      : "";
+  // a category that ships its own cover plate uses it; the glass shelves fall
+  // back to the first piece they hold, so every tile is one piece on black
+  const cover = category.cover || (() => {
+    const lead = items.find((p) => p.images && p.images.length) || items[0];
+    return lead && lead.images && lead.images[0];
+  })();
+  const img = cover
+    ? `<img src="${attr(mediaUrl(cover))}" alt="" loading="lazy" decoding="async">`
+    : "";
   return `<a class="tile spotlight" href="#/shop?c=${attr(category.slug)}">
     <span class="tile__media">${img}</span>
     <span class="tile__inner">
@@ -192,7 +196,7 @@ export function homeView(data) {
           </div>
           ${arrowLink("#/shop", "All pieces")}
         </div>
-        <div class="hscroll">${categories.map((c) => categoryTile(data, c)).join("")}</div>
+        <div class="catgrid">${categories.map((c) => categoryTile(data, c)).join("")}</div>
       </section>
 
       <section class="section split reveal" aria-labelledby="craft-title">

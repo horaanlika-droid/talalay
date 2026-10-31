@@ -58,6 +58,23 @@ MAP = {
     "retro-asia-engraved-rocks-glass": "retro-asia-engraved-rocks",
     "retro-asia-engraved-highball-glass": "retro-asia-engraved-highball",
     "bullet-rocks-glass": "bullet-rocks",
+    # third pass: the archive renders staged on the master black
+    "flowers-cocktail-glass": "flowers-cocktail",
+    "flowers-rocks-glass": "flowers-rocks",
+    "flowers-highball-glass": "flowers-highball",
+    "coupethini-coupethini": "coupethini",
+    "replicate-rocks-glass": "replicate-rocks",
+    "shorties-mini-martini": "shorties-mini-martini",
+    "shorties-daisy-coupe": "shorties-daisy-coupe",
+    "shorties-modern-margo": "shorties-modern-margo",
+    "shorties-lil-nora": "shorties-lil-nora",
+    "teapot-teapot": "teapot",
+    "two-sips-cocktail-glass": "two-sips",
+    "bullet-chalet-glass": "bullet-chalet",
+    "bullet-highball-glass": "bullet-highball",
+    "levitating-super-pony": "levitating-super-pony",
+    "levitating-rocks-glass": "levitating-rocks",
+    "levitating-highball-glass": "levitating-highball",
 }
 
 
@@ -68,16 +85,18 @@ def to_4x5(img: Image.Image, size=MASTER) -> Image.Image:
     if core.width >= w:
         left = (core.width - w) // 2
         return core.crop((left, 0, left + w, h))
-    canvas = Image.new("RGB", size)
+    # the stage is a flat master black now, so the frame is widened with it: no
+    # stretched edge column, no seam where the old plate ended, and the last
+    # pixels of the plate feather into the same black the page uses
+    canvas = Image.new("RGB", size, (0, 0, 0))
     pad = w - core.width
-    canvas.paste(core, (pad // 2, 0))
-    # the backdrop is a smooth vertical gradient: stretch its edge columns out
-    left = core.crop((0, 0, 1, h)).resize((pad // 2 + 1, h), Image.BILINEAR)
-    right = core.crop((core.width - 1, 0, core.width, h)).resize(
-        (pad - pad // 2 + 1, h), Image.BILINEAR
-    )
-    canvas.paste(left, (0, 0))
-    canvas.paste(right, (w - right.width, 0))
+    feather = min(80, max(16, core.width // 24))
+    ramp = [1.0] * (core.width - 2 * feather) + [0.0] * feather
+    alpha = ramp[:feather][::-1] + ramp
+    alpha = (alpha + [0.0] * (core.width - len(alpha)))[: core.width]
+    mask = Image.new("L", (core.width, h))
+    mask.putdata([int(v * 255) for v in alpha] * h)
+    canvas.paste(core, (pad // 2, 0), mask)
     return canvas
 
 

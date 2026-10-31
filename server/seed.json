@@ -143,13 +143,15 @@
       "slug": "acids",
       "name": "Acids & Essentials",
       "blurb": "Acids, enzymes, eco straws",
-      "sort": 5
+      "sort": 5,
+      "cover": "assets/categories/acids.webp"
     },
     {
       "slug": "essences",
       "name": "Essences",
       "blurb": "Ten flavours, dosed by the drop",
-      "sort": 6
+      "sort": 6,
+      "cover": "assets/categories/essences.webp"
     }
   ],
   "products": [

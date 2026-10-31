@@ -143,13 +143,15 @@
       "slug": "acids",
       "name": "Acids & Essentials",
       "blurb": "Acids, enzymes, eco straws",
-      "sort": 5
+      "sort": 5,
+      "cover": "assets/categories/acids.webp"
     },
     {
       "slug": "essences",
       "name": "Essences",
       "blurb": "Ten flavours, dosed by the drop",
-      "sort": 6
+      "sort": 6,
+      "cover": "assets/categories/essences.webp"
     }
   ],
   "products": [
@@ -245,7 +247,7 @@
       "priceUsd": 8.2,
       "volume": "140 ml",
       "images": [
-        "assets/archive/AG0020.webp"
+        "assets/products/levitating-super-pony.webp"
       ],
       "description": "Ultra-light crystal with a pulled stem, suspended for a unique experience.",
       "specs": {
@@ -274,7 +276,7 @@
       "priceUsd": 8.2,
       "volume": "300 ml",
       "images": [
-        "assets/archive/AG0021.webp"
+        "assets/products/levitating-rocks-glass.webp"
       ],
       "description": "Ultra-light crystal with a pulled stem, suspended for a unique experience.",
       "specs": {
@@ -302,7 +304,7 @@
       "priceUsd": 8.2,
       "volume": "390 ml",
       "images": [
-        "assets/archive/AG0022.webp"
+        "assets/products/levitating-highball-glass.webp"
       ],
       "description": "Ultra-light crystal with a pulled stem, suspended for a unique experience.",
       "specs": {
@@ -519,7 +521,7 @@
       "priceUsd": 8.2,
       "volume": "140 ml",
       "images": [
-        "assets/archive/AG0015.webp"
+        "assets/products/retro-asia-cocktail-glass.webp"
       ],
       "description": "The house classic: fine walls, a straight taper and a foot that finds the table by itself.",
       "specs": {
@@ -547,7 +549,7 @@
       "priceUsd": 6.8,
       "volume": "270 ml",
       "images": [
-        "assets/archive/AG0016.webp"
+        "assets/products/retro-asia-rocks-glass.webp"
       ],
       "description": "The house classic: fine walls, a straight taper and a foot that finds the table by itself.",
       "specs": {
@@ -575,7 +577,7 @@
       "priceUsd": 6.8,
       "volume": "310 ml",
       "images": [
-        "assets/archive/AG0017.webp"
+        "assets/products/retro-asia-highball-glass.webp"
       ],
       "description": "The house classic: fine walls, a straight taper and a foot that finds the table by itself.",
       "specs": {
@@ -603,7 +605,7 @@
       "priceUsd": 2.8,
       "volume": "60 ml",
       "images": [
-        "assets/archive/AG0018.webp"
+        "assets/products/retro-asia-shot-glass.webp"
       ],
       "description": "The house classic: fine walls, a straight taper and a foot that finds the table by itself.",
       "specs": {
@@ -631,7 +633,7 @@
       "priceUsd": 10.9,
       "volume": "140 ml",
       "images": [
-        "assets/archive/AG0011.webp"
+        "assets/products/retro-asia-engraved-cocktail-glass.webp"
       ],
       "description": "Retro Asia, engraved by hand — the dots read as frost under bar light.",
       "specs": {
@@ -659,7 +661,7 @@
       "priceUsd": 8.2,
       "volume": "270 ml",
       "images": [
-        "assets/archive/AG0012.webp"
+        "assets/products/retro-asia-engraved-rocks-glass.webp"
       ],
       "description": "Retro Asia, engraved by hand — the dots read as frost under bar light.",
       "specs": {
@@ -687,7 +689,7 @@
       "priceUsd": 8.2,
       "volume": "310 ml",
       "images": [
-        "assets/archive/AG0013.webp"
+        "assets/products/retro-asia-engraved-highball-glass.webp"
       ],
       "description": "Retro Asia, engraved by hand — the dots read as frost under bar light.",
       "specs": {
@@ -715,7 +717,7 @@
       "priceUsd": 8.2,
       "volume": "210 ml",
       "images": [
-        "assets/archive/AG0008.webp"
+        "assets/products/bullet-chalet-glass.webp"
       ],
       "description": "Tall-sided chalet shapes, weighted at the base for a low centre of gravity.",
       "specs": {
@@ -743,7 +745,7 @@
       "priceUsd": 6.8,
       "volume": "390 ml",
       "images": [
-        "assets/archive/AG0010.webp"
+        "assets/products/bullet-rocks-glass.webp"
       ],
       "description": "Tall-sided chalet shapes, weighted at the base for a low centre of gravity.",
       "specs": {
@@ -771,7 +773,7 @@
       "priceUsd": 6.8,
       "volume": "410 ml",
       "images": [
-        "assets/archive/AG0009.webp"
+        "assets/products/bullet-highball-glass.webp"
       ],
       "description": "Tall-sided chalet shapes, weighted at the base for a low centre of gravity.",
       "specs": {
@@ -799,7 +801,7 @@
       "priceUsd": 8.2,
       "volume": "150 ml",
       "images": [
-        "assets/archive/AG0002.webp"
+        "assets/products/flowers-cocktail-glass.webp"
       ],
       "description": "A flared bowl that opens like a petal; built for aromatic, floral serves.",
       "specs": {
@@ -827,7 +829,7 @@
       "priceUsd": 6.8,
       "volume": "330 ml",
       "images": [
-        "assets/archive/AG0003.webp"
+        "assets/products/flowers-rocks-glass.webp"
       ],
       "description": "A flared bowl that opens like a petal; built for aromatic, floral serves.",
       "specs": {
@@ -855,7 +857,7 @@
       "priceUsd": 6.8,
       "volume": "370 ml",
       "images": [
-        "assets/archive/AG0001.webp"
+        "assets/products/flowers-highball-glass.webp"
       ],
       "description": "A flared bowl that opens like a petal; built for aromatic, floral serves.",
       "specs": {
@@ -883,7 +885,7 @@
       "priceUsd": 8.2,
       "volume": "145 ml",
       "images": [
-        "assets/archive/AG0006.webp"
+        "assets/products/coupethini-coupethini.webp"
       ],
       "description": "A coupe and a martini in one profile — the widest serve in the collection.",
       "specs": {
@@ -911,7 +913,7 @@
       "priceUsd": 8.0,
       "volume": "330 ml",
       "images": [
-        "assets/archive/AG0004.webp"
+        "assets/products/replicate-rocks-glass.webp"
       ],
       "description": "Borosilicate, blown thin and left raw. Light and nearly unbreakable in service.",
       "specs": {
@@ -939,7 +941,7 @@
       "priceUsd": 8.2,
       "volume": "150 ml",
       "images": [
-        "assets/archive/AG0023.webp"
+        "assets/products/shorties-mini-martini.webp"
       ],
       "description": "Small-format glasses for tasting flights and miniature serves.",
       "specs": {
@@ -965,7 +967,7 @@
       "priceUsd": 8.2,
       "volume": "150 ml",
       "images": [
-        "assets/archive/AG0024.webp"
+        "assets/products/shorties-daisy-coupe.webp"
       ],
       "description": "Small-format glasses for tasting flights and miniature serves.",
       "specs": {
@@ -991,7 +993,7 @@
       "priceUsd": 8.2,
       "volume": "160 ml",
       "images": [
-        "assets/archive/AG0026.webp"
+        "assets/products/shorties-lil-nora.webp"
       ],
       "description": "Small-format glasses for tasting flights and miniature serves.",
       "specs": {
@@ -1017,7 +1019,7 @@
       "priceUsd": 8.2,
       "volume": "200 ml",
       "images": [
-        "assets/archive/AG0025.webp"
+        "assets/products/shorties-modern-margo.webp"
       ],
       "description": "Small-format glasses for tasting flights and miniature serves.",
       "specs": {
@@ -1043,7 +1045,7 @@
       "priceUsd": null,
       "volume": "500 ml",
       "images": [
-        "assets/archive/AG0027.webp"
+        "assets/products/teapot-teapot.webp"
       ],
       "description": "Crystal and wood, held by a magnetic system. In development — ask for the first series.",
       "specs": {
@@ -1068,7 +1070,7 @@
       "priceUsd": null,
       "volume": "85 ml",
       "images": [
-        "assets/archive/AG0019.webp"
+        "assets/products/two-sips-cocktail-glass.webp"
       ],
       "description": "A two-sip cocktail glass. In development — ask for the first series.",
       "specs": {

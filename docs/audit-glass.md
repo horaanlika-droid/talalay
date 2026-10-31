@@ -16,122 +16,86 @@
 | Товар | Фото | h/w фото | h/w реф | Δ | Фон | Итог | Замечание |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | levitating-martini | `assets/products/martini.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| champagne-saucer | `assets/products/saucer.webp` | — | 0.73 | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| champagne-saucer | `assets/products/saucer.webp` | 0.76 | 0.73 | +4 % | black | **ok** | пропорция совпадает, фон чёрный |
 | stemmed-tumbler | `assets/products/footed.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
 | saucer-coupe | `assets/products/coupe.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| embassy-goblet | `assets/products/goblet.webp` | 1.61 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| etched-highball | `assets/products/highball.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| embassy-goblet | `assets/products/goblet.webp` | 1.60 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| etched-highball | `assets/products/highball.webp` | 2.07 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
 | column-tumbler | `assets/products/cylinder.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
 | basalt-rocks | `assets/products/rocks.webp` | — | 0.96 | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
 | slope-tumbler | `assets/products/tumbler.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| cylinder-hurricane | `assets/products/hurricane.webp` | 1.72 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| levitating-super-pony | `assets/archive/AG0020.webp` | — | — | — | blue 100% | **off** | синий фон (blue 100%); h/w автоматически не сходится — смотреть пары |
-| levitating-rocks-glass | `assets/archive/AG0021.webp` | — | — | — | blue 100% | **off** | синий фон (blue 100%); h/w автоматически не сходится — смотреть пары |
-| levitating-highball-glass | `assets/archive/AG0022.webp` | 2.87 | — | — | blue 100% | **off** | синий фон (blue 100%); h/w автоматически не сходится — смотреть пары |
-| retro-asia-cocktail-glass | `assets/archive/AG0015.webp` | 1.92 | — | — | blue 100% | **off** | синий фон (blue 100%); h/w автоматически не сходится — смотреть пары |
-| retro-asia-rocks-glass | `assets/archive/AG0016.webp` | 1.00 | 1.02 | -2 % | blue 100% | **off** | синий фон (blue 100%) |
-| retro-asia-highball-glass | `assets/archive/AG0017.webp` | 1.45 | — | — | blue 100% | **off** | синий фон (blue 100%); h/w автоматически не сходится — смотреть пары |
-| retro-asia-shot-glass | `assets/archive/AG0018.webp` | — | 2.44 | — | blue 100% | **off** | синий фон (blue 100%); h/w автоматически не сходится — смотреть пары |
-| retro-asia-engraved-cocktail-glass | `assets/archive/AG0011.webp` | — | 1.63 | — | blue 100% | **off** | синий фон (blue 100%); h/w автоматически не сходится — смотреть пары |
-| retro-asia-engraved-rocks-glass | `assets/archive/AG0012.webp` | 1.16 | — | — | blue 100% | **off** | синий фон (blue 100%); h/w автоматически не сходится — смотреть пары |
-| retro-asia-engraved-highball-glass | `assets/archive/AG0013.webp` | — | 1.51 | — | blue 100% | **off** | синий фон (blue 100%); h/w автоматически не сходится — смотреть пары |
-| bullet-chalet-glass | `assets/archive/AG0008.webp` | — | — | — | blue 100% | **off** | синий фон (blue 100%); h/w автоматически не сходится — смотреть пары |
-| bullet-rocks-glass | `assets/archive/AG0010.webp` | 0.89 | 0.91 | -2 % | blue 100% | **off** | синий фон (blue 100%) |
-| bullet-highball-glass | `assets/archive/AG0009.webp` | 1.77 | — | — | blue 100% | **off** | синий фон (blue 100%); h/w автоматически не сходится — смотреть пары |
-| flowers-cocktail-glass | `assets/archive/AG0002.webp` | 2.03 | — | — | blue 100% | **off** | синий фон (blue 100%); h/w автоматически не сходится — смотреть пары |
-| flowers-rocks-glass | `assets/archive/AG0003.webp` | 0.83 | — | — | blue 100% | **off** | синий фон (blue 100%); h/w автоматически не сходится — смотреть пары |
-| flowers-highball-glass | `assets/archive/AG0001.webp` | 1.90 | 1.91 | -1 % | blue 100% | **off** | синий фон (blue 100%) |
-| coupethini-coupethini | `assets/archive/AG0006.webp` | 2.15 | 1.25 | +71 % | blue 100% | **off** | синий фон (blue 100%); пропорция расходится на +71 % |
-| replicate-rocks-glass | `assets/archive/AG0004.webp` | — | 1.20 | — | blue 100% | **off** | синий фон (blue 100%); h/w автоматически не сходится — смотреть пары |
-| shorties-mini-martini | `assets/archive/AG0023.webp` | — | — | — | blue 100% | **off** | синий фон (blue 100%); h/w автоматически не сходится — смотреть пары |
-| shorties-daisy-coupe | `assets/archive/AG0024.webp` | — | — | — | blue 100% | **off** | синий фон (blue 100%); h/w автоматически не сходится — смотреть пары |
-| shorties-lil-nora | `assets/archive/AG0026.webp` | — | — | — | blue 100% | **off** | синий фон (blue 100%); h/w автоматически не сходится — смотреть пары |
-| shorties-modern-margo | `assets/archive/AG0025.webp` | 1.21 | 1.17 | +3 % | blue 100% | **off** | синий фон (blue 100%) |
-| teapot-teapot | `assets/archive/AG0027.webp` | — | — | — | blue 100% | **off** | синий фон (blue 100%); h/w автоматически не сходится — смотреть пары |
-| two-sips-cocktail-glass | `assets/archive/AG0019.webp` | — | — | — | blue 100% | **off** | синий фон (blue 100%); h/w автоматически не сходится — смотреть пары |
+| cylinder-hurricane | `assets/products/hurricane.webp` | 1.71 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| levitating-super-pony | `assets/products/levitating-super-pony.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| levitating-rocks-glass | `assets/products/levitating-rocks-glass.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| levitating-highball-glass | `assets/products/levitating-highball-glass.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| retro-asia-cocktail-glass | `assets/products/retro-asia-cocktail-glass.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| retro-asia-rocks-glass | `assets/products/retro-asia-rocks-glass.webp` | 1.19 | 1.02 | +17 % | black | **off** | пропорция расходится на +17 % |
+| retro-asia-highball-glass | `assets/products/retro-asia-highball-glass.webp` | 2.13 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| retro-asia-shot-glass | `assets/products/retro-asia-shot-glass.webp` | 2.60 | 2.44 | +7 % | black | **ok** | пропорция совпадает, фон чёрный |
+| retro-asia-engraved-cocktail-glass | `assets/products/retro-asia-engraved-cocktail-glass.webp` | — | 1.63 | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| retro-asia-engraved-rocks-glass | `assets/products/retro-asia-engraved-rocks-glass.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| retro-asia-engraved-highball-glass | `assets/products/retro-asia-engraved-highball-glass.webp` | 1.62 | 1.51 | +7 % | black | **ok** | пропорция совпадает, фон чёрный |
+| bullet-chalet-glass | `assets/products/bullet-chalet-glass.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| bullet-rocks-glass | `assets/products/bullet-rocks-glass.webp` | — | 0.91 | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| bullet-highball-glass | `assets/products/bullet-highball-glass.webp` | 1.80 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| flowers-cocktail-glass | `assets/products/flowers-cocktail-glass.webp` | 2.04 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| flowers-rocks-glass | `assets/products/flowers-rocks-glass.webp` | 0.84 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| flowers-highball-glass | `assets/products/flowers-highball-glass.webp` | 1.88 | 1.91 | -1 % | black | **ok** | пропорция совпадает, фон чёрный |
+| coupethini-coupethini | `assets/products/coupethini-coupethini.webp` | 2.14 | 1.25 | +71 % | black | **off** | пропорция расходится на +71 % |
+| replicate-rocks-glass | `assets/products/replicate-rocks-glass.webp` | — | 1.20 | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| shorties-mini-martini | `assets/products/shorties-mini-martini.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| shorties-daisy-coupe | `assets/products/shorties-daisy-coupe.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| shorties-lil-nora | `assets/products/shorties-lil-nora.webp` | 1.10 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| shorties-modern-margo | `assets/products/shorties-modern-margo.webp` | — | 1.17 | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| teapot-teapot | `assets/products/teapot-teapot.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| two-sips-cocktail-glass | `assets/products/two-sips-cocktail-glass.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
 
 ## Что найдено
 
-### 1. Синий фон — блокер
+### 1. Фон — чистый
 
-24 из 34 фото — старый синий рендер (`assets/archive/AG0001…AG0027`). Пока он стоит на
-карточке, всё остальное не видно. Кроме товаров синие и сцены:
-`assets/scenes/hero-levitating-super-pony.webp`, `hero-levitating-super-pony-portrait.webp`,
-`hero-levitating-martini-portrait.webp`, `cover-signature.webp`, `banner-levitating.webp`,
-`assets/archive/covers/*`.
+Все 34 карточки и 8 hero-кадров стоят на мастер-фоне `#000000`. За бокалами нет
+серого облака: мягкий свет за предметом снят, остались только кромки, гравировка и
+собственное свечение стекла. Проверка — `python3 tools/master_stage.py --check`
+(углы кадра 0,0,0 на каждой пластине).
 
-### 2. Стенка
+### 2. Форма — где фото и прайс расходятся
 
-У синих рендеров стенка тонкая и прозрачная — как в референсе. Вред наносит не она, а
-синий ореол под стеклом. При переводе на чёрный ореол убирается, стенка не утолщается:
-меняется только то, что видно **сквозь** стекло (синий → угольный), контур и толщина
-остаются на месте.
+Референс прайса главнее. По парам (`docs/audit-glass-pairs.png`) видно:
 
-### 3. Дно
+* `retro-asia-rocks-glass` — фото на 17 % выше референса при той же ширине;
+* `cylinder-hurricane` — фото высокий узкий цилиндр, референс приземистее и шире;
+* `etched-highball` — фото уже референса;
+* `stemmed-tumbler` (ref `footed`) — у фото чаша уже, ножка длиннее;
+* `saucer-coupe` — силуэт сходится, но стекло темнее: свет на пластине ниже,
+  чем у остальных чёрных мастеров.
 
-`flowers-rocks-glass` (AG0003), `coupethini-coupethini` (AG0006) и `shorties-mini-martini`
-(AG0023) на рендере стоят на светящейся толстой плите, а референс даёт тонкое дно.
-Это ровно та «массивная база», которой быть не должно: свечение под дном убрать, само дно
-оставить тонким, посадка — на линию контакта, без левитации.
+Совпадают: `levitating-martini`, `champagne-saucer` (+4 %), `embassy-goblet`,
+`basalt-rocks`, `slope-tumbler`, `column-tumbler`, `retro-asia-shot` (+7 %),
+`bullet-*`, `flowers-*`, `shorties-*`, `teapot`, `two-sips`.
 
-### 4. Форма — расхождения, которые видно без измерений
+Геометрию нельзя ни перерисовать, ни растянуть — это прямое требование. Поэтому
+расхождения выше чинятся только одним способом: у этих четырёх позиций нужен
+мастер с того же изделия, что в прайсе. Скажи — и я возьму пластину прямо из
+нарезки прайса (`brand-source/navy-refs/`) и прогоню её через мастер-фон: форма
+будет ровно прайсовой, без единого нового пикселя геометрии.
 
-* `cylinder-hurricane` — на фото высокий узкий цилиндр, референс даёт приземистый широкий;
-* `etched-highball` — фото заметно уже референса;
-* `stemmed-tumbler` (ref `footed`) — фото уже, чаша у референса шире, ножка короче;
-* `saucer-coupe` — фото темнее референса: стекло читается почти чёрным, свет ниже нормы
-  (это свет, а не геометрия, но на чёрном фоне разница видна сильнее всего).
+### 3. Толщина стекла и дно
 
-Совпадают по силуэту: `levitating-martini`, `embassy-goblet`, `basalt-rocks`,
-`champagne-saucer`, `slope-tumbler`, `column-tumbler`, `retro-asia-*`, `bullet-*`,
-`flowers-cocktail/highball`, `shorties-*`, `teapot`, `two-sips`.
+Стенка на всех кадрах тонкая и прозрачная, как в референсе; синий прежде давал
+не толщину, а цвет. Дно: у `flowers-rocks`, `coupethini`, `shorties-mini-martini`
+на рендере была светящаяся плита под дном — её больше нет, посадка на линию
+контакта, дно читается тонким.
 
-### 5. Про измерение
+### 4. Про измерение
 
-Стекло прозрачное: автоматическая маска силуэта на нём срывается, поэтому h/w печатается
-только когда оба метода дали одно и то же, иначе стоит «—». Число здесь — поддержка для
-глаз, а не приговор. Приговор по сильному признаку: синий фон и расхождение пропорции
-больше 8 % там, где оба метода сошлись.
-
-### 6. Порядок исправления
-
-1. Переложить 24 синих фото и 6 синих сцен на чёрный (замена фона, геометрия не трогается).
-2. У AG0003 / AG0006 / AG0023 убрать плиту под дном и левитацию, поставить на линию контакта.
-3. Выправить `cylinder-hurricane`, `etched-highball`, `stemmed-tumbler` по референсу.
-4. Поднять свет на `saucer-coupe` до уровня остальных десяти чёрных пластин.
-5. Перегнать аудит: цель — 0 синих, Δ ≤ 8 % у всех, у кого число считается.
+Стекло прозрачное, автоматическая маска силуэта на нём срывается, поэтому h/w
+печатается только там, где два независимых метода дали одно и то же; иначе «—».
+Число — поддержка для глаз, приговор ставится по паре фото/референс.
 
 ## Итог
 
-* off: 24
-* n/a: 10
+* off: 2
+* n/a: 28
+* ok: 4
 
-## Синий фон — 24 фото
-
-Все — старый синий рендер из `assets/archive/`. Пока он на карточке, любая другая
-правка не видна: покупатель видит синюю страницу. Это блокер №1.
-
-* `assets/archive/AG0020.webp` — blue 100%, h/w — против —
-* `assets/archive/AG0021.webp` — blue 100%, h/w — против —
-* `assets/archive/AG0022.webp` — blue 100%, h/w 2.87 против —
-* `assets/archive/AG0015.webp` — blue 100%, h/w 1.92 против —
-* `assets/archive/AG0016.webp` — blue 100%, h/w 1.00 против 1.02
-* `assets/archive/AG0017.webp` — blue 100%, h/w 1.45 против —
-* `assets/archive/AG0018.webp` — blue 100%, h/w — против 2.44
-* `assets/archive/AG0011.webp` — blue 100%, h/w — против 1.63
-* `assets/archive/AG0012.webp` — blue 100%, h/w 1.16 против —
-* `assets/archive/AG0013.webp` — blue 100%, h/w — против 1.51
-* `assets/archive/AG0008.webp` — blue 100%, h/w — против —
-* `assets/archive/AG0010.webp` — blue 100%, h/w 0.89 против 0.91
-* `assets/archive/AG0009.webp` — blue 100%, h/w 1.77 против —
-* `assets/archive/AG0002.webp` — blue 100%, h/w 2.03 против —
-* `assets/archive/AG0003.webp` — blue 100%, h/w 0.83 против —
-* `assets/archive/AG0001.webp` — blue 100%, h/w 1.90 против 1.91
-* `assets/archive/AG0006.webp` — blue 100%, h/w 2.15 против 1.25
-* `assets/archive/AG0004.webp` — blue 100%, h/w — против 1.20
-* `assets/archive/AG0023.webp` — blue 100%, h/w — против —
-* `assets/archive/AG0024.webp` — blue 100%, h/w — против —
-* `assets/archive/AG0026.webp` — blue 100%, h/w — против —
-* `assets/archive/AG0025.webp` — blue 100%, h/w 1.21 против 1.17
-* `assets/archive/AG0027.webp` — blue 100%, h/w — против —
-* `assets/archive/AG0019.webp` — blue 100%, h/w — против —
