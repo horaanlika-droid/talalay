@@ -19,7 +19,7 @@ DEFAULT_SETTINGS: dict[str, Any] = {
     "announcement": "",
     "ticker": [
         "Hand-blown crystal · China",
-        "52 pieces · 17 collections",
+        "52 pieces · six categories",
         "Trade prices in AED",
         "Bars · hotels · studios",
         "Dubai · HoReCa supply",
@@ -29,7 +29,7 @@ DEFAULT_SETTINGS: dict[str, Any] = {
     ],
     "marquee": [
         "Hand-blown *crystal*",
-        "52 pieces · 17 collections",
+        "52 pieces · six categories",
         "Bars, hotels & *studios*",
         "Trade prices in *AED*",
         "Dubai",
@@ -159,15 +159,6 @@ def seed_database() -> None:
             blurb=category.get("blurb", ""),
             sort=category.get("sort", index),
         )
-    for index, collection in enumerate(payload.get("collections", [])):
-        upsert_collection(
-            slug=collection["slug"],
-            name=collection["name"],
-            subtitle=collection.get("subtitle", ""),
-            description=collection.get("description", ""),
-            image=collection.get("image", ""),
-            sort=collection.get("sort", index),
-        )
     for index, product in enumerate(payload.get("products", [])):
         upsert_product(
             slug=product["slug"],
@@ -182,7 +173,7 @@ def seed_database() -> None:
             in_stock=product.get("inStock", True) is not False,
             sort=product.get("sort", index),
             images=product.get("images", []),
-            collections=product.get("collectionSlugs", []),
+            collections=[],
             specs=product.get("specs", {}),
         )
 

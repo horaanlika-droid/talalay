@@ -38,15 +38,6 @@ const HERO_SCENES = new Set([
   "levitating-super-pony",
 ]);
 
-/* Wide header plates for the four live collections: the glass is the same
-   picture, scaled so it survives a short full-width band without being cut. */
-const COLLECTION_BANNERS = new Set(["levitating", "noir", "signature", "raw"]);
-
-function collectionBanner(collection) {
-  if (COLLECTION_BANNERS.has(collection.slug)) return `assets/scenes/banner-${collection.slug}.webp`;
-  return collection.image ? mediaUrl(collection.image) : "";
-}
-
 function heroScene(product, portrait) {
   if (HERO_SCENES.has(product.slug)) {
     return `assets/scenes/hero-${product.slug}${portrait ? "-portrait" : ""}.webp`;
@@ -59,7 +50,7 @@ function heroScene(product, portrait) {
 // word. Anything else is printed straight.
 const FALLBACK_MARQUEE = [
   "Hand-blown *crystal*",
-  "52 pieces · 17 collections",
+  "52 pieces · six categories",
   "Bars, hotels & *studios*",
   "Trade prices in *AED*",
   "Dubai",
@@ -111,32 +102,19 @@ function productCard(data, product) {
   </article>`;
 }
 
-function archiveTile(data, collection) {
-  const count = selectors.productsByCollection(data, collection.slug).length;
-  return `<a class="archive-tile spotlight" href="#/collection/${attr(collection.slug)}">
-    <span class="archive-tile__media">${
-      collection.image
-        ? `<img src="${attr(mediaUrl(collection.image))}" alt="" loading="lazy" decoding="async">`
-        : ""
-    }</span>
-    <span class="archive-tile__body">
-      <span class="archive-tile__name">${esc(collection.name)}</span>
-      <span class="archive-tile__meta">${count} ${count === 1 ? "piece" : "pieces"} · in development</span>
-    </span>
-  </a>`;
-}
-
-function collectionTile(data, collection) {
-  const count = selectors.productsByCollection(data, collection.slug).length;
-  const img = collection.image
-    ? `<img src="${attr(mediaUrl(collection.image))}" alt="${attr(collection.name)}" loading="lazy" decoding="async">`
-    : "";
-  return `<a class="tile spotlight" href="#/collection/${attr(collection.slug)}">
+function categoryTile(data, category) {
+  const items = selectors.productsByCategory(data, category.slug);
+  const lead = items.find((p) => p.images && p.images.length) || items[0];
+  const img =
+    lead && lead.images && lead.images[0]
+      ? `<img src="${attr(mediaUrl(lead.images[0]))}" alt="" loading="lazy" decoding="async">`
+      : "";
+  return `<a class="tile spotlight" href="#/shop?c=${attr(category.slug)}">
     <span class="tile__media">${img}</span>
     <span class="tile__inner">
-      <span class="tile__eyebrow">${esc(collection.subtitle || "Collection")}</span>
-      <span class="tile__name">${esc(collection.name)}</span>
-      <span class="tile__count">${count} ${count === 1 ? "piece" : "pieces"}</span>
+      <span class="tile__eyebrow">${esc(category.blurb || "Category")}</span>
+      <span class="tile__name">${esc(category.name)}</span>
+      <span class="tile__count">${items.length} ${items.length === 1 ? "piece" : "pieces"}</span>
     </span>
   </a>`;
 }
@@ -151,9 +129,7 @@ export function homeView(data) {
   const first = slides[0];
   const featured = selectors.featured(data);
   const grid = (featured.length ? featured : data.products.filter((p) => !p.comingSoon)).slice(0, 4);
-  const live = data.collections.filter((c) => !c.comingSoon && c.categorySlug !== "acids");
-  const collections = live.slice(0, 4);
-  const archived = data.collections.filter((c) => c.comingSoon);
+  const categories = data.categories.filter((c) => selectors.productsByCategory(data, c.slug).length);
   const kinetic = kineticHTML(settings);
 
   const heroHTML = first
@@ -163,7 +139,7 @@ export function homeView(data) {
         <img data-hero-art src="${attr(heroScene(first.product, true))}" alt="" fetchpriority="high" decoding="async">
       </picture>
       <div class="hero__inner">
-        <p class="hero__kicker" data-hero-kicker>${esc(first.kicker || "The collection")}</p>
+        <p class="hero__kicker" data-hero-kicker>${esc(first.kicker || "The house")}</p>
         <div class="hero__titleWrap">
           <h1 class="h-hero hero__title" data-hero-title>${esc(first.title || first.name)}</h1>
         </div>
@@ -199,21 +175,6 @@ export function homeView(data) {
     </section>`
     : "";
 
-  const categoriesIndex = data.categories
-    .map((category, i) => {
-      const count = selectors.productsByCategory(data, category.slug).length;
-      return `<a class="cat-row" href="#/shop?c=${attr(category.slug)}">
-        <span class="cat-row__num mono">${pad(i + 1)}</span>
-        <span class="cat-row__main">
-          <span class="cat-row__name">${esc(category.name)}</span>
-          <span class="cat-row__blurb">${esc(category.blurb || "")}</span>
-        </span>
-        <span class="cat-row__count">${count} ${count === 1 ? "item" : "items"}</span>
-        <span class="cat-row__arrow">${icon("arrowUpRight")}</span>
-      </a>`;
-    })
-    .join("");
-
   const html = `${heroHTML}
 
     <div class="kinetic" aria-hidden="true">
@@ -223,43 +184,15 @@ export function homeView(data) {
     </div>
 
     <div class="wrap">
-      <section class="section reveal" aria-labelledby="collections-title">
+      <section class="section reveal" aria-labelledby="categories-title">
         <div class="section-head">
           <div>
-            <p class="eyebrow">Collections</p>
-            <h2 class="h2" id="collections-title" style="margin-top:8px">Four ways to serve</h2>
+            <p class="eyebrow">Categories</p>
+            <h2 class="h2" id="categories-title" style="margin-top:8px">Six ways to serve</h2>
           </div>
           ${arrowLink("#/shop", "All pieces")}
         </div>
-        <div class="hscroll">${collections.map((c) => collectionTile(data, c)).join("")}</div>
-      </section>
-
-      ${
-        archived.length
-          ? `<section class="archive-band reveal" aria-labelledby="archive-title">
-        <div class="wrap">
-          <div class="section-head">
-            <div>
-              <p class="eyebrow" style="color:rgba(255,255,255,.55)">In development</p>
-              <h2 class="h2" id="archive-title" style="margin-top:8px;color:#fff">Next from the works.</h2>
-            </div>
-            <a class="btn btn--light" href="#/archive">All in development ${icon("arrowRight")}</a>
-          </div>
-          <div class="archive-row">${archived.map((c) => archiveTile(data, c)).join("")}</div>
-        </div>
-      </section>`
-          : ""
-      }
-
-      <section class="section reveal" aria-labelledby="featured-title">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">The selection</p>
-            <h2 class="h2" id="featured-title" style="margin-top:8px">Currently in the embassy</h2>
-          </div>
-          ${arrowLink("#/shop", "Shop all")}
-        </div>
-        <div class="grid">${grid.map((p) => productCard(data, p)).join("")}</div>
+        <div class="hscroll">${categories.map((c) => categoryTile(data, c)).join("")}</div>
       </section>
 
       <section class="section split reveal" aria-labelledby="craft-title">
@@ -287,16 +220,6 @@ export function homeView(data) {
             </div>
           </div>
         </div>
-      </section>
-
-      <section class="section reveal" aria-labelledby="index-title">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">Index</p>
-            <h2 class="h2" id="index-title" style="margin-top:8px">Browse by category</h2>
-          </div>
-        </div>
-        <div class="index">${categoriesIndex}</div>
       </section>
 
       <section class="section" aria-labelledby="assurance-title">
@@ -353,7 +276,7 @@ function mountHero(root, slides) {
     node.classList.add("is-changing");
 
     const apply = () => {
-      els.kicker.textContent = slide.kicker || "The collection";
+      els.kicker.textContent = slide.kicker || "The house";
       els.title.textContent = slide.title || slide.name;
       els.name.textContent = slide.name;
       els.sub.textContent = slide.subtitle || "";
@@ -519,7 +442,7 @@ export function shopView(data, params = {}) {
         const q = current.q.trim().toLowerCase();
         if (q) {
           list = list.filter((p) =>
-            [p.name, p.subtitle, p.description, p.categorySlug, ...(p.collectionSlugs || [])]
+            [p.name, p.subtitle, p.description, p.categorySlug]
               .join(" ")
               .toLowerCase()
               .includes(q)
@@ -628,9 +551,6 @@ export function productView(data, slug) {
   if (!product) return null;
 
   const category = selectors.categoryBySlug(data, product.categorySlug);
-  const collections = product.collectionSlugs
-    .map((s) => selectors.collectionBySlug(data, s))
-    .filter(Boolean);
   const related = selectors.related(data, product, 4);
   const specs = Object.entries(product.specs || {});
   const img = product.images[0] ? mediaUrl(product.images[0]) : "";
@@ -668,7 +588,6 @@ export function productView(data, slug) {
           <a href="#/shop?c=${attr(product.categorySlug)}" style="text-transform:inherit">${esc(
     category ? category.name : "Catalogue"
   )}</a>
-          ${collections.length ? `<span aria-hidden="true">·</span><span>${esc(collections[0].name)}</span>` : ""}
         </div>
         <h1 class="pdp__title">${esc(product.name)}</h1>
         <p class="muted" style="margin:0;font-size:15px">${esc(product.subtitle || "")}</p>
@@ -702,13 +621,10 @@ export function productView(data, slug) {
         .join("")}</div>` : ""}
 
       ${
-        collections.length
-          ? `<div style="display:flex;gap:8px;flex-wrap:wrap">${collections
-              .map(
-                (c) =>
-                  `<a class="chip" href="#/collection/${attr(c.slug)}">${esc(c.name)} collection</a>`
-              )
-              .join("")}</div>`
+        category
+          ? `<div style="display:flex;gap:8px;flex-wrap:wrap"><a class="chip" href="#/shop?c=${attr(
+              category.slug
+            )}">${esc(category.name)}</a></div>`
           : ""
       }
 
@@ -780,114 +696,7 @@ export function productView(data, slug) {
   };
 }
 
-/* ------------------------------------------------------------- collection */
-
-export function collectionView(data, slug) {
-  const collection = selectors.collectionBySlug(data, slug);
-  if (!collection) return null;
-  const products = selectors.productsByCollection(data, slug);
-  const live = products.filter((p) => !p.comingSoon);
-  const arch = products.filter((p) => p.comingSoon);
-  const banner = collectionBanner(collection);
-  const html = `<section class="hero-mini">
-      ${banner ? `<div class="hero-mini__bg"><img src="${attr(banner)}" alt=""></div>` : ""}
-      <div class="hero-mini__inner">
-        <p class="eyebrow" style="color:rgba(255,255,255,.55)">${esc(collection.subtitle || "Collection")}</p>
-        <h1 class="h1">${esc(collection.name)}</h1>
-        <p class="lede" style="color:rgba(255,255,255,.72);max-width:54ch;margin:0">${esc(
-          collection.description || ""
-        )}</p>
-      </div>
-    </section>
-    <div class="wrap">
-      <section class="section">
-        <div class="section-head">
-          <p class="result-count">${live.length} ${live.length === 1 ? "piece" : "pieces"}</p>
-          ${arrowLink("#/shop", "Full catalogue")}
-        </div>
-        ${
-          live.length
-            ? `<div class="grid">${live.map((p) => productCard(data, p)).join("")}</div>`
-            : arch.length
-            ? ""
-            : `<div class="empty">${icon("sparkle")}<p style="margin:0">This collection is being restocked.</p></div>`
-        }
-      </section>
-      ${
-        arch.length
-          ? `<section class="section section--tight">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">In development</p>
-            <h2 class="h2" style="margin-top:8px">${esc(collection.name)}, first series</h2>
-          </div>
-        </div>
-        <p class="muted" style="margin:-6px 0 18px;font-size:14px">Not in stock yet — ask and we will hold a place in the first firing.</p>
-        <div class="grid">${arch.map((p) => productCard(data, p)).join("")}</div>
-      </section>`
-          : ""
-      }
-    </div>`;
-  return {
-    title: `${collection.name} — ${data.settings.brand || "Cocktail Embassy"}`,
-    html,
-    navTitle: collection.name,
-    theme: "dark-top",
-  };
-}
-
 /* ---------------------------------------------------------------- request */
-
-export function archiveView(data, slug) {
-  const brand = data.settings?.brand || "Cocktail Embassy";
-  const soon = data.collections.filter((c) => c.comingSoon);
-  if (!slug) {
-    const html = `<section class="hero-mini hero-mini--navy">
-      <div class="hero-mini__inner">
-        <p class="eyebrow" style="color:rgba(255,255,255,.55)">In development</p>
-        <h1 class="h1">Next from the works.</h1>
-        <p class="lede" style="color:rgba(255,255,255,.72);max-width:54ch;margin:0">Shapes we are still blowing — the first series has no stock yet. Pick a collection, choose a piece and submit a request: we confirm timing and pricing within one business day.</p>
-      </div>
-    </section>
-    <div class="wrap">
-      <section class="section">
-        <div class="grid grid--tiles">${soon.map((c) => collectionTile(data, c)).join("")}</div>
-      </section>
-    </div>`;
-    return { title: `In development — ${brand}`, html, theme: "dark-top" };
-  }
-  const collection = selectors.collectionBySlug(data, slug);
-  if (!collection || !collection.comingSoon) return null;
-  const products = selectors.productsByCollection(data, slug);
-  const html = `<section class="hero-mini">
-      ${
-        collection.image
-          ? `<div class="hero-mini__bg"><img src="${attr(mediaUrl(collection.image))}" alt=""></div>`
-          : ""
-      }
-      <div class="hero-mini__inner">
-        <p class="eyebrow" style="color:rgba(255,255,255,.55)">${esc(collection.subtitle || "In development")}</p>
-        <h1 class="h1">${esc(collection.name)}</h1>
-        <p class="lede" style="color:rgba(255,255,255,.72);max-width:54ch;margin:0">${esc(
-          collection.description || ""
-        )}</p>
-      </div>
-    </section>
-    <div class="wrap">
-      <section class="section">
-        <div class="section-head">
-          <p class="result-count">${products.length} ${products.length === 1 ? "piece" : "pieces"} · first series</p>
-          ${arrowLink("#/archive", "All in development")}
-        </div>
-        ${
-          products.length
-            ? `<div class="grid">${products.map((p) => productCard(data, p)).join("")}</div>`
-            : `<div class="empty">${icon("sparkle")}<p style="margin:0">This series is being catalogued.</p></div>`
-        }
-      </section>
-    </div>`;
-  return { title: `${collection.name} — ${brand}`, html, theme: "dark-top" };
-}
 
 /* ---------------------------------------------------------------- request */
 
@@ -1261,7 +1070,7 @@ export function infoView(data) {
         <div class="mesh-card">
           <div style="display:grid;gap:14px;max-width:52ch">
             <h2 class="h2">Open the catalogue.</h2>
-            <p style="margin:0;color:rgba(11,23,48,.78);line-height:1.6">Sixteen pieces, four collections, one house standard.</p>
+            <p style="margin:0;color:rgba(11,23,48,.78);line-height:1.6">Fifty-two pieces, six categories, one house standard.</p>
             <div><a class="btn" href="#/shop">Shop all pieces ${icon("arrowRight")}</a></div>
           </div>
         </div>

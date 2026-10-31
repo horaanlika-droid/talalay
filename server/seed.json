@@ -77,156 +77,40 @@
   },
   "categories": [
     {
-      "slug": "glassware",
-      "name": "Glassware",
-      "blurb": "Hand-blown crystal for every serve",
+      "slug": "highball",
+      "name": "Highball & Collins",
+      "blurb": "Long drinks, collins, hurricanes",
       "sort": 1
     },
     {
-      "slug": "acids",
-      "name": "Acids & Other",
-      "blurb": "Acids, essences, straws and enzymes",
-      "sort": 2
-    }
-  ],
-  "collections": [
-    {
-      "slug": "levitating",
-      "name": "Levitating",
-      "subtitle": "Cocktail Collection",
-      "description": "Ultra-light crystal with a pulled stem, suspended for a unique experience.",
-      "image": "assets/scenes/cover-levitating.webp",
-      "sort": 1
-    },
-    {
-      "slug": "noir",
-      "name": "Noir",
-      "subtitle": "Dark Service",
-      "description": "Deep shadows, wide bowls, low light. Designed for after-dinner service.",
-      "image": "assets/scenes/cover-noir.webp",
+      "slug": "rocks",
+      "name": "Rocks & Tumblers",
+      "blurb": "Old fashioned, neat, on the rocks",
       "sort": 2
     },
     {
-      "slug": "signature",
-      "name": "Signature",
-      "subtitle": "House Editions",
-      "description": "The Embassy house cuts — etched, engraved and numbered by hand.",
-      "image": "assets/scenes/cover-signature.webp",
+      "slug": "cocktail",
+      "name": "Cocktail & Martini",
+      "blurb": "Martinies, coupes, shots, two sips",
       "sort": 3
     },
     {
-      "slug": "raw",
-      "name": "Raw",
-      "subtitle": "Studio Series",
-      "description": "Unfinished textures, sandblasted surfaces and single-piece vessels.",
-      "image": "assets/scenes/cover-raw.webp",
+      "slug": "wine",
+      "name": "Wine & Serve",
+      "blurb": "Wine, champagne, goblets, tea",
       "sort": 4
     },
     {
-      "slug": "retro-asia",
-      "name": "Retro Asia",
-      "subtitle": "Classic series",
-      "description": "The house classic: fine walls, a straight taper and a foot that finds the table by itself.",
-      "image": "assets/archive/covers/retro-asia.webp",
+      "slug": "acids",
+      "name": "Acids & Essentials",
+      "blurb": "Acids, enzymes, eco straws",
       "sort": 5
     },
     {
-      "slug": "retro-asia-engraved",
-      "name": "Retro Asia Engraved",
-      "subtitle": "Engraved series",
-      "description": "Retro Asia, engraved by hand — the dots read as frost under bar light.",
-      "image": "assets/archive/covers/retro-asia-engraved.webp",
-      "sort": 6
-    },
-    {
-      "slug": "bullet",
-      "name": "Bullet",
-      "subtitle": "Chalet series",
-      "description": "Tall-sided chalet shapes, weighted at the base for a low centre of gravity.",
-      "image": "assets/archive/covers/bullet.webp",
-      "sort": 7
-    },
-    {
-      "slug": "flowers",
-      "name": "Flowers",
-      "subtitle": "Floral series",
-      "description": "A flared bowl that opens like a petal; built for aromatic, floral serves.",
-      "image": "assets/archive/covers/flowers.webp",
-      "sort": 8
-    },
-    {
-      "slug": "coupethini",
-      "name": "Coupethini",
-      "subtitle": "Coupe series",
-      "description": "A coupe and a martini in one profile — the widest serve in the collection.",
-      "image": "assets/archive/covers/coupethini.webp",
-      "sort": 9
-    },
-    {
-      "slug": "replicate",
-      "name": "Replicate",
-      "subtitle": "Borosilicate series",
-      "description": "Borosilicate, blown thin and left raw. Light and nearly unbreakable in service.",
-      "image": "assets/archive/covers/replicate.webp",
-      "sort": 10
-    },
-    {
-      "slug": "shorties",
-      "name": "Shorties",
-      "subtitle": "Miniature series",
-      "description": "Small-format glasses for tasting flights and miniature serves.",
-      "image": "assets/archive/covers/shorties.webp",
-      "sort": 11
-    },
-    {
-      "slug": "soon-teapot",
-      "name": "Teapot",
-      "subtitle": "First series",
-      "description": "Crystal and wood, held by a magnetic system. In development — ask for the first series.",
-      "image": "assets/archive/covers/soon-teapot.webp",
-      "sort": 12,
-      "comingSoon": true
-    },
-    {
-      "slug": "two-sips",
-      "name": "Two Sips",
-      "subtitle": "First series",
-      "description": "A two-sip cocktail glass. In development — ask for the first series.",
-      "image": "assets/archive/covers/two-sips.webp",
-      "sort": 13,
-      "comingSoon": true
-    },
-    {
-      "slug": "straws",
-      "name": "Straws",
-      "subtitle": "Bar essentials",
-      "description": "Plant-based drinking straws for high-volume service.",
-      "image": "assets/packaging/sleeve-sugarcane.webp",
-      "sort": 14
-    },
-    {
-      "slug": "acids",
-      "name": "Acids",
-      "subtitle": "Cocktail acids",
-      "description": "Cocktail acids by the kilo, food grade, for calibration and shelf-stable balance.",
-      "image": "assets/packaging/jar-malic.webp",
-      "sort": 15
-    },
-    {
-      "slug": "hydrocolloids",
-      "name": "Hydrocolloids",
-      "subtitle": "Clarification",
-      "description": "Enzymes and gelling agents for clarification and texture work.",
-      "image": "assets/packaging/bottle-pectinase.webp",
-      "sort": 16
-    },
-    {
       "slug": "essences",
-      "name": "Flavour essences",
-      "subtitle": "Natural",
-      "description": "Natural flavour essences, 100 ml, dosed by the drop.",
-      "image": "assets/packaging/essence-strawberry.webp",
-      "sort": 17
+      "name": "Essences",
+      "blurb": "Ten flavours, dosed by the drop",
+      "sort": 6
     }
   ],
   "products": [
@@ -234,10 +118,7 @@
       "slug": "levitating-martini",
       "name": "Levitating Martini",
       "subtitle": "Hand-Blown Crystal · 210 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "levitating"
-      ],
+      "categorySlug": "cocktail",
       "price": 42,
       "priceUsd": null,
       "volume": "210 ml",
@@ -263,10 +144,7 @@
       "slug": "champagne-saucer",
       "name": "Champagne Saucer",
       "subtitle": "Wide Bowl Saucer · 250 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "levitating"
-      ],
+      "categorySlug": "wine",
       "price": 32,
       "priceUsd": null,
       "volume": "250 ml",
@@ -292,10 +170,7 @@
       "slug": "stemmed-tumbler",
       "name": "Stemmed Tumbler",
       "subtitle": "Footed Tumbler · 330 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "levitating"
-      ],
+      "categorySlug": "rocks",
       "price": 36,
       "priceUsd": null,
       "volume": "330 ml",
@@ -323,10 +198,7 @@
       "cod": "AG0020",
       "name": "Levitating Super Pony",
       "subtitle": "Levitating · 140 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "levitating"
-      ],
+      "categorySlug": "cocktail",
       "price": 30,
       "priceUsd": 8.2,
       "volume": "140 ml",
@@ -355,10 +227,7 @@
       "cod": "AG0021",
       "name": "Levitating Rocks Glass",
       "subtitle": "Levitating · 300 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "levitating"
-      ],
+      "categorySlug": "rocks",
       "price": 30,
       "priceUsd": 8.2,
       "volume": "300 ml",
@@ -386,10 +255,7 @@
       "cod": "AG0022",
       "name": "Levitating Highball Glass",
       "subtitle": "Levitating · 390 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "levitating"
-      ],
+      "categorySlug": "highball",
       "price": 30,
       "priceUsd": 8.2,
       "volume": "390 ml",
@@ -416,10 +282,7 @@
       "slug": "saucer-coupe",
       "name": "Saucer Coupe",
       "subtitle": "Double-Wall Coupe · 220 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "noir"
-      ],
+      "categorySlug": "wine",
       "price": 34,
       "priceUsd": null,
       "volume": "220 ml",
@@ -445,10 +308,7 @@
       "slug": "embassy-goblet",
       "name": "Embassy Goblet",
       "subtitle": "Burgundy Goblet · 400 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "signature"
-      ],
+      "categorySlug": "wine",
       "price": 38,
       "priceUsd": null,
       "volume": "400 ml",
@@ -474,10 +334,7 @@
       "slug": "etched-highball",
       "name": "Etched Highball",
       "subtitle": "Etched Edition · 350 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "signature"
-      ],
+      "categorySlug": "highball",
       "price": 28,
       "priceUsd": null,
       "volume": "350 ml",
@@ -504,10 +361,7 @@
       "slug": "column-tumbler",
       "name": "Column Tumbler",
       "subtitle": "Etched Column · 300 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "signature"
-      ],
+      "categorySlug": "rocks",
       "price": 28,
       "priceUsd": null,
       "volume": "300 ml",
@@ -533,10 +387,7 @@
       "slug": "basalt-rocks",
       "name": "Basalt Rocks",
       "subtitle": "Heavy Base Rocks · 320 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "raw"
-      ],
+      "categorySlug": "rocks",
       "price": 30,
       "priceUsd": null,
       "volume": "320 ml",
@@ -562,10 +413,7 @@
       "slug": "slope-tumbler",
       "name": "Slope Tumbler",
       "subtitle": "Stacking Tumbler · 300 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "raw"
-      ],
+      "categorySlug": "rocks",
       "price": 26,
       "priceUsd": null,
       "volume": "300 ml",
@@ -591,10 +439,7 @@
       "slug": "cylinder-hurricane",
       "name": "Cylinder Hurricane",
       "subtitle": "Candle Hurricane · 380 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "raw"
-      ],
+      "categorySlug": "highball",
       "price": 34,
       "priceUsd": null,
       "volume": "380 ml",
@@ -620,10 +465,7 @@
       "cod": "AG0015",
       "name": "Retro Asia Cocktail Glass",
       "subtitle": "Retro Asia · 140 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "retro-asia"
-      ],
+      "categorySlug": "cocktail",
       "price": 30,
       "priceUsd": 8.2,
       "volume": "140 ml",
@@ -651,10 +493,7 @@
       "cod": "AG0016",
       "name": "Retro Asia Rocks Glass",
       "subtitle": "Retro Asia · 270 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "retro-asia"
-      ],
+      "categorySlug": "rocks",
       "price": 25,
       "priceUsd": 6.8,
       "volume": "270 ml",
@@ -682,10 +521,7 @@
       "cod": "AG0017",
       "name": "Retro Asia Highball Glass",
       "subtitle": "Retro Asia · 310 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "retro-asia"
-      ],
+      "categorySlug": "highball",
       "price": 25,
       "priceUsd": 6.8,
       "volume": "310 ml",
@@ -713,10 +549,7 @@
       "cod": "AG0018",
       "name": "Retro Asia Shot Glass",
       "subtitle": "Retro Asia · 60 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "retro-asia"
-      ],
+      "categorySlug": "cocktail",
       "price": 10,
       "priceUsd": 2.8,
       "volume": "60 ml",
@@ -744,10 +577,7 @@
       "cod": "AG0011",
       "name": "Retro Asia Engraved Cocktail Glass",
       "subtitle": "Retro Asia Engraved · 140 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "retro-asia-engraved"
-      ],
+      "categorySlug": "cocktail",
       "price": 35,
       "priceUsd": 10.9,
       "volume": "140 ml",
@@ -775,10 +605,7 @@
       "cod": "AG0012",
       "name": "Retro Asia Engraved Rocks Glass",
       "subtitle": "Retro Asia Engraved · 270 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "retro-asia-engraved"
-      ],
+      "categorySlug": "rocks",
       "price": 30,
       "priceUsd": 8.2,
       "volume": "270 ml",
@@ -806,10 +633,7 @@
       "cod": "AG0013",
       "name": "Retro Asia Engraved Highball Glass",
       "subtitle": "Retro Asia Engraved · 310 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "retro-asia-engraved"
-      ],
+      "categorySlug": "highball",
       "price": 30,
       "priceUsd": 8.2,
       "volume": "310 ml",
@@ -837,10 +661,7 @@
       "cod": "AG0008",
       "name": "Bullet Chalet Glass",
       "subtitle": "Bullet · 210 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "bullet"
-      ],
+      "categorySlug": "rocks",
       "price": 30,
       "priceUsd": 8.2,
       "volume": "210 ml",
@@ -868,10 +689,7 @@
       "cod": "AG0010",
       "name": "Bullet Rocks Glass",
       "subtitle": "Bullet · 390 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "bullet"
-      ],
+      "categorySlug": "rocks",
       "price": 25,
       "priceUsd": 6.8,
       "volume": "390 ml",
@@ -899,10 +717,7 @@
       "cod": "AG0009",
       "name": "Bullet Highball Glass",
       "subtitle": "Bullet · 410 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "bullet"
-      ],
+      "categorySlug": "highball",
       "price": 25,
       "priceUsd": 6.8,
       "volume": "410 ml",
@@ -930,10 +745,7 @@
       "cod": "AG0002",
       "name": "Flowers Cocktail Glass",
       "subtitle": "Flowers · 150 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "flowers"
-      ],
+      "categorySlug": "cocktail",
       "price": 30,
       "priceUsd": 8.2,
       "volume": "150 ml",
@@ -961,10 +773,7 @@
       "cod": "AG0003",
       "name": "Flowers Rocks Glass",
       "subtitle": "Flowers · 330 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "flowers"
-      ],
+      "categorySlug": "rocks",
       "price": 25,
       "priceUsd": 6.8,
       "volume": "330 ml",
@@ -992,10 +801,7 @@
       "cod": "AG0001",
       "name": "Flowers Highball Glass",
       "subtitle": "Flowers · 370 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "flowers"
-      ],
+      "categorySlug": "highball",
       "price": 25,
       "priceUsd": 6.8,
       "volume": "370 ml",
@@ -1023,10 +829,7 @@
       "cod": "AG0006",
       "name": "Coupethini",
       "subtitle": "Coupethini · 145 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "coupethini"
-      ],
+      "categorySlug": "cocktail",
       "price": 30,
       "priceUsd": 8.2,
       "volume": "145 ml",
@@ -1054,10 +857,7 @@
       "cod": "AG0004",
       "name": "Replicate Rocks Glass",
       "subtitle": "Replicate · 330 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "replicate"
-      ],
+      "categorySlug": "rocks",
       "price": 28,
       "priceUsd": 8.0,
       "volume": "330 ml",
@@ -1085,10 +885,7 @@
       "cod": "AG0023",
       "name": "Shorties Mini Martini",
       "subtitle": "Shorties · 150 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "shorties"
-      ],
+      "categorySlug": "cocktail",
       "price": 30,
       "priceUsd": 8.2,
       "volume": "150 ml",
@@ -1114,10 +911,7 @@
       "cod": "AG0024",
       "name": "Shorties Daisy Coupe",
       "subtitle": "Shorties · 150 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "shorties"
-      ],
+      "categorySlug": "cocktail",
       "price": 30,
       "priceUsd": 8.2,
       "volume": "150 ml",
@@ -1143,10 +937,7 @@
       "cod": "AG0026",
       "name": "Shorties Lil' Nora",
       "subtitle": "Shorties · 160 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "shorties"
-      ],
+      "categorySlug": "cocktail",
       "price": 30,
       "priceUsd": 8.2,
       "volume": "160 ml",
@@ -1172,10 +963,7 @@
       "cod": "AG0025",
       "name": "Shorties Modern Margo",
       "subtitle": "Shorties · 200 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "shorties"
-      ],
+      "categorySlug": "cocktail",
       "price": 30,
       "priceUsd": 8.2,
       "volume": "200 ml",
@@ -1201,10 +989,7 @@
       "cod": "AG0027",
       "name": "Teapot",
       "subtitle": "Teapot · 500 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "soon-teapot"
-      ],
+      "categorySlug": "wine",
       "price": 145,
       "priceUsd": null,
       "volume": "500 ml",
@@ -1229,10 +1014,7 @@
       "cod": "AG0019",
       "name": "Two Sips Cocktail Glass",
       "subtitle": "Two Sips · 85 ml",
-      "categorySlug": "glassware",
-      "collectionSlugs": [
-        "two-sips"
-      ],
+      "categorySlug": "cocktail",
       "price": 0,
       "priceUsd": null,
       "volume": "85 ml",
@@ -1261,9 +1043,6 @@
       "name": "Eco Straw · Sugar Cane",
       "subtitle": "Straws · 210 mm · ⌀ 5 mm",
       "categorySlug": "acids",
-      "collectionSlugs": [
-        "straws"
-      ],
       "price": 125,
       "priceUsd": null,
       "volume": "210 mm · ⌀ 5 mm",
@@ -1290,9 +1069,6 @@
       "name": "Eco Straw · Coffee",
       "subtitle": "Straws · 210 mm · ⌀ 5 mm",
       "categorySlug": "acids",
-      "collectionSlugs": [
-        "straws"
-      ],
       "price": 125,
       "priceUsd": null,
       "volume": "210 mm · ⌀ 5 mm",
@@ -1319,9 +1095,6 @@
       "name": "Malic Acid",
       "subtitle": "Acids · 1000 g · food grade",
       "categorySlug": "acids",
-      "collectionSlugs": [
-        "acids"
-      ],
       "price": 100,
       "priceUsd": 40.1,
       "volume": "1000 g · food grade",
@@ -1346,9 +1119,6 @@
       "name": "Citric Acid",
       "subtitle": "Acids · 1000 g · food grade",
       "categorySlug": "acids",
-      "collectionSlugs": [
-        "acids"
-      ],
       "price": 80,
       "priceUsd": 32.7,
       "volume": "1000 g · food grade",
@@ -1373,9 +1143,6 @@
       "name": "Ascorbic Acid",
       "subtitle": "Acids · 1000 g · food grade",
       "categorySlug": "acids",
-      "collectionSlugs": [
-        "acids"
-      ],
       "price": 140,
       "priceUsd": 40.1,
       "volume": "1000 g · food grade",
@@ -1400,9 +1167,6 @@
       "name": "Tartaric Acid",
       "subtitle": "Acids · 1000 g · food grade",
       "categorySlug": "acids",
-      "collectionSlugs": [
-        "acids"
-      ],
       "price": 100,
       "priceUsd": 38.1,
       "volume": "1000 g · food grade",
@@ -1427,9 +1191,6 @@
       "name": "Pectinase",
       "subtitle": "Hydrocolloids · 300 ml · clarification",
       "categorySlug": "acids",
-      "collectionSlugs": [
-        "hydrocolloids"
-      ],
       "price": 475,
       "priceUsd": null,
       "volume": "300 ml · clarification",
@@ -1454,9 +1215,6 @@
       "name": "Agar Agar",
       "subtitle": "Hydrocolloids · 1000 g · clarification",
       "categorySlug": "acids",
-      "collectionSlugs": [
-        "hydrocolloids"
-      ],
       "price": 400,
       "priceUsd": 109,
       "volume": "1000 g · clarification",
@@ -1480,10 +1238,7 @@
       "cod": "FE0001",
       "name": "Strawberry",
       "subtitle": "Flavour essences · 100 ml · natural",
-      "categorySlug": "acids",
-      "collectionSlugs": [
-        "essences"
-      ],
+      "categorySlug": "essences",
       "price": 100,
       "priceUsd": 28,
       "volume": "100 ml · natural",
@@ -1507,10 +1262,7 @@
       "cod": "FE0002",
       "name": "Raspberry",
       "subtitle": "Flavour essences · 100 ml · natural",
-      "categorySlug": "acids",
-      "collectionSlugs": [
-        "essences"
-      ],
+      "categorySlug": "essences",
       "price": 100,
       "priceUsd": 28,
       "volume": "100 ml · natural",
@@ -1534,10 +1286,7 @@
       "cod": "FE0003",
       "name": "Grapefruit",
       "subtitle": "Flavour essences · 100 ml · natural",
-      "categorySlug": "acids",
-      "collectionSlugs": [
-        "essences"
-      ],
+      "categorySlug": "essences",
       "price": 100,
       "priceUsd": 28,
       "volume": "100 ml · natural",
@@ -1561,10 +1310,7 @@
       "cod": "FE0004",
       "name": "Peach",
       "subtitle": "Flavour essences · 100 ml · natural",
-      "categorySlug": "acids",
-      "collectionSlugs": [
-        "essences"
-      ],
+      "categorySlug": "essences",
       "price": 100,
       "priceUsd": 28,
       "volume": "100 ml · natural",
@@ -1588,10 +1334,7 @@
       "cod": "FE0005",
       "name": "Vanilla",
       "subtitle": "Flavour essences · 100 ml · natural",
-      "categorySlug": "acids",
-      "collectionSlugs": [
-        "essences"
-      ],
+      "categorySlug": "essences",
       "price": 100,
       "priceUsd": 28,
       "volume": "100 ml · natural",
@@ -1615,10 +1358,7 @@
       "cod": "FE0006",
       "name": "Cherry",
       "subtitle": "Flavour essences · 100 ml · natural",
-      "categorySlug": "acids",
-      "collectionSlugs": [
-        "essences"
-      ],
+      "categorySlug": "essences",
       "price": 100,
       "priceUsd": 28,
       "volume": "100 ml · natural",
@@ -1642,10 +1382,7 @@
       "cod": "FE0007",
       "name": "Green Apple",
       "subtitle": "Flavour essences · 100 ml · natural",
-      "categorySlug": "acids",
-      "collectionSlugs": [
-        "essences"
-      ],
+      "categorySlug": "essences",
       "price": 100,
       "priceUsd": 28,
       "volume": "100 ml · natural",
@@ -1669,10 +1406,7 @@
       "cod": "FE0008",
       "name": "Mango",
       "subtitle": "Flavour essences · 100 ml · natural",
-      "categorySlug": "acids",
-      "collectionSlugs": [
-        "essences"
-      ],
+      "categorySlug": "essences",
       "price": 100,
       "priceUsd": 28,
       "volume": "100 ml · natural",
@@ -1696,10 +1430,7 @@
       "cod": "FE0009",
       "name": "Banana",
       "subtitle": "Flavour essences · 100 ml · natural",
-      "categorySlug": "acids",
-      "collectionSlugs": [
-        "essences"
-      ],
+      "categorySlug": "essences",
       "price": 100,
       "priceUsd": 28,
       "volume": "100 ml · natural",
@@ -1723,10 +1454,7 @@
       "cod": "FE0010",
       "name": "Blackcurrant",
       "subtitle": "Flavour essences · 100 ml · natural",
-      "categorySlug": "acids",
-      "collectionSlugs": [
-        "essences"
-      ],
+      "categorySlug": "essences",
       "price": 100,
       "priceUsd": 28,
       "volume": "100 ml · natural",

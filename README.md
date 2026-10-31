@@ -5,7 +5,7 @@ and cocktail acids for bars, hotels and studios.
 
 | Part | Where it runs | What it does |
 | --- | --- | --- |
-| **Storefront** (`index.html`, `css/`, `js/`, `assets/`, `data/`) | GitHub Pages | iOS-style catalogue: hero carousel, shop with search/filters, product pages, collections, request form |
+| **Storefront** (`index.html`, `css/`, `js/`, `assets/`, `data/`) | GitHub Pages | iOS-style catalogue: hero carousel, shop with search/filters, product pages, categories, request form |
 | **Back office** (`server/`) | BotHost | REST API + Telegram admin bot. Everything on the site is edited from the bot |
 
 Live site: **https://horaanlika-droid.github.io/talalay/**
@@ -31,19 +31,22 @@ Live site: **https://horaanlika-droid.github.io/talalay/**
 Plain static files — no build step, no dependencies. Hash routing (`#/shop`, `#/product/…`)
 means it works identically on Pages, on BotHost, or from a local folder.
 
-* **Design** — dark navy hero with a levitating glass plate (reference 1429), one flat
-  raster picture per slide, chrome wordmark, oversized negative tracking typography.
+* **Design** — deep-black hero with a levitating glass plate, one flat raster picture
+  per slide, chrome wordmark, oversized negative tracking typography.
   iOS-native details: bottom tab bar, safe-area insets, sheet dialogs (drag them down
   to dismiss), spring easing, 44 px touch targets.
+* **Catalogue** — six categories (Highball & Collins, Rocks & Tumblers, Cocktail &
+  Martini, Wine & Serve, Acids & Essentials, Essences). Collections are retired: the
+  home page leads with category tiles, and every piece lives in exactly one category.
 * **Mechanics** — the app shell follows the Telegram-mini-app pattern proven in
   `posudnayalavka`, worn in the Embassy's navy and chrome:
   * **Opening curtain** — the chrome lockup and a single hairline progress bar, no
     counters and no copy, with `app by @stonym0ntana` set at the bottom. It stays at
     least 2.6 s and lifts only once the first hero plate is decoded. A failsafe lifts
     it after 9 s whatever happens.
-  * **iOS screen motion** — a piece or a collection *pushes* in from the right, going
+  * **iOS screen motion** — a piece *pushes* in from the right, going
     back *pops* in from the left, tab switches cross-fade (`js/app.js`, `routeDepth`).
-  * **Bar** — the current piece / collection name fades into the top bar as you
+  * **Bar** — the current piece name fades into the top bar as you
     scroll, and a back chevron appears on deep screens.
   * **Running line** — one `ticker` under the bar carries the trade announcement and
     the house lines across the top of every screen; it never blocks a tap and stands
@@ -51,7 +54,7 @@ means it works identically on Pages, on BotHost, or from a local folder.
   * **Press states** — every card, tile and row answers the finger, like a native list.
 * **Responsive** — single column + tab bar on phones, split hero and 4-up grid on desktop,
   sticky product stage at ≥ 900 px.
-* **Catalogue** — 52 pieces in 2 categories and 17 collections, generated from the
+* **Catalogue** — 52 pieces in six categories, generated from the
   trade price list by `tools/build_catalog.py` (see *Catalogue source* below).
 * **Requests, not checkout** — pieces are added to a request and submitted with contact
   details; the shop owner receives it in Telegram.
@@ -79,10 +82,7 @@ Leave it empty and the site keeps running on its bundled data.
 Everything the storefront shows is editable from the bot — no code, no redeploy.
 
 * **Products** — name, subtitle, description, price, volume, badge, category,
-  collections, featured flag, in-stock flag, photos (send a photo to upload).
-* **Collections** — the tiles on the home page and the collection pages: name,
-  subtitle, description, cover photo (upload or clear), the order the tiles appear
-  in, and which pieces belong to each collection (tap a piece to add or remove it).
+  category, featured flag, in-stock flag, photos (send a photo to upload).
 * **Categories** — filters in the shop (`Glassware`, `Acids & Other`).
 * **Running lines** — the two strips that carry live copy across the top of every
   page (`ticker`) and under the hero on the home page (`marquee`). Add, edit, delete,
@@ -203,16 +203,16 @@ Rules baked into the generator:
 ## Visuals — one flat raster per picture
 
 The storefront never composites a cut-out glass over a painted backdrop. Every
-picture the visitor sees is **one finished WebP**: the navy room, its glow and the
-piece are already in the file. CSS only paints the matching app colour (`#060c18`)
+picture the visitor sees is **one finished WebP**: the deep-black stage, its light
+and the piece are already in the file. CSS only paints the matching app colour
 around it, so a plate has no visible frame.
 
 | File | Made by | Used for |
 | --- | --- | --- |
-| `assets/products/*.webp` | `tools/harmonize_images.py` | product cards, product stage, cart, story split |
+| `assets/products/*.webp` | `tools/navy_to_catalog.py` | product cards, product stage, cart, story split |
 | `assets/scenes/hero-<slug>.webp` | `tools/render_scenes.py` | hero, desktop 16:9 |
 | `assets/scenes/hero-<slug>-portrait.webp` | `tools/render_scenes.py` | hero, phones 3:4 |
-| `assets/scenes/cover-<slug>.webp` | `tools/render_scenes.py` | collection tiles, collection header |
+| `assets/scenes/cover-<slug>.webp` | `tools/render_scenes.py` | legacy cover plates (collections retired) |
 | `assets/archive/**`, `assets/packaging/**` | archive pipeline / `render_packaging.py` | archive and acids & other |
 
 Rules:

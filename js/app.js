@@ -7,8 +7,6 @@ import {
   homeView,
   shopView,
   productView,
-  collectionView,
-  archiveView,
   requestView,
   infoView,
   notFoundView,
@@ -27,7 +25,7 @@ const NAV_ITEMS = [
 // running lines in the back office. The live copy is settings.ticker.
 const FALLBACK_TICKER = [
   "Hand-blown crystal · China",
-  "52 pieces · 17 collections",
+  "52 pieces · six categories",
   "Trade prices in AED",
   "Bars · hotels · studios",
   "Dubai · HoReCa supply",
@@ -129,7 +127,6 @@ function footerHTML(data) {
       <h4>Catalogue</h4>
       ${data.categories.map((cat) => `<a href="#/shop?c=${attr(cat.slug)}">${esc(cat.name)}</a>`).join("")}
       <a href="#/shop">All pieces</a>
-      <a href="#/archive">In development</a>
     </div>
     <div class="footer__col">
       <h4>Contact</h4>
@@ -210,18 +207,6 @@ const routeDefs = [
     tab: "shop",
     nav: "shop",
   },
-  {
-    test: (s) => s[0] === "collection" && s[1],
-    view: (data, p, params, s) => collectionView(data, s[1]),
-    tab: "shop",
-    nav: "shop",
-  },
-  {
-    test: (s) => s[0] === "archive",
-    view: (data, p, params, s) => archiveView(data, s[1]),
-    tab: "shop",
-    nav: "shop",
-  },
   { test: (s) => s[0] === "request", view: (data) => requestView(data), tab: "request", nav: "request" },
   { test: (s) => s[0] === "info", view: (data) => infoView(data), tab: "info", nav: "info" },
 ];
@@ -231,7 +216,7 @@ const routeDefs = [
    came back, so the screen can move the way the user's thumb did. */
 function routeDepth(segments) {
   if (!segments.length) return 0;
-  if (segments[0] === "product" || segments[0] === "collection") return 2;
+  if (segments[0] === "product") return 2;
   return 1;
 }
 
@@ -304,7 +289,7 @@ function updateNavMeta(view, def, depth, segments) {
   if (back) {
     back.hidden = !deep;
     back.href = "#/shop";
-    back.setAttribute("aria-label", segments[0] === "collection" ? "Back to collections" : "Back to the catalogue");
+    back.setAttribute("aria-label", "Back to the catalogue");
   }
   const title = nav.querySelector("[data-nav-title]");
   if (title) {
