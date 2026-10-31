@@ -14,7 +14,14 @@ Live site: **https://horaanlika-droid.github.io/talalay/**
 
 ## Design reference — 1697–1702 (master)
 
-> **31 Oct 2026 — stage is now DEEP MATTE BLACK, and so is the app.** Lighting law
+> **31 Oct 2026 — everything is matte black, app included, in a Tesla-like key.**
+> The interface is a flat black room: no gradients, no glows, no drop shadows.
+> Depth comes from three surface steps (`#0b0b0b` → `#141414` → `#1c1c1c`) and
+> 1 px hairlines; corners are 2–8 px, labels are wide-tracked uppercase 10.5 px,
+> the primary action is solid white on black, and the accent is silver — no blue
+> anywhere in the UI.
+>
+> **The photography stage is DEEP MATTE BLACK too.** Lighting law
 > unchanged; the navy backdrop is retired, and the interface follows the
 > photography: page background `#000000`, hairlines and light neutral, one cold
 > silver accent instead of blue. Plates are **never re-rendered**: each accepted master in
