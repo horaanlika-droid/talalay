@@ -18,6 +18,7 @@ import argparse
 import json
 from pathlib import Path
 
+import numpy as np
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -29,6 +30,13 @@ AUDIT = ROOT / "data" / "image-audit.json"
 MASTER = (2400, 3000)
 THUMB = (840, 1050)
 CONTACT_Y = 0.80                     # base line of every plate, navy or black
+
+# the catalogue's own framing, measured on the plates that were already right:
+# the piece fills 52.8 % of the frame height and stands on 73.3 % — below it the
+# floor, the contact shadow and the reflection. Everything is brought to this.
+PIECE_H = 0.528
+PIECE_BASE = 0.733
+FRAME_TOLERANCE = 0.012              # closer than this and the plate is left alone
 
 
 def master_for(name: str) -> Path:
@@ -78,6 +86,45 @@ MAP = {
 }
 
 
+def _piece_box(img: Image.Image) -> tuple[float, float, float, float, float]:
+    """Silhouette of the piece, measured against the plate's own brightest pixels.
+
+    A fixed threshold would make a dim plate look smaller than a bright one, so
+    the level is a share of that plate's own peak; the glow sits below it and
+    does not stretch the box.
+    """
+    a = np.asarray(img.convert("RGB")).max(axis=2).astype(np.float32)
+    level = max(24.0, 0.25 * float(np.percentile(a, 99.9)))
+    mask = a > level
+    ys = np.where(mask.any(axis=1))[0]
+    xs = np.where(mask.any(axis=0))[0]
+    h, w = a.shape
+    return xs.min() / w, ys.min() / h, (xs.max() + 1) / w, (ys.max() + 1) / h, level
+
+
+def frame_piece(img: Image.Image) -> Image.Image:
+    """Put the piece on the catalogue framing — same height, same base, same centre.
+
+    The masters came from three eras of shooting and their framing drifted: some
+    pieces filled 70 % of the frame and stood at 95 %, others filled 53 % at 73 %.
+    Side by side in a rail that reads as glasses of different sizes. This levels
+    them without touching a silhouette: the plate is scaled as a whole (glow
+    included) and re-pasted on black, so only its size on the page changes.
+    """
+    w, h = img.size
+    x0, y0, x1, y1, _ = _piece_box(img)
+    box_h = (y1 - y0) * h
+    scale = (PIECE_H * h) / max(1.0, box_h)
+    off_x = w / 2.0 - (x0 + x1) / 2.0 * w * scale
+    off_y = PIECE_BASE * h - y1 * h * scale
+    if abs(scale - 1.0) < FRAME_TOLERANCE and abs(off_x) < 2 and abs(off_y) < 2:
+        return img
+    big = img.resize((max(1, round(w * scale)), max(1, round(h * scale))), Image.LANCZOS)
+    canvas = Image.new("RGB", (w, h), (0, 0, 0))
+    canvas.paste(big, (round(off_x), round(off_y)))
+    return canvas
+
+
 def to_4x5(img: Image.Image, size=MASTER) -> Image.Image:
     w, h = size
     scale = h / img.height
@@ -109,7 +156,7 @@ def main() -> None:
     thumbs = []
     for name, master in MAP.items():
         source = master_for(master)
-        img = Image.open(source).convert("RGB")
+        img = frame_piece(Image.open(source).convert("RGB"))
         plate = to_4x5(img)
         if not args.preview:
             plate.save(OUT / f"{name}.webp", "WEBP", quality=88, method=6)
