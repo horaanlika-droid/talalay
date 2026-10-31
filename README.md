@@ -14,8 +14,10 @@ Live site: **https://horaanlika-droid.github.io/talalay/**
 
 ## Design reference — 1697–1702 (master)
 
-> **31 Oct 2026 — stage is now DEEP MATTE BLACK.** Lighting law unchanged; the navy
-> backdrop is retired. Plates are **never re-rendered**: each accepted master in
+> **31 Oct 2026 — stage is now DEEP MATTE BLACK, and so is the app.** Lighting law
+> unchanged; the navy backdrop is retired, and the interface follows the
+> photography: page background `#000000`, hairlines and light neutral, one cold
+> silver accent instead of blue. Plates are **never re-rendered**: each accepted master in
 > `brand-source/` goes through an edit that swaps only the backdrop to true black
 > `#000000` (≤ `#0e0e0e` haze) and neutralises the blue cast. Shape, engraving, wall
 > and base thickness stay 100 % those of the price list — checked by edge
@@ -31,13 +33,20 @@ Live site: **https://horaanlika-droid.github.io/talalay/**
 Plain static files — no build step, no dependencies. Hash routing (`#/shop`, `#/product/…`)
 means it works identically on Pages, on BotHost, or from a local folder.
 
-* **Design** — deep-black hero with a levitating glass plate, one flat raster picture
-  per slide, chrome wordmark, oversized negative tracking typography.
+* **Design** — a black room with the product photography as the only picture. The
+  hero shows the piece's own catalogue plate (`assets/products/*.webp`), whole and
+  never cropped, so its black edges dissolve into the page; no separate wide
+  render can drift away from the catalogue. Chrome wordmark, oversized negative
+  tracking typography.
   iOS-native details: bottom tab bar, safe-area insets, sheet dialogs (drag them down
   to dismiss), spring easing, 44 px touch targets.
 * **Catalogue** — six categories (Highball & Collins, Rocks & Tumblers, Cocktail &
   Martini, Wine & Serve, Acids & Essentials, Essences). Collections are retired: the
   home page leads with category tiles, and every piece lives in exactly one category.
+  Search covers names, copy, categories and article numbers; sort by featured, price,
+  name, volume or newest; filters for new pieces, stock and a price ceiling, all kept
+  in the URL so a filtered view can be shared. Every piece carries an article number
+  (AG/AC/PC/FE/ST + four digits) printed on the card and the product page.
 * **Mechanics** — the app shell follows the Telegram-mini-app pattern proven in
   `posudnayalavka`, worn in the Embassy's navy and chrome:
   * **Opening curtain** — the chrome lockup and a single hairline progress bar, no
@@ -466,8 +475,11 @@ One session = **3 glasses**. For each glass, produce **3 frames**:
 
 - [ ] Убрать коллекции из витрины, схемы данных и бота; навигация — 7 категорий
       (хайболы, rocks, коктейльные, винные, графины, чайная, наборы) по нашим позициям.
-- [ ] Карточка: артикул, объём, характеристики, «похожие», метки hit/new.
-- [ ] Каталог: поиск, сортировка (цена/объём/название), фильтры (новинки, в наличии, цена).
+- [x] Артикулы во всех 52 позициях (AG/AC/PC/FE/ST), на карточке и в карточке товара.
+- [x] Каталог: поиск (включая артикул), сортировка (цена/объём/название/новинки), фильтры
+      (новинки, в наличии, потолок цены), состояние в URL.
+- [x] Приложение на чёрном: фон `#000`, нейтральные поверхности и серебристый акцент,
+      герой показывает каталожную плашку товара, а не отдельный широкий рендер.
 - [ ] Корзина, оформление заказа, статусы (new → paid → packing → shipped → delivered),
       кабинет, избранное, чат поддержки.
 - [ ] Бот-админка: заказы, поддержка, каталог, категории, магазин и контакты, статистика,
