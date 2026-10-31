@@ -1,16 +1,16 @@
 {
-  "_comment": "Contact line of every catalogue photo, as a fraction of image height — read off a labelled grid (tools/diag_detect.py) and verified by eye. Everything below it is the old studio floor: contact shadow and mirror reflection. The harmoniser cuts there so the set has no shadow and no reflection. Drink photography is gone: the catalogue is glass only.",
-  "updatedAt": "2026-10-30",
+  "_comment": "Contact line of every catalogue photo, as a fraction of image height. The navy-studio plates (2026-10-31) all share one base line at 0.80; below it is the studio floor, contact shadow and mirror reflection.",
+  "updatedAt": "2026-10-31",
   "products": {
-    "coupe.webp": 0.75,
-    "cylinder.webp": 0.77,
+    "coupe.webp": 0.8,
+    "cylinder.webp": 0.8,
     "footed.webp": 0.8,
-    "goblet.webp": 0.848,
-    "highball.webp": 0.735,
-    "hurricane.webp": 0.775,
-    "martini.webp": 0.792,
-    "rocks.webp": 0.775,
-    "saucer.webp": 0.885,
-    "tumbler.webp": 0.768
+    "goblet.webp": 0.8,
+    "highball.webp": 0.8,
+    "hurricane.webp": 0.8,
+    "martini.webp": 0.8,
+    "rocks.webp": 0.8,
+    "saucer.webp": 0.8,
+    "tumbler.webp": 0.8
   }
 }
