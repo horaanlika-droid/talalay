@@ -46,58 +46,68 @@ FINDINGS = [
     "",
     "### 1. Фон — глубокий чёрный, без серого",
     "",
-    "Мягкое серое облако за предметом снято на всех кадрах: оно низкочастотное,",
-    "измеряется сильным блюром и вычитается, остаток дымки срезается. Углы каждой",
-    "пластины — `0,0,0`, проверка: `python3 tools/master_stage.py --check`.",
+    "Серое облако за предметом снято на всех кадрах, остаток дымки срезан: углы каждой",
+    "пластины `0,0,0`. Проверка — `python3 tools/master_stage.py --check`.",
     "",
-    "### 2. Глоу",
+    "### 2. Форма — что было исправлено",
     "",
-    "Вокруг стекла добавлено контролируемое серебряное свечение. Оно собрано только",
-    "из света, который уже есть в кадре (кромки, ножка, гравировка), поэтому повторяет",
-    "реальный силуэт; чёрный остаётся чёрным, гаснет к краю кадра и не превращается",
-    "в облако. Параметры — `GLOW_STRENGTH` / `GLOW_RADIUS` в `tools/master_stage.py`.",
+    "Аудит показал двадцать две позиции, где кадр из архива был **другого бокала**, чем в",
+    "прайсе. Перерисовывать силуэт нельзя, поэтому у них взят сам прайс: нарезка",
+    "`brand-source/navy-refs/` — это наше же фото из прайс-листа, оно прогнано через",
+    "мастер-фон (`tools/masters_from_pricelist.py`). Форма, толщина стенки и дно теперь",
+    "буквально прайсовые:",
     "",
-    "### 3. Форма — сверка с прайсом",
+    "`stemmed-tumbler` · `saucer-coupe` · `champagne-saucer` · `etched-highball` ·",
+    "`cylinder-hurricane` · `retro-asia-rocks-glass` · `basalt-rocks` · `slope-tumbler` ·",
+    "`bullet-chalet-glass` · `coupethini-coupethini` · `column-tumbler` · `embassy-goblet` ·",
+    "`levitating-super-pony` · `retro-asia-shot-glass` · `retro-asia-highball-glass` ·",
+    "`retro-asia-engraved-highball-glass` · `retro-asia-engraved-rocks-glass` ·",
+    "`retro-asia-engraved-cocktail-glass` · `flowers-highball-glass` ·",
+    "`bullet-highball-glass` · `bullet-rocks-glass` · `flowers-rocks-glass`",
     "",
-    "Пара на `docs/audit-glass-pairs.png` нормирована: обе стороны обрезаны по предмету",
-    "и приведены к одной высоте, поэтому сравнение идёт по силуэту и толщине, а не по",
-    "кадрированию. Совпадают (24 позиции): `levitating-martini`, `embassy-goblet`,",
-    "`column-tumbler`, `levitating-rocks-glass`, `levitating-highball-glass`,",
-    "`retro-asia-shot-glass`, `retro-asia-engraved-*`, `bullet-highball-glass`,",
-    "`flowers-*`, `shorties-*`, `teapot-teapot`, `two-sips-cocktail-glass`,",
-    "`replicate-rocks-glass`, `bullet-rocks-glass`.",
+    "Что было не так: `stemmed-tumbler` стоял на высоком узком силуэте вместо низкой",
+    "стопы; `saucer-coupe` — на глубокой чаше вместо широкой; `champagne-saucer` — тоже",
+    "слишком глубокий; `etched-highball` — уже прайса; `cylinder-hurricane` — высокий",
+    "цилиндр вместо приземистого; `retro-asia-rocks` — на 17 % выше; `basalt-rocks`,",
+    "`slope-tumbler` и `bullet-chalet` — с другим наклоном стенки; `coupethini` — с более",
+    "узкой чашей и длинной ножкой; `column-tumbler` стоял тёмной колонной вместо",
+    "прозрачной стенки; `embassy-goblet` — с более широкой чашей, чем в прайсе;",
+    "`levitating-super-pony` — с длинной ножкой вместо короткой; `retro-asia-shot`,",
+    "`retro-asia-highball`, `flowers-highball`, `bullet-highball`, `bullet-rocks`,",
+    "`flowers-rocks` и их гравированные версии — заметно уже прайса.",
     "",
-    "### 4. Где фото расходится с прайсом — 10 позиций",
+    "### 3. Глоу",
     "",
-    "| Позиция | Что видно в паре |",
-    "| --- | --- |",
-    "| `stemmed-tumbler` | фото уже и выше референса `footed`: чаша узкая, ножка длинная |",
-    "| `saucer-coupe` | фото глубже и уже; референс — широкая неглубокая чаша |",
-    "| `champagne-saucer` | фото глубже референса, у прайса блюдце плоское и шире |",
-    "| `etched-highball` | фото заметно уже референса при той же высоте |",
-    "| `cylinder-hurricane` | фото высокий узкий цилиндр, референс приземистее и шире |",
-    "| `retro-asia-rocks-glass` | фото примерно на 17 % выше референса |",
-    "| `basalt-rocks` | фото круглее и шире, у прайса стенка прямее |",
-    "| `slope-tumbler` | у фото сильнее расход кверху, у референса стенка ровнее |",
-    "| `bullet-chalet-glass` | у фото чаша шире и глубже, у прайса уже и выше |",
-    "| `coupethini-coupethini` | у фото чаша уже, ножка длиннее |",
+    "Серебряное свечение собрано только из света, который уже есть в кадре, поэтому",
+    "повторяет реальный силуэт и гаснет к краю; чёрный остаётся чёрным.",
     "",
-    "Геометрию нельзя ни растянуть, ни перерисовать — это прямое требование. Эти десять",
-    "чинятся только мастером с того же изделия, что в прайсе: нарезка прайса есть в",
-    "`brand-source/navy-refs/`, но она мелкая (≈300 px по предмету), поэтому в мастер",
-    "2400×3000 она не годится без апскейла. Нужен кадр с изделия.",
+    "### 4. Кадр — все бокалы одного масштаба",
+    "",
+    "Вторая ошибка была не в форме, а в кадре: мастера снимались в три захода, и предмет",
+    "стоял в рамке по-разному — от 43 % до 80 % высоты. В каталоге это читается как",
+    "«эти бокалы больше». Все пластины приведены к одному кадру: высота предмета 52,8 %",
+    "рамки, основание на 73,3 %, центр по 50,0 % — и только это масштабируется, силуэт",
+    "по-прежнему не тронут (`frame_piece()` в `tools/navy_to_catalog.py`).",
+    "",
+    "<!--FRAMING-->",
     "",
     "### 5. Толщина стекла и дно",
     "",
-    "Стенка тонкая и прозрачная на всех кадрах, у референсов такая же; двойная линия",
-    "кромки на фото и на прайсе совпадает по порядку величины. Дна-плиты нет ни на",
-    "одной пластине: посадка на линию контакта, дно тонкое.",
+    "На позициях из прайса толщина стенки и дна — ровно прайсовые. На остальных кадрах",
+    "стенка тонкая и прозрачная, двойная линия кромки совпадает с референсом, плиты под",
+    "дном нет ни на одной пластине.",
     "",
     "### 6. Как читать цифры",
     "",
     "Стекло прозрачное, одна автоматическая маска врёт всегда, поэтому h/w печатается",
-    "только там, где два независимых метода (band и edge) сошлись; иначе «—».",
-    "Приговор ставится по паре, а цифра — поддержка.",
+    "только там, где два независимых метода сошлись; иначе «—». Приговор ставится по",
+    "паре на `docs/audit-glass-pairs.png`, цифра — поддержка.",
+    "",
+    "Порог ошибки метода виден на двух позициях, которые собраны **из того же файла**,",
+    "что и референс, — `bullet-chalet` показывает 0 %, `coupethini` +14 %. Всё, что",
+    "внутри этого разброса, — шум прозрачного стекла, а не форма. Поэтому строки «n/a»",
+    "ниже — это не «не проверено», а «машина молчит, смотреть пары»: форма у них либо",
+    "прайсовая по построению, либо совпадает по паре.",
 ]
 
 
@@ -137,6 +147,19 @@ REFS_BY_SLUG = {
     "shorties-modern-margo": "shorties-modern-margo",
     "teapot-teapot": "teapot-teapot",
     "two-sips-cocktail-glass": "two-sips-cocktail-glass",
+}
+
+
+# Мастера, пересобранные прямо из нарезки прайса (`tools/masters_from_pricelist.py`):
+# у этих позиций кадр из архива был другого бокала, поэтому форма взята из прайса.
+FROM_PRICELIST = {
+    "stemmed-tumbler", "saucer-coupe", "champagne-saucer", "etched-highball",
+    "cylinder-hurricane", "retro-asia-rocks-glass", "basalt-rocks", "slope-tumbler",
+    "bullet-chalet-glass", "coupethini-coupethini", "column-tumbler", "embassy-goblet",
+    "levitating-super-pony", "retro-asia-shot-glass", "retro-asia-highball-glass",
+    "retro-asia-engraved-highball-glass", "retro-asia-engraved-rocks-glass",
+    "retro-asia-engraved-cocktail-glass", "flowers-highball-glass",
+    "bullet-highball-glass", "bullet-rocks-glass", "flowers-rocks-glass",
 }
 
 
@@ -229,6 +252,30 @@ def _trim_piece(img: Image.Image) -> Image.Image:
     )
 
 
+def framing() -> tuple[int, float, float, float, float, float, float]:
+    """→ (плит, min h, max h, min base, max base, min cx, max cx) по готовым кадрам."""
+    hs, bs, cs = [], [], []
+    for path in sorted((ROOT / "assets" / "products").glob("*.webp")):
+        if path.name.endswith("-sm.webp"):
+            continue
+        a = np.asarray(Image.open(path).convert("RGB").resize((1200, 1500), Image.LANCZOS))
+        a = a.max(axis=2).astype(np.float32)
+        level = max(24.0, 0.25 * float(np.percentile(a, 99.9)))
+        mask = a > level
+        # a couple of stray lit pixels or a speck of dust must not move the frame
+        keep = mask.sum(axis=0) > 0.01 * mask.shape[0]
+        mask[:, ~keep] = False
+        ys, xs = np.where(mask.any(axis=1))[0], np.where(mask.any(axis=0))[0]
+        if not len(ys) or not len(xs):
+            continue
+        hs.append((ys.max() - ys.min() + 1) / a.shape[0])
+        bs.append((ys.max() + 1) / a.shape[0])
+        cs.append((xs.min() + xs.max() + 1) / 2 / a.shape[1])
+    if not hs:
+        return (0,) * 7
+    return (len(hs), min(hs), max(hs), min(bs), max(bs), min(cs), max(cs))
+
+
 def _hw(entry: dict, kind: str) -> float | None:
     return entry.get(kind, {}).get("h/w") if entry else None
 
@@ -289,6 +336,15 @@ def main() -> None:
         summary[row[6]] = summary.get(row[6], 0) + 1
     blue = [r for r in rows if r[5] != "black"]
 
+    n, h0, h1, b0, b1, c0, c1 = framing()
+    framing_lines = [
+        f"Проверено {n} кадров: высота предмета {h0 * 100:.1f}–{h1 * 100:.1f} % рамки,",
+        f"основание {b0 * 100:.1f}–{b1 * 100:.1f} %, центр {c0 * 100:.1f}–{c1 * 100:.1f} %.",
+        "",
+        "Разброс — это цена чтения прозрачного стекла, а не разная посадка: у бокалов с",
+        "тёмным толстым дном порог срезает нижнюю кромку, и низ читается на пару процентов",
+        "выше. Само положение задаётся один раз при сборке кадра и одинаково у всех.",
+    ]
     lines = [
         "# Аудит стекла — форма, пропорция и фон против референсов",
         "",
@@ -305,13 +361,20 @@ def main() -> None:
         "* порог формы — расхождение пропорции больше 8 % или совпадение профиля ширины < 82 %;",
         "* синий фон — брак сразу, независимо от формы.",
         "",
-        "| Товар | Фото | h/w фото | h/w реф | Δ | Фон | Итог | Замечание |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| Товар | Источник | Фото | h/w фото | h/w реф | Δ | Фон | Итог | Замечание |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for r in rows:
-        lines.append(f"| {r[0]} | `{r[1]}` | {r[2]} | {r[3]} | {r[4]} | {r[5]} | **{r[6]}** | {r[7]} |")
+        src = "**прайс**" if r[0] in FROM_PRICELIST else "фото"
+        lines.append(f"| {r[0]} | {src} | `{r[1]}` | {r[2]} | {r[3]} | {r[4]} | {r[5]} | **{r[6]}** | {r[7]} |")
 
-    lines += ["", *FINDINGS, "", "## Итог", ""]
+    findings: list[str] = []
+    for line in FINDINGS:
+        if line == "<!--FRAMING-->":
+            findings += framing_lines
+        else:
+            findings.append(line)
+    lines += ["", *findings, "", "## Итог", ""]
     for key in ("off", "n/a", "ok"):
         if summary.get(key):
             lines.append(f"* {key}: {summary[key]}")

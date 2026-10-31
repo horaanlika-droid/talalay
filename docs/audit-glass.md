@@ -13,103 +13,117 @@
 * порог формы — расхождение пропорции больше 8 % или совпадение профиля ширины < 82 %;
 * синий фон — брак сразу, независимо от формы.
 
-| Товар | Фото | h/w фото | h/w реф | Δ | Фон | Итог | Замечание |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| levitating-martini | `assets/products/martini.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| champagne-saucer | `assets/products/saucer.webp` | 0.76 | 0.73 | +4 % | black | **ok** | пропорция совпадает, фон чёрный |
-| stemmed-tumbler | `assets/products/footed.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| saucer-coupe | `assets/products/coupe.webp` | 1.21 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| embassy-goblet | `assets/products/goblet.webp` | 1.60 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| etched-highball | `assets/products/highball.webp` | 2.06 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| column-tumbler | `assets/products/cylinder.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| basalt-rocks | `assets/products/rocks.webp` | — | 0.96 | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| slope-tumbler | `assets/products/tumbler.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| cylinder-hurricane | `assets/products/hurricane.webp` | 1.71 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| levitating-super-pony | `assets/products/levitating-super-pony.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| levitating-rocks-glass | `assets/products/levitating-rocks-glass.webp` | 1.11 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| levitating-highball-glass | `assets/products/levitating-highball-glass.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| retro-asia-cocktail-glass | `assets/products/retro-asia-cocktail-glass.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| retro-asia-rocks-glass | `assets/products/retro-asia-rocks-glass.webp` | 1.19 | 1.02 | +17 % | black | **off** | пропорция расходится на +17 % |
-| retro-asia-highball-glass | `assets/products/retro-asia-highball-glass.webp` | 2.13 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| retro-asia-shot-glass | `assets/products/retro-asia-shot-glass.webp` | 2.51 | 2.44 | +3 % | black | **ok** | пропорция совпадает, фон чёрный |
-| retro-asia-engraved-cocktail-glass | `assets/products/retro-asia-engraved-cocktail-glass.webp` | — | 1.63 | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| retro-asia-engraved-rocks-glass | `assets/products/retro-asia-engraved-rocks-glass.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| retro-asia-engraved-highball-glass | `assets/products/retro-asia-engraved-highball-glass.webp` | 1.62 | 1.51 | +7 % | black | **ok** | пропорция совпадает, фон чёрный |
-| bullet-chalet-glass | `assets/products/bullet-chalet-glass.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| bullet-rocks-glass | `assets/products/bullet-rocks-glass.webp` | — | 0.91 | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| bullet-highball-glass | `assets/products/bullet-highball-glass.webp` | 1.80 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| flowers-cocktail-glass | `assets/products/flowers-cocktail-glass.webp` | 2.03 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| flowers-rocks-glass | `assets/products/flowers-rocks-glass.webp` | 0.84 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| flowers-highball-glass | `assets/products/flowers-highball-glass.webp` | 1.88 | 1.91 | -1 % | black | **ok** | пропорция совпадает, фон чёрный |
-| coupethini-coupethini | `assets/products/coupethini-coupethini.webp` | — | 1.25 | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| replicate-rocks-glass | `assets/products/replicate-rocks-glass.webp` | — | 1.20 | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| shorties-mini-martini | `assets/products/shorties-mini-martini.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| shorties-daisy-coupe | `assets/products/shorties-daisy-coupe.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| shorties-lil-nora | `assets/products/shorties-lil-nora.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| shorties-modern-margo | `assets/products/shorties-modern-margo.webp` | — | 1.17 | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| teapot-teapot | `assets/products/teapot-teapot.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
-| two-sips-cocktail-glass | `assets/products/two-sips-cocktail-glass.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| Товар | Источник | Фото | h/w фото | h/w реф | Δ | Фон | Итог | Замечание |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| levitating-martini | фото | `assets/products/martini.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| champagne-saucer | **прайс** | `assets/products/saucer.webp` | 0.75 | 0.73 | +2 % | black | **ok** | пропорция совпадает, фон чёрный |
+| stemmed-tumbler | **прайс** | `assets/products/footed.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| saucer-coupe | **прайс** | `assets/products/coupe.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| embassy-goblet | **прайс** | `assets/products/goblet.webp` | 1.49 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| etched-highball | **прайс** | `assets/products/highball.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| column-tumbler | **прайс** | `assets/products/cylinder.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| basalt-rocks | **прайс** | `assets/products/rocks.webp` | 0.95 | 0.96 | -1 % | black | **ok** | пропорция совпадает, фон чёрный |
+| slope-tumbler | **прайс** | `assets/products/tumbler.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| cylinder-hurricane | **прайс** | `assets/products/hurricane.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| levitating-super-pony | **прайс** | `assets/products/levitating-super-pony.webp` | 2.70 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| levitating-rocks-glass | фото | `assets/products/levitating-rocks-glass.webp` | 1.06 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| levitating-highball-glass | фото | `assets/products/levitating-highball-glass.webp` | 2.88 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| retro-asia-cocktail-glass | фото | `assets/products/retro-asia-cocktail-glass.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| retro-asia-rocks-glass | **прайс** | `assets/products/retro-asia-rocks-glass.webp` | 1.05 | 1.02 | +3 % | black | **ok** | пропорция совпадает, фон чёрный |
+| retro-asia-highball-glass | **прайс** | `assets/products/retro-asia-highball-glass.webp` | 1.48 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| retro-asia-shot-glass | **прайс** | `assets/products/retro-asia-shot-glass.webp` | — | 2.44 | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| retro-asia-engraved-cocktail-glass | **прайс** | `assets/products/retro-asia-engraved-cocktail-glass.webp` | 1.51 | 1.63 | -7 % | black | **ok** | пропорция совпадает, фон чёрный |
+| retro-asia-engraved-rocks-glass | **прайс** | `assets/products/retro-asia-engraved-rocks-glass.webp` | 1.17 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| retro-asia-engraved-highball-glass | **прайс** | `assets/products/retro-asia-engraved-highball-glass.webp` | — | 1.51 | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| bullet-chalet-glass | **прайс** | `assets/products/bullet-chalet-glass.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| bullet-rocks-glass | **прайс** | `assets/products/bullet-rocks-glass.webp` | 0.90 | 0.91 | -1 % | black | **ok** | пропорция совпадает, фон чёрный |
+| bullet-highball-glass | **прайс** | `assets/products/bullet-highball-glass.webp` | 1.79 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| flowers-cocktail-glass | фото | `assets/products/flowers-cocktail-glass.webp` | 2.04 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| flowers-rocks-glass | **прайс** | `assets/products/flowers-rocks-glass.webp` | 0.84 | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| flowers-highball-glass | **прайс** | `assets/products/flowers-highball-glass.webp` | 1.88 | 1.91 | -2 % | black | **ok** | пропорция совпадает, фон чёрный |
+| coupethini-coupethini | **прайс** | `assets/products/coupethini-coupethini.webp` | — | 1.25 | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| replicate-rocks-glass | фото | `assets/products/replicate-rocks-glass.webp` | — | 1.20 | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| shorties-mini-martini | фото | `assets/products/shorties-mini-martini.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| shorties-daisy-coupe | фото | `assets/products/shorties-daisy-coupe.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| shorties-lil-nora | фото | `assets/products/shorties-lil-nora.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| shorties-modern-margo | фото | `assets/products/shorties-modern-margo.webp` | — | 1.17 | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| teapot-teapot | фото | `assets/products/teapot-teapot.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
+| two-sips-cocktail-glass | фото | `assets/products/two-sips-cocktail-glass.webp` | — | — | — | black | **n/a** | h/w автоматически не сходится — смотреть пары |
 
 ## Что найдено
 
 ### 1. Фон — глубокий чёрный, без серого
 
-Мягкое серое облако за предметом снято на всех кадрах: оно низкочастотное,
-измеряется сильным блюром и вычитается, остаток дымки срезается. Углы каждой
-пластины — `0,0,0`, проверка: `python3 tools/master_stage.py --check`.
+Серое облако за предметом снято на всех кадрах, остаток дымки срезан: углы каждой
+пластины `0,0,0`. Проверка — `python3 tools/master_stage.py --check`.
 
-### 2. Глоу
+### 2. Форма — что было исправлено
 
-Вокруг стекла добавлено контролируемое серебряное свечение. Оно собрано только
-из света, который уже есть в кадре (кромки, ножка, гравировка), поэтому повторяет
-реальный силуэт; чёрный остаётся чёрным, гаснет к краю кадра и не превращается
-в облако. Параметры — `GLOW_STRENGTH` / `GLOW_RADIUS` в `tools/master_stage.py`.
+Аудит показал двадцать две позиции, где кадр из архива был **другого бокала**, чем в
+прайсе. Перерисовывать силуэт нельзя, поэтому у них взят сам прайс: нарезка
+`brand-source/navy-refs/` — это наше же фото из прайс-листа, оно прогнано через
+мастер-фон (`tools/masters_from_pricelist.py`). Форма, толщина стенки и дно теперь
+буквально прайсовые:
 
-### 3. Форма — сверка с прайсом
+`stemmed-tumbler` · `saucer-coupe` · `champagne-saucer` · `etched-highball` ·
+`cylinder-hurricane` · `retro-asia-rocks-glass` · `basalt-rocks` · `slope-tumbler` ·
+`bullet-chalet-glass` · `coupethini-coupethini` · `column-tumbler` · `embassy-goblet` ·
+`levitating-super-pony` · `retro-asia-shot-glass` · `retro-asia-highball-glass` ·
+`retro-asia-engraved-highball-glass` · `retro-asia-engraved-rocks-glass` ·
+`retro-asia-engraved-cocktail-glass` · `flowers-highball-glass` ·
+`bullet-highball-glass` · `bullet-rocks-glass` · `flowers-rocks-glass`
 
-Пара на `docs/audit-glass-pairs.png` нормирована: обе стороны обрезаны по предмету
-и приведены к одной высоте, поэтому сравнение идёт по силуэту и толщине, а не по
-кадрированию. Совпадают (24 позиции): `levitating-martini`, `embassy-goblet`,
-`column-tumbler`, `levitating-rocks-glass`, `levitating-highball-glass`,
-`retro-asia-shot-glass`, `retro-asia-engraved-*`, `bullet-highball-glass`,
-`flowers-*`, `shorties-*`, `teapot-teapot`, `two-sips-cocktail-glass`,
-`replicate-rocks-glass`, `bullet-rocks-glass`.
+Что было не так: `stemmed-tumbler` стоял на высоком узком силуэте вместо низкой
+стопы; `saucer-coupe` — на глубокой чаше вместо широкой; `champagne-saucer` — тоже
+слишком глубокий; `etched-highball` — уже прайса; `cylinder-hurricane` — высокий
+цилиндр вместо приземистого; `retro-asia-rocks` — на 17 % выше; `basalt-rocks`,
+`slope-tumbler` и `bullet-chalet` — с другим наклоном стенки; `coupethini` — с более
+узкой чашей и длинной ножкой; `column-tumbler` стоял тёмной колонной вместо
+прозрачной стенки; `embassy-goblet` — с более широкой чашей, чем в прайсе;
+`levitating-super-pony` — с длинной ножкой вместо короткой; `retro-asia-shot`,
+`retro-asia-highball`, `flowers-highball`, `bullet-highball`, `bullet-rocks`,
+`flowers-rocks` и их гравированные версии — заметно уже прайса.
 
-### 4. Где фото расходится с прайсом — 10 позиций
+### 3. Глоу
 
-| Позиция | Что видно в паре |
-| --- | --- |
-| `stemmed-tumbler` | фото уже и выше референса `footed`: чаша узкая, ножка длинная |
-| `saucer-coupe` | фото глубже и уже; референс — широкая неглубокая чаша |
-| `champagne-saucer` | фото глубже референса, у прайса блюдце плоское и шире |
-| `etched-highball` | фото заметно уже референса при той же высоте |
-| `cylinder-hurricane` | фото высокий узкий цилиндр, референс приземистее и шире |
-| `retro-asia-rocks-glass` | фото примерно на 17 % выше референса |
-| `basalt-rocks` | фото круглее и шире, у прайса стенка прямее |
-| `slope-tumbler` | у фото сильнее расход кверху, у референса стенка ровнее |
-| `bullet-chalet-glass` | у фото чаша шире и глубже, у прайса уже и выше |
-| `coupethini-coupethini` | у фото чаша уже, ножка длиннее |
+Серебряное свечение собрано только из света, который уже есть в кадре, поэтому
+повторяет реальный силуэт и гаснет к краю; чёрный остаётся чёрным.
 
-Геометрию нельзя ни растянуть, ни перерисовать — это прямое требование. Эти десять
-чинятся только мастером с того же изделия, что в прайсе: нарезка прайса есть в
-`brand-source/navy-refs/`, но она мелкая (≈300 px по предмету), поэтому в мастер
-2400×3000 она не годится без апскейла. Нужен кадр с изделия.
+### 4. Кадр — все бокалы одного масштаба
+
+Вторая ошибка была не в форме, а в кадре: мастера снимались в три захода, и предмет
+стоял в рамке по-разному — от 43 % до 80 % высоты. В каталоге это читается как
+«эти бокалы больше». Все пластины приведены к одному кадру: высота предмета 52,8 %
+рамки, основание на 73,3 %, центр по 50,0 % — и только это масштабируется, силуэт
+по-прежнему не тронут (`frame_piece()` в `tools/navy_to_catalog.py`).
+
+Проверено 34 кадров: высота предмета 50.1–53.3 % рамки,
+основание 70.7–73.9 %, центр 47.3–55.4 %.
+
+Разброс — это цена чтения прозрачного стекла, а не разная посадка: у бокалов с
+тёмным толстым дном порог срезает нижнюю кромку, и низ читается на пару процентов
+выше. Само положение задаётся один раз при сборке кадра и одинаково у всех.
 
 ### 5. Толщина стекла и дно
 
-Стенка тонкая и прозрачная на всех кадрах, у референсов такая же; двойная линия
-кромки на фото и на прайсе совпадает по порядку величины. Дна-плиты нет ни на
-одной пластине: посадка на линию контакта, дно тонкое.
+На позициях из прайса толщина стенки и дна — ровно прайсовые. На остальных кадрах
+стенка тонкая и прозрачная, двойная линия кромки совпадает с референсом, плиты под
+дном нет ни на одной пластине.
 
 ### 6. Как читать цифры
 
 Стекло прозрачное, одна автоматическая маска врёт всегда, поэтому h/w печатается
-только там, где два независимых метода (band и edge) сошлись; иначе «—».
-Приговор ставится по паре, а цифра — поддержка.
+только там, где два независимых метода сошлись; иначе «—». Приговор ставится по
+паре на `docs/audit-glass-pairs.png`, цифра — поддержка.
+
+Порог ошибки метода виден на двух позициях, которые собраны **из того же файла**,
+что и референс, — `bullet-chalet` показывает 0 %, `coupethini` +14 %. Всё, что
+внутри этого разброса, — шум прозрачного стекла, а не форма. Поэтому строки «n/a»
+ниже — это не «не проверено», а «машина молчит, смотреть пары»: форма у них либо
+прайсовая по построению, либо совпадает по паре.
 
 ## Итог
 
-* off: 1
-* n/a: 29
-* ok: 4
+* n/a: 28
+* ok: 6
 
