@@ -54,7 +54,37 @@ function heroScene(product, portrait) {
   return mediaUrl(product.images?.[0] || "");
 }
 
-export const KINETIC_WORDS = `<span>Hand-blown <em>crystal</em></span><span>52 pieces · 17 collections</span><span>Bars, hotels &amp; <em>studios</em></span><span>Trade prices in <em>AED</em></span><span>Dubai</span><span>Worldwide <em>delivery</em></span><span>Breakage replaced <em>free</em></span>`;
+// The kinetic row under the hero. Live copy comes from settings.marquee; text
+// wrapped in *asterisks* is set in italic, the way the house voice stresses a
+// word. Anything else is printed straight.
+const FALLBACK_MARQUEE = [
+  "Hand-blown *crystal*",
+  "52 pieces · 17 collections",
+  "Bars, hotels & *studios*",
+  "Trade prices in *AED*",
+  "Dubai",
+  "Worldwide *delivery*",
+  "Breakage replaced *free*",
+];
+
+function marqueeLines(value) {
+  if (Array.isArray(value)) return value.map((v) => String(v).trim()).filter(Boolean);
+  if (typeof value === "string") {
+    return value
+      .split(/\r?\n/)
+      .map((v) => v.trim())
+      .filter(Boolean);
+  }
+  return [];
+}
+
+export function kineticHTML(settings = {}) {
+  const custom = marqueeLines(settings.marquee);
+  const lines = custom.length ? custom : FALLBACK_MARQUEE;
+  return lines
+    .map((line) => `<span>${esc(line).replace(/\*([^*]+)\*/g, "<em>$1</em>")}</span>`)
+    .join("");
+}
 
 function productCard(data, product) {
   const badge = product.comingSoon
@@ -124,6 +154,7 @@ export function homeView(data) {
   const live = data.collections.filter((c) => !c.comingSoon && c.categorySlug !== "acids");
   const collections = live.slice(0, 4);
   const archived = data.collections.filter((c) => c.comingSoon);
+  const kinetic = kineticHTML(settings);
 
   const heroHTML = first
     ? `<section class="hero" data-hero>
@@ -187,7 +218,7 @@ export function homeView(data) {
 
     <div class="kinetic" aria-hidden="true">
       <div class="kinetic__row">
-        ${KINETIC_WORDS}${KINETIC_WORDS}
+        ${kinetic}${kinetic}
       </div>
     </div>
 
@@ -238,7 +269,7 @@ export function homeView(data) {
         <div class="split__copy">
           <p class="eyebrow">The craft</p>
           <h2 class="h1" id="craft-title">Hand-blown,<br>never manufactured.</h2>
-          <p>Every piece passes through the hands of a glassblower before it reaches your bar. We work with two family workshops in Europe, keep editions small and reject anything that does not sit perfectly balanced in the hand.</p>
+          <p>Every piece passes through the hands of a glassblower before it reaches your bar — blown one at a time in our workshops in China, in small batches, and rejected if it does not sit perfectly balanced in the hand.</p>
           <p class="muted" style="font-size:14px">No two pieces are identical. Slight variations in weight and texture are the signature of the process — and the reason bars keep coming back.</p>
           ${arrowLink("#/info", "Our story")}
         </div>
@@ -277,7 +308,7 @@ export function homeView(data) {
           <div class="assurance__item">${icon("shield")}<h3>Breakage replaced</h3><p>${esc(
     settings.returnsNote || "Transit breakage is replaced free of charge."
   )}</p></div>
-          <div class="assurance__item">${icon("sparkle")}<h3>Hand-blown</h3><p>Small-batch crystal from two family workshops in Europe.</p></div>
+          <div class="assurance__item">${icon("sparkle")}<h3>Hand-blown</h3><p>Small-batch crystal, blown by hand in China.</p></div>
         </div>
       </section>
     </div>`;
@@ -1129,7 +1160,7 @@ const FAQ = [
     a: "Single pieces are available for studios and private bars. Bars and hotels usually order 6 per case; mixed cases are welcome. Pallet orders are quoted individually.",
   },
   {
-    q: "Do you ship outside the EU?",
+    q: "Do you ship outside the UAE?",
     a: "Yes — we ship worldwide, including the Gulf and North America. Import duties and local taxes are payable by the recipient unless agreed otherwise.",
   },
   {
@@ -1170,8 +1201,8 @@ export function infoView(data) {
         <div class="split__copy">
           <p class="eyebrow">Since 2024</p>
           <h2 class="h2">A small house with a long memory.</h2>
-          <p>Cocktail Embassy began as a private order of coupes for a single bar in Rotterdam. The shape travelled, the orders followed, and we kept the same rule: nothing ships unless it feels right in the hand.</p>
-          <p>We work with two family workshops, keep editions small, and publish specifications honestly — because the bar manager with a broken stem at midnight needs a real answer, not a marketing line.</p>
+          <p>Cocktail Embassy is a Dubai house supplying bars, hotels and studios across the Gulf and beyond. Every piece is blown by hand, one at a time, in our partner workshops in China — then checked here against the shape and the weight it has to hit.</p>
+          <p>Editions stay small and specifications are published honestly — because the bar manager with a broken stem at midnight needs a real answer, not a marketing line.</p>
         </div>
       </section>
 

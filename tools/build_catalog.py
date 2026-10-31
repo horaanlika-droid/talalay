@@ -34,7 +34,7 @@ HOUSE = OrderedDict([
                       "The pulled stem replicates classic proportions while keeping the piece almost "
                       "weightless in the hand.",
                  specs={"Capacity": "210 ml", "Material": "Lead-free hand-blown crystal",
-                        "Height": "185 mm", "Care": "Hand wash", "Origin": "Hand-blown in Europe"}),
+                        "Height": "185 mm", "Care": "Hand wash", "Origin": "Hand-blown in China"}),
             dict(slug="champagne-saucer", name="Champagne Saucer",
                  subtitle="Wide Bowl Saucer · 250 ml", price=32, badge=None,
                  image="assets/products/saucer.webp",
