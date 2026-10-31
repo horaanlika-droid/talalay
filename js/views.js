@@ -211,9 +211,9 @@ export function homeView(data) {
       <section class="section reveal" aria-labelledby="trade-title">
         <div class="mesh-card spotlight">
           <div style="display:grid;gap:18px;max-width:56ch;position:relative">
-            <p class="eyebrow" style="color:rgba(11,23,48,.6)">Trade programme</p>
+            <p class="eyebrow" style="color:var(--faint)">Trade programme</p>
             <h2 class="h2" id="trade-title">Built for bars, hotels &amp; studios.</h2>
-            <p style="margin:0;color:rgba(11,23,48,.78);line-height:1.6;max-width:46ch">Volume pricing, replacement on breakage, and an account manager who answers in one business day. Build a request and we&rsquo;ll quote the full case.</p>
+            <p style="margin:0;color:var(--fg-soft);line-height:1.6;max-width:46ch">Volume pricing, replacement on breakage, and an account manager who answers in one business day. Build a request and we&rsquo;ll quote the full case.</p>
             <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px">
               <a class="btn" href="#/shop">Start a request ${icon("arrowRight")}</a>
               <a class="btn btn--ghost" href="#/info">Talk to us</a>
@@ -1138,7 +1138,7 @@ export function infoView(data) {
         <div class="mesh-card">
           <div style="display:grid;gap:14px;max-width:52ch">
             <h2 class="h2">Open the catalogue.</h2>
-            <p style="margin:0;color:rgba(11,23,48,.78);line-height:1.6">Fifty-two pieces, six categories, one house standard.</p>
+            <p style="margin:0;color:var(--fg-soft);line-height:1.6">Fifty-two pieces, six categories, one house standard.</p>
             <div><a class="btn" href="#/shop">Shop all pieces ${icon("arrowRight")}</a></div>
           </div>
         </div>

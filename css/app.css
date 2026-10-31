@@ -2845,3 +2845,215 @@ body.is-booting .ticker {
 .ticker {
   transition: opacity 0.6s var(--ease-ios);
 }
+
+
+/* ==========================================================================
+   Matte black — Tesla house style
+   --------------------------------------------------------------------------
+   One flat black room, no gradients, no glows, no drop shadows: depth comes
+   from surface steps (#0b0b0b → #141414 → #1c1c1c) and 1 px hairlines only.
+   Geometry goes square-ish (4–8 px), labels are wide-tracked uppercase, and
+   the only strong contrast is white type on black.
+   ========================================================================== */
+
+:root {
+  --bg: #0b0b0b;
+  --bg-deep: #000000;
+  --bg-lift: #141414;
+  --surface: #141414;
+  --surface-2: #1c1c1c;
+  --surface-3: #242424;
+  --hairline: #262626;
+  --hairline-strong: #3a3a3a;
+
+  --fg: #f4f4f4;
+  --fg-soft: rgba(244, 244, 244, 0.72);
+  --muted: rgba(244, 244, 244, 0.5);
+  --faint: rgba(244, 244, 244, 0.34);
+
+  --accent: #ffffff;
+  --accent-deep: #b9b9b9;
+  --accent-blue: #d5d5d5;
+
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --glow-accent: none;
+  --mesh: #101010;
+}
+
+/* flat surfaces everywhere a gradient used to be */
+.card,
+.tile,
+.mesh-card,
+.sheet,
+.hero-mini--navy,
+.spotlight {
+  background: var(--surface);
+  background-image: none;
+  box-shadow: none;
+}
+.mesh-card::before,
+.spotlight::before {
+  display: none;
+}
+.hero,
+.hero-mini {
+  background: var(--bg);
+  background-image: none;
+}
+.nav {
+  background: rgba(11, 11, 11, 0.92);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--hairline);
+}
+.tabbar {
+  background: rgba(11, 11, 11, 0.96);
+  border-top: 1px solid var(--hairline);
+}
+.sheet {
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  border-color: var(--hairline);
+}
+
+/* square controls, white fill for the one primary action */
+.btn {
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 12.5px;
+  font-weight: 600;
+  min-height: 46px;
+}
+.btn:hover {
+  background: #ffffff;
+  box-shadow: none;
+}
+.btn--ghost,
+.btn--light {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--hairline-strong);
+  background: transparent;
+  color: var(--fg);
+}
+.btn--ghost:hover,
+.btn--light:hover {
+  border-color: var(--fg);
+  background: transparent;
+  color: var(--fg);
+}
+.chip {
+  border-radius: var(--radius-sm);
+  border-color: var(--hairline);
+  font-size: 11.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 8px 12px;
+}
+.chip[aria-pressed="true"],
+.chip.is-on {
+  background: var(--fg);
+  border-color: var(--fg);
+  color: #0b0b0b;
+}
+.iconbtn {
+  border-radius: var(--radius-sm);
+  border-color: var(--hairline);
+}
+
+/* type: wide-tracked small labels, tight big headlines */
+.eyebrow,
+.result-count,
+.card__article,
+.pdp__eyebrow {
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 10.5px;
+  color: var(--muted);
+}
+.h1,
+.h2,
+.h-hero,
+.pdp__title {
+  letter-spacing: -0.03em;
+}
+.card {
+  border-radius: var(--radius-md);
+}
+.card:hover {
+  transform: none;
+  border-color: var(--hairline-strong);
+  box-shadow: none;
+}
+.card__add {
+  border-radius: var(--radius-sm);
+}
+.tile {
+  border-radius: var(--radius-md);
+}
+.badge {
+  border-radius: var(--radius-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 9.5px;
+}
+.searchbar {
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+}
+.ticker {
+  background: #000000;
+  border-bottom: 1px solid var(--hairline);
+}
+.footer {
+  background: #080808;
+  border-top: 1px solid var(--hairline);
+}
+/* the hero plate sits straight on the black — no frame, no glow around it */
+.hero__art img {
+  filter: none;
+}
+
+/* --- Tesla layer: navigation and labels ---------------------------------- */
+.nav__link,
+.tab span,
+.footer__col h4,
+.pdp__eyebrow a {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 10.5px;
+  font-weight: 600;
+}
+.tabbar .tab {
+  border-radius: 0;
+}
+.nav__title {
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 10.5px;
+  color: var(--muted);
+}
+.section-head .h2 {
+  letter-spacing: -0.025em;
+}
+.card__media {
+  border-bottom: 1px solid var(--hairline);
+}
+.card__name {
+  letter-spacing: -0.01em;
+}
+.summary,
+.info-card {
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  box-shadow: none;
+}
