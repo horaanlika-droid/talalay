@@ -54,7 +54,7 @@ function heroScene(product, portrait) {
   return mediaUrl(product.images?.[0] || "");
 }
 
-export const KINETIC_WORDS = `<span>Hand-blown <em>crystal</em></span><span>Bars &amp; hotels</span><span>Small-batch <em>editions</em></span><span>Trade pricing</span><span>Dubai</span><span>Worldwide <em>dispatch</em></span>`;
+export const KINETIC_WORDS = `<span>Hand-blown <em>crystal</em></span><span>52 pieces · 17 collections</span><span>Bars, hotels &amp; <em>studios</em></span><span>Trade prices in <em>AED</em></span><span>Dubai</span><span>Worldwide <em>delivery</em></span><span>Breakage replaced <em>free</em></span>`;
 
 function productCard(data, product) {
   const badge = product.comingSoon
