@@ -65,6 +65,16 @@ FROM_PRICELIST = {
     "coupethini": "coupethini-coupethini",
     "cylinder": "cylinder",              # прозрачная стенка вместо тёмной колонны
     "goblet": "goblet",                  # чаша уже и выше, как в прайсе
+    "levitating-super-pony": "levitating-super-pony",   # узкая чаша на короткой ножке
+    "retro-asia-shot": "retro-asia-shot-glass",
+    "retro-asia-highball": "retro-asia-highball-glass",
+    "retro-asia-engraved-highball": "retro-asia-engraved-highball-glass",
+    "retro-asia-engraved-rocks": "retro-asia-engraved-rocks-glass",
+    "retro-asia-engraved-cocktail": "retro-asia-engraved-cocktail-glass",
+    "flowers-highball": "flowers-highball-glass",
+    "bullet-highball": "bullet-highball-glass",
+    "bullet-rocks": "bullet-rocks-glass",
+    "flowers-rocks": "flowers-rocks-glass",
 }
 
 
