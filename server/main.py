@@ -1,22 +1,27 @@
-"""Cocktail Embassy — API + Telegram back office (single process for BotHost)."""
+"""Cocktail Embassy — API + Telegram back office (single process for BotHost & local preview)."""
 from __future__ import annotations
 
 import asyncio
+import base64
+import hashlib
+import hmac
 import logging
+import re
+import secrets
+import time
+import uuid
 from contextlib import asynccontextmanager
 from typing import Any
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
 import db
 import settings as cfg
-import secrets
-import time
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("embassy")
@@ -24,6 +29,19 @@ log = logging.getLogger("embassy")
 # ------------------------------------------------------------------ admin auth
 _ADMIN_TOKENS: dict[str, float] = {}   # token -> expiry timestamp
 _ADMIN_TTL_SECONDS = 60 * 60 * 24      # 24 h session
+_DEFAULT_WEB_PASSWORD = "embassy2026"
+
+
+def _verify_web_password(password: str) -> bool:
+    clean = (password or "").strip()
+    if not clean:
+        return False
+    custom_hash = db.get_setting("_web_admin_pw_hash", "")
+    if isinstance(custom_hash, str) and len(custom_hash) == 64:
+        digest = hashlib.sha256(clean.encode("utf-8")).hexdigest()
+        return hmac.compare_digest(digest, custom_hash)
+    expected = cfg.ADMIN_PASSWORD or _DEFAULT_WEB_PASSWORD
+    return hmac.compare_digest(clean.encode("utf-8"), expected.encode("utf-8"))
 
 
 def _require_admin(request: Request) -> None:
@@ -107,7 +125,7 @@ async def lifespan(app: FastAPI):
             pass
 
 
-app = FastAPI(title="Cocktail Embassy API", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="Cocktail Embassy API", version="1.1.0", lifespan=lifespan)
 
 cfg.MEDIA_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/media", StaticFiles(directory=str(cfg.MEDIA_DIR)), name="media")
@@ -116,7 +134,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=cfg.CORS_ORIGINS,
     allow_credentials=False,
-    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -127,15 +145,6 @@ async def no_store(request: Request, call_next):
     if request.url.path.startswith("/api/"):
         response.headers["Cache-Control"] = "no-store, max-age=0"
     return response
-
-
-@app.get("/")
-async def index() -> dict[str, Any]:
-    return {
-        "service": "Cocktail Embassy API",
-        "status": "ok",
-        "endpoints": ["/api/content", "/api/requests", "/api/health", "/media/<file>"],
-    }
 
 
 @app.get("/api/health")
@@ -154,12 +163,6 @@ async def content() -> JSONResponse:
 
 
 def _shipping_for(settings: dict, delivery: str, subtotal: float) -> float:
-    """Shipping the office will invoice for this order.
-
-    The method list lives in settings, so the shop owner can change a fee from
-    the bot without a deploy. Free above the threshold, free on pickup; a method
-    with fee 0 and no threshold means "quoted later" and adds nothing here.
-    """
     methods = settings.get("deliveryMethods") or []
     method = next((m for m in methods if m.get("id") == delivery), None)
     if not method:
@@ -235,13 +238,40 @@ class AdminLoginIn(BaseModel):
     password: str
 
 
+class AdminPasswordChangeIn(BaseModel):
+    currentPassword: str
+    newPassword: str = Field(min_length=4, max_length=200)
+
+
+class SettingsIn(BaseModel):
+    key: str
+    value: Any
+
+
+class BulkSettingsIn(BaseModel):
+    settings: dict[str, Any]
+
+
+class UploadImageIn(BaseModel):
+    filename: str = Field(default="photo.webp", max_length=200)
+    dataUrl: str
+
+
 @app.post("/api/admin/login")
 async def admin_login(payload: AdminLoginIn) -> JSONResponse:
-    if not cfg.ADMIN_PASSWORD:
-        raise HTTPException(status_code=500, detail="admin password not configured")
-    if payload.password != cfg.ADMIN_PASSWORD:
-        raise HTTPException(status_code=401, detail="wrong password")
+    if not _verify_web_password(payload.password):
+        raise HTTPException(status_code=401, detail="Неверный пароль")
     return JSONResponse({"ok": True, "token": _issue_admin_token()})
+
+
+@app.post("/api/admin/password")
+async def admin_change_password(payload: AdminPasswordChangeIn, request: Request) -> JSONResponse:
+    _require_admin(request)
+    if not _verify_web_password(payload.currentPassword):
+        raise HTTPException(status_code=400, detail="Текущий пароль указан неверно")
+    digest = hashlib.sha256(payload.newPassword.strip().encode("utf-8")).hexdigest()
+    db.set_setting("_web_admin_pw_hash", digest)
+    return JSONResponse({"ok": True})
 
 
 @app.get("/api/admin/content")
@@ -250,16 +280,43 @@ async def admin_content(request: Request) -> JSONResponse:
     return JSONResponse(db.get_content())
 
 
-class SettingsIn(BaseModel):
-    key: str
-    value: Any
-
-
 @app.put("/api/admin/settings")
 async def admin_set_setting(payload: SettingsIn, request: Request) -> JSONResponse:
     _require_admin(request)
+    if str(payload.key).startswith("_"):
+        raise HTTPException(status_code=400, detail="Invalid setting key")
     db.set_setting(payload.key, payload.value)
     return JSONResponse({"ok": True})
+
+
+@app.put("/api/admin/settings/bulk")
+async def admin_set_settings_bulk(payload: BulkSettingsIn, request: Request) -> JSONResponse:
+    _require_admin(request)
+    for key, value in payload.settings.items():
+        if not str(key).startswith("_"):
+            db.set_setting(key, value)
+    return JSONResponse({"ok": True})
+
+
+@app.post("/api/admin/upload")
+async def admin_upload_image(payload: UploadImageIn, request: Request) -> JSONResponse:
+    _require_admin(request)
+    m = re.match(r"^data:image/(webp|png|jpe?g);base64,(.+)$", payload.dataUrl.strip(), re.IGNORECASE)
+    if not m:
+        raise HTTPException(status_code=400, detail="Поддерживаются изображения WebP, PNG или JPEG")
+    ext = m.group(1).lower()
+    if ext == "jpeg":
+        ext = "jpg"
+    try:
+        raw = base64.b64decode(m.group(2))
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=400, detail="Повреждённые данные изображения") from exc
+    if len(raw) > cfg.MAX_UPLOAD_MB * 1024 * 1024:
+        raise HTTPException(status_code=413, detail=f"Файл превышает {cfg.MAX_UPLOAD_MB} МБ")
+    fname = f"upload-{uuid.uuid4().hex[:12]}.{ext}"
+    out_path = cfg.MEDIA_DIR / fname
+    out_path.write_bytes(raw)
+    return JSONResponse({"ok": True, "url": f"/media/{fname}"})
 
 
 @app.put("/api/admin/products/{slug}")
@@ -276,6 +333,7 @@ async def admin_update_product(slug: str, payload: dict, request: Request) -> JS
         badge=payload.get("badge", ""),
         featured=bool(payload.get("featured")),
         in_stock=bool(payload.get("inStock", True)),
+        coming_soon=bool(payload.get("comingSoon", False)),
         sort=int(payload.get("sort") or 0),
         images=payload.get("images", []),
         collections=payload.get("collectionSlugs", []),
@@ -287,7 +345,8 @@ async def admin_update_product(slug: str, payload: dict, request: Request) -> JS
 @app.post("/api/admin/products")
 async def admin_create_product(payload: dict, request: Request) -> JSONResponse:
     _require_admin(request)
-    slug = payload.get("slug") or db.slugify(payload.get("name", "item"))
+    base_slug = db.slugify(payload.get("slug") or payload.get("name", "item"))
+    slug = db.unique_slug("products", base_slug)
     db.upsert_product(
         slug=slug,
         name=payload.get("name", ""),
@@ -299,7 +358,8 @@ async def admin_create_product(payload: dict, request: Request) -> JSONResponse:
         badge=payload.get("badge", ""),
         featured=bool(payload.get("featured")),
         in_stock=bool(payload.get("inStock", True)),
-        sort=int(payload.get("sort") or 0),
+        coming_soon=bool(payload.get("comingSoon", False)),
+        sort=int(payload.get("sort") or db.next_sort("product")),
         images=payload.get("images", []),
         collections=payload.get("collectionSlugs", []),
         specs=payload.get("specs", {}),
@@ -317,12 +377,27 @@ async def admin_delete_product(slug: str, request: Request) -> JSONResponse:
 @app.put("/api/admin/categories/{slug}")
 async def admin_update_category(slug: str, payload: dict, request: Request) -> JSONResponse:
     _require_admin(request)
+    target_slug = db.slugify(payload.get("slug") or slug)
     db.upsert_category(
-        slug=slug,
+        slug=target_slug,
         name=payload.get("name", ""),
         blurb=payload.get("blurb", ""),
         sort=int(payload.get("sort") or 0),
+        cover=payload.get("cover", ""),
     )
+    if target_slug != slug:
+        conn = db.get_conn()
+        with db._lock:
+            conn.execute("UPDATE products SET category_slug = ? WHERE category_slug = ?", (target_slug, slug))
+            conn.execute("DELETE FROM categories WHERE slug = ?", (slug,))
+            conn.commit()
+    return JSONResponse({"ok": True, "slug": target_slug})
+
+
+@app.delete("/api/admin/categories/{slug}")
+async def admin_delete_category(slug: str, request: Request) -> JSONResponse:
+    _require_admin(request)
+    db.delete_category(slug)
     return JSONResponse({"ok": True})
 
 
@@ -358,6 +433,39 @@ async def admin_set_request_status(
 @app.exception_handler(ValueError)
 async def value_error_handler(_: Request, exc: ValueError) -> JSONResponse:
     return JSONResponse(status_code=422, content={"detail": str(exc)})
+
+
+# ---------------------------------------------------- storefront static mount
+_INDEX_FILE = cfg.ROOT_DIR / "index.html"
+if _INDEX_FILE.exists():
+    for _dir_name in ("css", "js", "assets", "data"):
+        _dir_path = cfg.ROOT_DIR / _dir_name
+        if _dir_path.is_dir():
+            app.mount(f"/{_dir_name}", StaticFiles(directory=str(_dir_path)), name=f"static-{_dir_name}")
+
+    @app.get("/")
+    async def storefront_index() -> FileResponse:
+        return FileResponse(_INDEX_FILE, headers={"Cache-Control": "no-cache"})
+
+    @app.get("/index.html")
+    async def storefront_index_file() -> FileResponse:
+        return FileResponse(_INDEX_FILE, headers={"Cache-Control": "no-cache"})
+
+    @app.get("/sw.js")
+    async def storefront_sw() -> FileResponse:
+        return FileResponse(cfg.ROOT_DIR / "sw.js", media_type="application/javascript", headers={"Cache-Control": "no-cache"})
+
+    @app.get("/manifest.webmanifest")
+    async def storefront_manifest() -> FileResponse:
+        return FileResponse(cfg.ROOT_DIR / "manifest.webmanifest", media_type="application/manifest+json")
+else:
+    @app.get("/")
+    async def index() -> dict[str, Any]:
+        return {
+            "service": "Cocktail Embassy API",
+            "status": "ok",
+            "endpoints": ["/api/content", "/api/requests", "/api/health", "/media/<file>"],
+        }
 
 
 def main() -> None:

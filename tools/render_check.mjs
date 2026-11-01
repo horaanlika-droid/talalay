@@ -19,6 +19,8 @@ const el = () => ({
   classList: { add() {}, remove() {}, toggle() {} },
   setAttribute() {},
   appendChild() {},
+  replaceChildren() {},
+  focus() {},
   addEventListener() {},
   querySelector: () => null,
   querySelectorAll: () => [],
@@ -87,7 +89,24 @@ ok("hero plates are full-bleed sources", home.html.includes("hero-levitating-mar
 const marquee = (home.html.match(/kinetic__row/g) || []).length;
 ok("big running line present", marquee === 1);
 ok("request renders", views.requestView(data).html.length > 500);
-ok("info renders", views.infoView(data).html.length > 500);
+const info = views.infoView(data);
+ok("info renders", info.html.length > 500);
+ok("faq svgs have explicit dimensions", /accordion__trigger[\s\S]*?<svg width="\d+" height="\d+"/.test(info.html));
+const cssText = await readFile(join(root, "css/app.css"), "utf8");
+ok("css sizes accordion trigger svg", /\.accordion__trigger svg\s*\{[^}]*width:\s*\d+px/.test(cssText));
+
+const admin = await import(join(root, "js/admin.js"));
+const loginScreen = admin.adminView(data);
+ok("admin shows login form without server", loginScreen.html.includes("admin__login-form") && !loginScreen.html.includes("API не настроен"));
+await admin.adminLogin("embassy2026");
+ok("admin login succeeds in static mode", admin.isAdmin() === true);
+for (const tab of ["products", "categories", "settings", "requests", "sync"]) {
+  globalThis.location.hash = `#/admin/${tab}`;
+  const panel = admin.adminView(data);
+  ok(`admin ${tab} renders visible body`, panel.html.includes("admin__body") && !panel.html.includes('class="admin__sheet"'));
+}
+admin.logout();
+ok("admin logout clears session", admin.isAdmin() === false);
 
 let failed = 0;
 for (const [name, passed] of checks) {

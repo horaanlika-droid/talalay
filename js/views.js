@@ -1147,12 +1147,12 @@ export function infoView(data) {
         </div>
       </section>
 
-      <section class="section" aria-labelledby="faq-title">
-        <div class="section-head">
-          <h2 class="h2" id="faq-title">Good questions</h2>
+      <section class="section section--faq" aria-labelledby="faq-title">
+        <div class="section-head" style="margin-bottom:12px">
+          <h2 class="h3" id="faq-title">Good questions</h2>
         </div>
         <div class="accordion" data-accordion>
-          ${FAQ.map(
+          ${(Array.isArray(settings.faq) && settings.faq.length ? settings.faq : FAQ).map(
             (item, i) => `<div class="accordion__item">
               <button class="accordion__trigger" type="button" aria-expanded="false" aria-controls="faq-${i}">
                 <span>${esc(item.q)}</span>${icon("plus")}
