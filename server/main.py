@@ -15,9 +15,33 @@ from pydantic import BaseModel, Field, field_validator
 
 import db
 import settings as cfg
+import secrets
+import time
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("embassy")
+
+# ------------------------------------------------------------------ admin auth
+_ADMIN_TOKENS: dict[str, float] = {}   # token -> expiry timestamp
+_ADMIN_TTL_SECONDS = 60 * 60 * 24      # 24 h session
+
+
+def _require_admin(request: Request) -> None:
+    """401 unless a valid admin session token is presented."""
+    auth = request.headers.get("authorization", "")
+    if not auth.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="admin login required")
+    token = auth[7:]
+    expiry = _ADMIN_TOKENS.get(token)
+    if not expiry or time.time() > expiry:
+        _ADMIN_TOKENS.pop(token, None)
+        raise HTTPException(status_code=401, detail="admin session expired")
+
+
+def _issue_admin_token() -> str:
+    token = secrets.token_urlsafe(24)
+    _ADMIN_TOKENS[token] = time.time() + _ADMIN_TTL_SECONDS
+    return token
 
 
 class RequestItem(BaseModel):
@@ -203,6 +227,132 @@ async def create_request(payload: RequestIn) -> RequestOut:
             log.warning("Bot notification failed: %s", exc)
 
     return RequestOut(id=record["id"], reference=record["reference"])
+
+
+# ================================================================ admin API
+
+class AdminLoginIn(BaseModel):
+    password: str
+
+
+@app.post("/api/admin/login")
+async def admin_login(payload: AdminLoginIn) -> JSONResponse:
+    if not cfg.ADMIN_PASSWORD:
+        raise HTTPException(status_code=500, detail="admin password not configured")
+    if payload.password != cfg.ADMIN_PASSWORD:
+        raise HTTPException(status_code=401, detail="wrong password")
+    return JSONResponse({"ok": True, "token": _issue_admin_token()})
+
+
+@app.get("/api/admin/content")
+async def admin_content(request: Request) -> JSONResponse:
+    _require_admin(request)
+    return JSONResponse(db.get_content())
+
+
+class SettingsIn(BaseModel):
+    key: str
+    value: Any
+
+
+@app.put("/api/admin/settings")
+async def admin_set_setting(payload: SettingsIn, request: Request) -> JSONResponse:
+    _require_admin(request)
+    db.set_setting(payload.key, payload.value)
+    return JSONResponse({"ok": True})
+
+
+@app.put("/api/admin/products/{slug}")
+async def admin_update_product(slug: str, payload: dict, request: Request) -> JSONResponse:
+    _require_admin(request)
+    db.upsert_product(
+        slug=slug,
+        name=payload.get("name", ""),
+        subtitle=payload.get("subtitle", ""),
+        description=payload.get("description", ""),
+        price=float(payload.get("price") or 0),
+        volume=payload.get("volume", ""),
+        category_slug=payload.get("categorySlug", ""),
+        badge=payload.get("badge", ""),
+        featured=bool(payload.get("featured")),
+        in_stock=bool(payload.get("inStock", True)),
+        sort=int(payload.get("sort") or 0),
+        images=payload.get("images", []),
+        collections=payload.get("collectionSlugs", []),
+        specs=payload.get("specs", {}),
+    )
+    return JSONResponse({"ok": True})
+
+
+@app.post("/api/admin/products")
+async def admin_create_product(payload: dict, request: Request) -> JSONResponse:
+    _require_admin(request)
+    slug = payload.get("slug") or db.slugify(payload.get("name", "item"))
+    db.upsert_product(
+        slug=slug,
+        name=payload.get("name", ""),
+        subtitle=payload.get("subtitle", ""),
+        description=payload.get("description", ""),
+        price=float(payload.get("price") or 0),
+        volume=payload.get("volume", ""),
+        category_slug=payload.get("categorySlug", ""),
+        badge=payload.get("badge", ""),
+        featured=bool(payload.get("featured")),
+        in_stock=bool(payload.get("inStock", True)),
+        sort=int(payload.get("sort") or 0),
+        images=payload.get("images", []),
+        collections=payload.get("collectionSlugs", []),
+        specs=payload.get("specs", {}),
+    )
+    return JSONResponse({"ok": True, "slug": slug})
+
+
+@app.delete("/api/admin/products/{slug}")
+async def admin_delete_product(slug: str, request: Request) -> JSONResponse:
+    _require_admin(request)
+    db.delete_product(slug)
+    return JSONResponse({"ok": True})
+
+
+@app.put("/api/admin/categories/{slug}")
+async def admin_update_category(slug: str, payload: dict, request: Request) -> JSONResponse:
+    _require_admin(request)
+    db.upsert_category(
+        slug=slug,
+        name=payload.get("name", ""),
+        blurb=payload.get("blurb", ""),
+        sort=int(payload.get("sort") or 0),
+    )
+    return JSONResponse({"ok": True})
+
+
+@app.put("/api/admin/collections/{slug}")
+async def admin_update_collection(slug: str, payload: dict, request: Request) -> JSONResponse:
+    _require_admin(request)
+    db.upsert_collection(
+        slug=slug,
+        name=payload.get("name", ""),
+        subtitle=payload.get("subtitle", ""),
+        description=payload.get("description", ""),
+        image=payload.get("image", ""),
+        sort=int(payload.get("sort") or 0),
+    )
+    return JSONResponse({"ok": True})
+
+
+@app.get("/api/admin/requests")
+async def admin_list_requests(request: Request, status: str | None = None) -> JSONResponse:
+    _require_admin(request)
+    return JSONResponse(db.list_requests(status=status))
+
+
+@app.post("/api/admin/requests/{request_id}/status")
+async def admin_set_request_status(
+    request: Request, request_id: int, payload: dict
+) -> JSONResponse:
+    _require_admin(request)
+    db.set_request_status(request_id, payload.get("status", "new"))
+    return JSONResponse({"ok": True})
 
 
 @app.exception_handler(ValueError)

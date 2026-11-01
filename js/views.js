@@ -1220,3 +1220,9 @@ export function notFoundView(data) {
     </section></div>`,
   };
 }
+
+/* -------------------------------------------------------------- admin */
+
+import { adminView } from "./admin.js";
+
+export { adminView };
