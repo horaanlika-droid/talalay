@@ -36,30 +36,30 @@ ASSETS = ROOT / "assets"
 MANIFEST = ROOT / "data" / "image-audit.json"
 
 # ------------------------------------------------------------------ the set
-APP_BG = (6, 12, 24)          # #060c18 — shared with css/app.css (--bg)
-WORK = (1200, 1500)           # 4:5 — composite space (lean on memory)
+APP_BG = (10, 10, 10)         # deep matte black — matches IMG_1704 corners (~11)
+WORK = (1200, 1800)           # 2:3 — composite space to match IMG_1704 benchmark
 WORK_TYPE = (1400, 900)       # 14:9 wide covers
-PREVIEW = (800, 1000)
+PREVIEW = (800, 1200)
 PREVIEW_TYPE = (960, 617)
-UPSCALE = 2                   # → 2400×3000 / 2800×1800 delivered masters
+UPSCALE = 2                   # → 2400×3600 delivered masters (2:3, like IMG_1704)
 
-PIECE_H = 0.560               # piece height, fraction of the canvas
-PIECE_W = 0.820               # piece width cap
-PIECE_CY = 0.468              # piece centre, fraction of the canvas height
-PIECE_CX = 0.500              # piece centre, fraction of the canvas width
+PIECE_H = 0.50                # piece height, fraction of the canvas (~glass fill in IMG_1704)
+PIECE_W = 0.80                # piece width cap
+PIECE_CY = 0.56               # piece centre — IMG_1704 glass sits at cy≈0.56
+PIECE_CX = 0.500              # piece centre — IMG_1704 glass centred cx=0.5
 
-GLOW_MID = np.array([24.0, 52.0, 90.0], np.float32)
-GLOW_HOT = np.array([64.0, 110.0, 164.0], np.float32)
-GLOW_HAZE = np.array([11.0, 24.0, 46.0], np.float32)
-SHEEN = np.array([6.0, 1.0, 10.0], np.float32)     # thin-film violet on the rim
+GLOW_MID = np.array([12.0, 12.0, 14.0], np.float32)   # nearly flat black room, barely above bg
+GLOW_HOT = np.array([16.0, 17.0, 20.0], np.float32)
+GLOW_HAZE = np.array([11.0, 11.0, 12.0], np.float32)
+SHEEN = np.array([2.0, 1.0, 3.0], np.float32)         # thin-film violet on the rim
 
-BLOOM_TIGHT = 0.65            # light licked off the glass (close) — brighter rims so glass reads on black
-BLOOM_WIDE = 0.40             # atmospheric halo (far)
-SHARPEN = 0.60                # unsharp on the glass, keeps 4K crisp
+BLOOM_TIGHT = 0.70            # bright specular rim light off the glass (IMG_1704 p99≈245)
+BLOOM_WIDE = 0.30             # soft halo around the glass, not in the background
+SHARPEN = 0.65                # crisp rims, engraving and wall thickness
 
 D_CLAMP = 22.0                # max light the piece may add to the new room
-D_LF_BASE = 0.17              # how much of its soft body a clear glass keeps — more glass body visible
-D_LF_LIQUID = 0.52            # …and how much a drink keeps
+D_LF_BASE = 0.15              # soft glass body kept visible
+D_LF_LIQUID = 0.45            # …and how much a drink keeps
 
 
 # ------------------------------------------------------------------ helpers
