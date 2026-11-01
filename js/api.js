@@ -11,11 +11,21 @@ const CUSTOM_API_KEY = "ce.admin.apiBase";
 const OVERRIDE_KEY = "ce.admin.override.v1";
 const LOCAL_REQ_KEY = "ce.requests.local.v1";
 const CONTENT_KEY = "ce.content.v1";
+const GH_TREE_KEY = "ce.gh.tree.v1";
 const CACHE_MAX_AGE = 1000 * 60 * 60 * 24 * 3; // 3 days
+const FOLDER_IMAGE_RE = /^(glasses|covers|packaging)\/[^/]+\/[^/]+\.(webp|png|jpe?g|avif|gif)$/i;
+const PACKAGING_CATS = new Set(["acids", "essences"]);
+const SITE_COVER_KEYS = [
+  ["homeCraft", "covers/home-craft"],
+  ["infoBanner", "covers/info-banner"],
+  ["infoStory", "covers/info-story"],
+  ["ogShare", "covers/og-share"],
+];
 
 let sameOriginApi = null; // null = unknown, "" = none, string = origin
 let contentPromise = null;
 let bundledCache = null;
+let folderDefaultsCache = null;
 let source = "static";
 
 export const state = {
@@ -204,6 +214,209 @@ export function normalize(raw) {
   };
 }
 
+function naturalCompare(aName, bName) {
+  const stem = (n) => String(n).toLowerCase().replace(/\.[^.]+$/, "");
+  const prio = (n) => (/^(photo|cover|main|1|01|wide)$/.test(stem(n)) ? 0 : 1);
+  const pa = prio(aName);
+  const pb = prio(bName);
+  if (pa !== pb) return pa - pb;
+  return String(aName).localeCompare(String(bName), undefined, { numeric: true, sensitivity: "base" });
+}
+
+function versionedPath(entry, defaults) {
+  if (!entry.sha) return entry.path;
+  if (defaults && defaults[entry.path] && defaults[entry.path] === entry.sha) return entry.path;
+  return `${entry.path}?v=${String(entry.sha).slice(0, 8)}`;
+}
+
+function pickFolderImages(entries, defaults) {
+  if (!entries || !entries.length) return [];
+  const sorted = [...entries].sort((a, b) => naturalCompare(a.name, b.name));
+  if (sorted.length > 1 && defaults) {
+    const custom = sorted.filter((e) => !defaults[e.path] || defaults[e.path] !== e.sha);
+    if (custom.length) return custom.map((e) => versionedPath(e, defaults));
+  }
+  return sorted.map((e) => versionedPath(e, defaults));
+}
+
+function pickHeroImages(entries, defaults) {
+  if (!entries || !entries.length) return { cover: "", portraitCover: "" };
+  const isPortrait = (e) => /portrait|mobile|tall/i.test(String(e.name).replace(/\.[^.]+$/, ""));
+  let portraits = entries.filter(isPortrait).sort((a, b) => naturalCompare(a.name, b.name));
+  let mains = entries.filter((e) => !isPortrait(e)).sort((a, b) => naturalCompare(a.name, b.name));
+
+  if (mains.length > 1 && defaults) {
+    const customMains = mains.filter((e) => !defaults[e.path] || defaults[e.path] !== e.sha);
+    if (customMains.length) mains = customMains;
+  }
+  if (!mains.length) {
+    return { cover: versionedPath(portraits[0], defaults), portraitCover: "" };
+  }
+  const main = mains[0];
+  if (!portraits.length) {
+    return { cover: versionedPath(main, defaults), portraitCover: "" };
+  }
+  if (portraits.length > 1 && defaults) {
+    const customPortraits = portraits.filter((e) => !defaults[e.path] || defaults[e.path] !== e.sha);
+    if (customPortraits.length) portraits = customPortraits;
+  }
+  const portrait = portraits[0];
+  if (defaults) {
+    const mainChanged = !defaults[main.path] || defaults[main.path] !== main.sha;
+    const portraitChanged = !defaults[portrait.path] || defaults[portrait.path] !== portrait.sha;
+    if (mainChanged && !portraitChanged) {
+      return { cover: versionedPath(main, defaults), portraitCover: "" };
+    }
+  }
+  return {
+    cover: versionedPath(main, defaults),
+    portraitCover: versionedPath(portrait, defaults),
+  };
+}
+
+/**
+ * Apply discovered repository folder files (`glasses/*`, `covers/*`, `packaging/*`)
+ * onto normalized catalogue data so dropping/replacing any image in a folder updates the site.
+ */
+export function applyFolderFiles(data, files, defaults = {}) {
+  if (!data || !Array.isArray(files) || !files.length) return data;
+  const byFolder = new Map();
+  for (const item of files) {
+    if (!item || !FOLDER_IMAGE_RE.test(item.path)) continue;
+    const slash = item.path.lastIndexOf("/");
+    const folder = item.path.slice(0, slash);
+    const name = item.path.slice(slash + 1);
+    if (!byFolder.has(folder)) byFolder.set(folder, []);
+    byFolder.get(folder).push({ name, path: item.path, sha: item.sha || "" });
+  }
+  if (!byFolder.size) return data;
+
+  for (const product of data.products || []) {
+    const hasInline = (product.images || []).some(
+      (u) => String(u).startsWith("data:") || String(u).startsWith("/media/")
+    );
+    if (hasInline) continue;
+    const top = PACKAGING_CATS.has(product.categorySlug) ? "packaging" : "glasses";
+    const folder = `${top}/${product.slug}`;
+    if (byFolder.has(folder)) {
+      const imgs = pickFolderImages(byFolder.get(folder), defaults);
+      if (imgs.length) product.images = imgs;
+    }
+  }
+
+  for (const cat of data.categories || []) {
+    if (cat.cover && (String(cat.cover).startsWith("data:") || String(cat.cover).startsWith("/media/"))) {
+      continue;
+    }
+    const folder = `covers/category-${cat.slug}`;
+    if (byFolder.has(folder)) {
+      const imgs = pickFolderImages(byFolder.get(folder), defaults);
+      if (imgs.length) cat.cover = imgs[0];
+    }
+  }
+
+  const settings = data.settings || (data.settings = {});
+  for (const slide of settings.hero || []) {
+    if (!slide.productSlug) continue;
+    const folder = `covers/hero-${slide.productSlug}`;
+    if (byFolder.has(folder)) {
+      const { cover, portraitCover } = pickHeroImages(byFolder.get(folder), defaults);
+      if (cover) slide.cover = cover;
+      else delete slide.cover;
+      if (portraitCover) slide.portraitCover = portraitCover;
+      else delete slide.portraitCover;
+    }
+  }
+
+  const covers = { ...(settings.covers || {}) };
+  for (const [key, folder] of SITE_COVER_KEYS) {
+    if (byFolder.has(folder)) {
+      const imgs = pickFolderImages(byFolder.get(folder), defaults);
+      if (imgs.length) covers[key] = imgs[0];
+    }
+  }
+  settings.covers = covers;
+  return data;
+}
+
+export function detectGitHubRepo() {
+  const configured = String(CONFIG.githubRepo || "").trim();
+  if (configured) {
+    return { repo: configured, branch: String(CONFIG.githubBranch || "main").trim() || "main" };
+  }
+  const host = (typeof location !== "undefined" && location.hostname) || "";
+  const pathname = (typeof location !== "undefined" && location.pathname) || "/";
+  if (host.endsWith(".github.io")) {
+    const owner = host.slice(0, -".github.io".length);
+    const seg = pathname.split("/").filter(Boolean)[0] || `${owner}.github.io`;
+    if (owner && seg) {
+      return { repo: `${owner}/${seg}`, branch: String(CONFIG.githubBranch || "main").trim() || "main" };
+    }
+  }
+  return null;
+}
+
+async function loadFolderDefaults() {
+  if (folderDefaultsCache) return folderDefaultsCache;
+  try {
+    folderDefaultsCache = await fetchJSON("data/folder-defaults.json", { cache: "no-cache" });
+  } catch {
+    folderDefaultsCache = {};
+  }
+  return folderDefaultsCache;
+}
+
+async function resolveRepoFolders(data) {
+  const gh = detectGitHubRepo();
+  if (!gh) return data;
+
+  let cachedTree = null;
+  try {
+    const raw = localStorage.getItem(GH_TREE_KEY);
+    if (raw) cachedTree = JSON.parse(raw);
+  } catch {
+    /* ignore */
+  }
+  const sameTarget = cachedTree && cachedTree.repo === gh.repo && cachedTree.branch === gh.branch;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 3500);
+
+  let files = sameTarget && Array.isArray(cachedTree.files) ? cachedTree.files : null;
+  try {
+    const headers = { Accept: "application/vnd.github+json" };
+    if (sameTarget && cachedTree.etag) headers["If-None-Match"] = cachedTree.etag;
+    const res = await fetch(
+      `https://api.github.com/repos/${gh.repo}/git/trees/${encodeURIComponent(gh.branch)}?recursive=1`,
+      { cache: "no-store", signal: controller.signal, headers }
+    );
+    if (res.status === 200) {
+      const json = await res.json();
+      if (json && Array.isArray(json.tree)) {
+        files = json.tree
+          .filter((item) => item.type === "blob" && FOLDER_IMAGE_RE.test(item.path))
+          .map((item) => ({ path: item.path, sha: item.sha || "" }));
+        const etag = res.headers?.get?.("etag") || "";
+        try {
+          localStorage.setItem(
+            GH_TREE_KEY,
+            JSON.stringify({ repo: gh.repo, branch: gh.branch, etag, files, at: Date.now() })
+          );
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+  } catch {
+    /* offline or rate-limited — fall back to cached tree or bundled paths */
+  } finally {
+    clearTimeout(timer);
+  }
+
+  if (!files || !files.length) return data;
+  const defaults = await loadFolderDefaults();
+  return applyFolderFiles(data, files, defaults);
+}
+
 async function fetchJSON(url, options = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 7000);
@@ -247,7 +460,7 @@ export function loadContent({ force = false } = {}) {
     const override = readLocalOverride();
     if (override) {
       try {
-        const data = normalize(override);
+        const data = await resolveRepoFolders(normalize(override));
         state.content = data;
         state.online = false;
         state.loading = false;
@@ -262,7 +475,7 @@ export function loadContent({ force = false } = {}) {
     try {
       const raw = await fetchJSON("data/content.json", { cache: "no-cache" });
       bundledCache = raw;
-      const data = normalize(raw);
+      const data = await resolveRepoFolders(normalize(raw));
       state.content = data;
       state.online = false;
       state.loading = false;
@@ -276,7 +489,7 @@ export function loadContent({ force = false } = {}) {
     // 4. Cache
     const cached = readCache();
     if (cached) {
-      const data = normalize(cached);
+      const data = await resolveRepoFolders(normalize(cached));
       state.content = data;
       state.online = false;
       state.loading = false;

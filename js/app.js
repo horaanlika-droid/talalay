@@ -1,6 +1,6 @@
 /** App shell, router and global interactions. */
 import { icon } from "./icons.js";
-import { loadContent, state, mediaUrl } from "./api.js";
+import { loadContent, state, mediaUrl, detectGitHubRepo } from "./api.js";
 import { request } from "./store.js";
 import { toast, esc, attr, prefersReducedMotion } from "./ui.js";
 import {
@@ -470,16 +470,54 @@ async function boot() {
   // Preload the hero plates after first paint — each is one finished raster
   // picture (room + glow + glass), so the carousel never flashes a frame.
   requestAnimationFrame(() => {
-    // Warm the opening plates: the catalogue plates themselves, one per hero slide.
     const slides = (data.settings?.hero || []).slice(0, 3);
     slides
-      .map((slide) => (data.products.find((p) => p.slug === slide.productSlug) || {}).images?.[0])
+      .map((slide) => slide.cover || (data.products.find((p) => p.slug === slide.productSlug) || {}).images?.[0])
       .filter(Boolean)
       .forEach((src) => {
         const img = new Image();
-        img.src = src;
+        img.src = mediaUrl(src);
       });
   });
+
+  // Fallback chain if a folder image was swapped to another extension offline or Pages CDN is mid-deploy
+  document.addEventListener(
+    "error",
+    (ev) => {
+      const img = ev && ev.target;
+      if (!img || img.tagName !== "IMG") return;
+      const rawSrc = img.getAttribute("src") || "";
+      if (!rawSrc || /^data:/i.test(rawSrc)) return;
+      const m = /(?:^|\/)((?:glasses|covers|packaging)\/[^?#]+)(\?[^#]*)?$/i.exec(rawSrc);
+      if (!m) return;
+      const relPath = m[1];
+      const qs = m[2] || "";
+      const tried = (img.dataset.ceFallback || "").split(",").filter(Boolean);
+
+      // 1. On GitHub Pages right after a commit, raw.githubusercontent.com has the new file immediately
+      const gh = detectGitHubRepo();
+      if (gh && !rawSrc.includes("raw.githubusercontent.com") && !tried.includes("ghraw")) {
+        tried.push("ghraw");
+        img.dataset.ceFallback = tried.join(",");
+        img.src = `https://raw.githubusercontent.com/${gh.repo}/${encodeURIComponent(gh.branch)}/${relPath}${qs}`;
+        return;
+      }
+
+      // 2. Try sibling image extensions (.png, .jpg, .jpeg, .webp) when browsing static files without API
+      const baseNoExt = relPath.replace(/\.[^./]+$/, "");
+      for (const ext of ["png", "jpg", "jpeg", "webp"]) {
+        const candidate = `${baseNoExt}.${ext}`;
+        if (candidate.toLowerCase() === relPath.toLowerCase()) continue;
+        if (!tried.includes(ext)) {
+          tried.push(ext);
+          img.dataset.ceFallback = tried.join(",");
+          img.src = candidate;
+          return;
+        }
+      }
+    },
+    true
+  );
 
   try {
     await render();
@@ -512,7 +550,7 @@ async function boot() {
 
   if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
     navigator.serviceWorker
-      .register("sw.js?v=16")
+      .register("sw.js?v=17")
       .then((reg) => reg.update().catch(() => {}))
       .catch(() => {});
   }

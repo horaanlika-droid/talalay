@@ -3,12 +3,35 @@
 A production-ready catalogue web app for **Cocktail Embassy** — hand-blown glassware
 and cocktail acids for bars, hotels and studios.
 
+Live site: **https://horaanlika-droid.github.io/talalay/**
+
+---
+
+## Папки с фото бокалов и обложек (меняешь фото в папке — оно само меняется на сайте)
+
+Все фотографии каталога и обложек лежат прямо в корне репозитория по папкам:
+
+| Раздел | Папка в репозитории | Принцип |
+| --- | --- | --- |
+| **Бокалы (34 папки)** | [**`glasses/`**](./glasses/) | **1 папка = 1 бокал** (`glasses/levitating-martini/`, `glasses/champagne-saucer/`, …). Полная таблица соответствия — внутри [`glasses/README.md`](./glasses/README.md). |
+| **Обложки сайта (14 папок)** | [**`covers/`**](./covers/) | **1 папка = 1 обложка**: 4 слайда главного экрана (`hero-*`), 6 обложек категорий (`category-*`) и обложки разделов (`home-craft`, `info-banner`, `info-story`, `og-share`). Список — внутри [`covers/README.md`](./covers/README.md). |
+| **Кислоты, трубочки, эссенции (18 папок)** | [**`packaging/`**](./packaging/) | **1 папка = 1 позиция** (`packaging/citric-acid/`, `packaging/essence-mango/`, …). Список — внутри [`packaging/README.md`](./packaging/README.md). |
+
+### Как заменить фото (с компьютера или телефона в GitHub):
+1. Откройте нужную папку (например, `glasses/levitating-martini/` или `covers/hero-levitating-martini/`).
+2. Загрузите новое фото (`.webp`, `.png`, `.jpg` или `.jpeg` — **подходит любой формат и любое имя файла**):
+   - можно заменить `photo.webp` / `cover.webp` файлом с тем же именем, **или**
+   - просто загрузить свой файл (даже `IMG_1234.jpg` без удаления стандартного `photo.webp` — сайт автоматически увидит новый файл и поставит его главным; но старый при желании лучше удалить, чтобы в папке был порядок).
+3. Если в папку бокала загрузить **несколько ваших фото** (`1.jpg`, `2.jpg`, `3.jpg`), на странице этого бокала автоматически появится галерея ракурсов.
+4. Для главных обложек (`covers/hero-*`): если загрузить **одно** новое фото, оно сразу встанет и на компьютере, и на телефоне.
+5. Нажмите **Commit changes** — сайт сам подхватит новое фото и сбросит кэш браузера.
+
+---
+
 | Part | Where it runs | What it does |
 | --- | --- | --- |
-| **Storefront** (`index.html`, `css/`, `js/`, `assets/`, `data/`) | GitHub Pages | iOS-style catalogue: hero carousel, shop with search/filters, product pages, categories, request form |
-| **Back office** (`server/`) | BotHost | REST API + Telegram admin bot. Everything on the site is edited from the bot |
-
-Live site: **https://horaanlika-droid.github.io/talalay/**
+| **Storefront** (`index.html`, `css/`, `js/`, `glasses/`, `covers/`, `packaging/`, `data/`) | GitHub Pages | iOS-style catalogue: hero carousel, shop with search/filters, product pages, categories, request form |
+| **Back office** (`server/`) | BotHost | REST API + Telegram admin bot + `#/admin` web panel |
 
 ---
 

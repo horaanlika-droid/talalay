@@ -5,12 +5,14 @@ import asyncio
 import base64
 import hashlib
 import hmac
+import json
 import logging
 import re
 import secrets
 import time
 import uuid
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Any
 
 import uvicorn
@@ -142,9 +144,169 @@ app.add_middleware(
 @app.middleware("http")
 async def no_store(request: Request, call_next):
     response = await call_next(request)
-    if request.url.path.startswith("/api/"):
+    p = request.url.path
+    if p.startswith("/api/"):
         response.headers["Cache-Control"] = "no-store, max-age=0"
+    elif p.startswith(("/glasses/", "/covers/", "/packaging/")):
+        response.headers["Cache-Control"] = "no-cache"
     return response
+
+
+_FOLDER_IMG_EXTS = {".webp", ".png", ".jpg", ".jpeg", ".avif", ".gif"}
+_PACKAGING_CATS = {"acids", "essences"}
+_SITE_COVERS = (
+    ("homeCraft", "covers/home-craft"),
+    ("infoBanner", "covers/info-banner"),
+    ("infoStory", "covers/info-story"),
+    ("ogShare", "covers/og-share"),
+)
+_SHA_CACHE: dict[str, tuple[int, int, str]] = {}
+_DEFAULTS_CACHE: tuple[int, dict[str, str]] | None = None
+
+
+def _load_folder_defaults() -> dict[str, str]:
+    global _DEFAULTS_CACHE
+    p = cfg.ROOT_DIR / "data" / "folder-defaults.json"
+    if not p.is_file():
+        return {}
+    st = p.stat()
+    if _DEFAULTS_CACHE and _DEFAULTS_CACHE[0] == st.st_mtime_ns:
+        return _DEFAULTS_CACHE[1]
+    try:
+        data = json.loads(p.read_text(encoding="utf-8"))
+        if isinstance(data, dict):
+            _DEFAULTS_CACHE = (st.st_mtime_ns, data)
+            return data
+    except Exception:
+        pass
+    return {}
+
+
+def _git_sha(path: Path) -> str:
+    st = path.stat()
+    key = str(path)
+    cached = _SHA_CACHE.get(key)
+    if cached and cached[0] == st.st_mtime_ns and cached[1] == st.st_size:
+        return cached[2]
+    raw = path.read_bytes()
+    sha = hashlib.sha1(f"blob {len(raw)}\0".encode("utf-8") + raw).hexdigest()
+    _SHA_CACHE[key] = (st.st_mtime_ns, st.st_size, sha)
+    return sha
+
+
+def _natural_key(name: str) -> tuple:
+    low = name.lower()
+    stem = Path(low).stem
+    prio = 0 if stem in ("photo", "cover", "main", "1", "01", "wide") else 1
+    parts = [int(t) if t.isdigit() else t for t in re.split(r"(\d+)", low)]
+    return (prio, parts)
+
+
+def _versioned_rel(path: Path, defaults: dict[str, str]) -> str:
+    rel = path.relative_to(cfg.ROOT_DIR).as_posix()
+    sha = _git_sha(path)
+    if defaults.get(rel) == sha:
+        return rel
+    return f"{rel}?v={sha[:8]}"
+
+
+def _pick_folder_images(folder: Path, defaults: dict[str, str]) -> list[str]:
+    if not folder.is_dir():
+        return []
+    files = [
+        p for p in folder.iterdir()
+        if p.is_file() and p.suffix.lower() in _FOLDER_IMG_EXTS and not p.name.startswith(".")
+    ]
+    if not files:
+        return []
+    files.sort(key=lambda p: _natural_key(p.name))
+    if len(files) > 1 and defaults:
+        custom = [p for p in files if defaults.get(p.relative_to(cfg.ROOT_DIR).as_posix()) != _git_sha(p)]
+        if custom:
+            files = custom
+    return [_versioned_rel(p, defaults) for p in files]
+
+
+def _pick_hero_images(folder: Path, defaults: dict[str, str]) -> tuple[str, str]:
+    if not folder.is_dir():
+        return ("", "")
+    files = [
+        p for p in folder.iterdir()
+        if p.is_file() and p.suffix.lower() in _FOLDER_IMG_EXTS and not p.name.startswith(".")
+    ]
+    if not files:
+        return ("", "")
+    is_port = lambda p: any(tok in p.stem.lower() for tok in ("portrait", "mobile", "tall"))
+    portraits = sorted([p for p in files if is_port(p)], key=lambda p: _natural_key(p.name))
+    mains = sorted([p for p in files if not is_port(p)], key=lambda p: _natural_key(p.name))
+
+    if len(mains) > 1 and defaults:
+        custom_m = [p for p in mains if defaults.get(p.relative_to(cfg.ROOT_DIR).as_posix()) != _git_sha(p)]
+        if custom_m:
+            mains = custom_m
+    if not mains:
+        return (_versioned_rel(portraits[0], defaults), "")
+
+    main_p = mains[0]
+    if not portraits:
+        return (_versioned_rel(main_p, defaults), "")
+
+    if len(portraits) > 1 and defaults:
+        custom_p = [p for p in portraits if defaults.get(p.relative_to(cfg.ROOT_DIR).as_posix()) != _git_sha(p)]
+        if custom_p:
+            portraits = custom_p
+    port_p = portraits[0]
+    if defaults:
+        m_rel = main_p.relative_to(cfg.ROOT_DIR).as_posix()
+        p_rel = port_p.relative_to(cfg.ROOT_DIR).as_posix()
+        if defaults.get(m_rel) != _git_sha(main_p) and defaults.get(p_rel) == _git_sha(port_p):
+            return (_versioned_rel(main_p, defaults), "")
+    return (_versioned_rel(main_p, defaults), _versioned_rel(port_p, defaults))
+
+
+def _apply_repo_folders(payload: dict[str, Any]) -> dict[str, Any]:
+    if not (cfg.ROOT_DIR / "glasses").is_dir():
+        return payload
+    defaults = _load_folder_defaults()
+    for product in payload.get("products") or []:
+        imgs = product.get("images") or []
+        if any(str(u).startswith(("data:", "/media/")) for u in imgs):
+            continue
+        top = "packaging" if product.get("categorySlug") in _PACKAGING_CATS else "glasses"
+        found = _pick_folder_images(cfg.ROOT_DIR / top / str(product.get("slug", "")), defaults)
+        if found:
+            product["images"] = found
+
+    for cat in payload.get("categories") or []:
+        cov = str(cat.get("cover") or "")
+        if cov.startswith(("data:", "/media/")):
+            continue
+        found = _pick_folder_images(cfg.ROOT_DIR / "covers" / f"category-{cat.get('slug', '')}", defaults)
+        if found:
+            cat["cover"] = found[0]
+
+    settings = payload.setdefault("settings", {})
+    for slide in settings.get("hero") or []:
+        slug = slide.get("productSlug") or ""
+        if not slug:
+            continue
+        cover, portrait = _pick_hero_images(cfg.ROOT_DIR / "covers" / f"hero-{slug}", defaults)
+        if cover:
+            slide["cover"] = cover
+        else:
+            slide.pop("cover", None)
+        if portrait:
+            slide["portraitCover"] = portrait
+        else:
+            slide.pop("portraitCover", None)
+
+    covers_map = dict(settings.get("covers") or {})
+    for key, rel_dir in _SITE_COVERS:
+        found = _pick_folder_images(cfg.ROOT_DIR / rel_dir, defaults)
+        if found:
+            covers_map[key] = found[0]
+    settings["covers"] = covers_map
+    return payload
 
 
 @app.get("/api/health")
@@ -159,7 +321,7 @@ async def health() -> dict[str, Any]:
 
 @app.get("/api/content")
 async def content() -> JSONResponse:
-    return JSONResponse(db.get_content())
+    return JSONResponse(_apply_repo_folders(db.get_content()))
 
 
 def _shipping_for(settings: dict, delivery: str, subtotal: float) -> float:
@@ -438,7 +600,7 @@ async def value_error_handler(_: Request, exc: ValueError) -> JSONResponse:
 # ---------------------------------------------------- storefront static mount
 _INDEX_FILE = cfg.ROOT_DIR / "index.html"
 if _INDEX_FILE.exists():
-    for _dir_name in ("css", "js", "assets", "data"):
+    for _dir_name in ("css", "js", "assets", "data", "glasses", "covers", "packaging"):
         _dir_path = cfg.ROOT_DIR / _dir_name
         if _dir_path.is_dir():
             app.mount(f"/{_dir_name}", StaticFiles(directory=str(_dir_path)), name=f"static-{_dir_name}")

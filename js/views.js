@@ -49,14 +49,24 @@ function heroScene(product) {
    phone, both of the same piece on the same black. Because the room inside the
    photograph is the room the page is painted in, the picture can run edge to
    edge on any screen without a frame, a letterbox or a seam. */
-function heroPicture(product, first = false) {
+function heroPicture(slide, first = false) {
   const lead = first ? 'fetchpriority="high"' : 'loading="lazy"';
-  if (HERO_PLATES.has(product.slug)) {
-    // tall screens (phone and iPad held upright) take the portrait plate, wide
-    // screens take the wide one — the piece is never cropped by the ratio
+  const product = (slide && slide.product) || slide || {};
+  const hasSlideCover = !!(slide && slide.cover);
+  const cover = hasSlideCover
+    ? slide.cover
+    : HERO_PLATES.has(product.slug)
+    ? `covers/hero-${product.slug}/cover.webp`
+    : "";
+  const portrait = hasSlideCover
+    ? slide.portraitCover || ""
+    : HERO_PLATES.has(product.slug)
+    ? `covers/hero-${product.slug}/portrait.webp`
+    : "";
+  if (cover) {
     return `<picture>
-      <source media="(max-aspect-ratio: 1/1)" srcset="assets/scenes/hero-${attr(product.slug)}-portrait.webp">
-      <img src="assets/scenes/hero-${attr(product.slug)}.webp" alt="" ${lead} decoding="async">
+      ${portrait ? `<source media="(max-aspect-ratio: 1/1)" srcset="${attr(mediaUrl(portrait))}">` : ""}
+      <img src="${attr(mediaUrl(cover))}" alt="" ${lead} decoding="async">
     </picture>`;
   }
   // a plain catalogue plate is 4:5 and must be shown whole, never cropped
@@ -160,7 +170,7 @@ export function homeView(data) {
       <div class="hero__art" aria-hidden="true">
         <div class="hero__track" data-hero-track>
           ${slides
-            .map((slide, i) => `<div class="hero__slide" data-hero-slide="${i}">${heroPicture(slide.product, i === 0)}</div>`)
+            .map((slide, i) => `<div class="hero__slide" data-hero-slide="${i}">${heroPicture(slide, i === 0)}</div>`)
             .join("")}
         </div>
       </div>
@@ -223,7 +233,9 @@ export function homeView(data) {
 
       <section class="section split reveal" aria-labelledby="craft-title">
         <div class="split__media split__media--portrait">
-          <img src="assets/products/goblet.webp" alt="Embassy Goblet — hand-blown crystal in the Embassy studio" loading="lazy" decoding="async">
+          <img src="${attr(
+            mediaUrl((settings.covers && settings.covers.homeCraft) || "covers/home-craft/cover.webp")
+          )}" alt="Embassy Goblet — hand-blown crystal in the Embassy studio" loading="lazy" decoding="async">
         </div>
         <div class="split__copy">
           <p class="eyebrow">The craft</p>
@@ -1088,8 +1100,11 @@ export function infoView(data) {
     c.whatsapp ? `<a href="${attr(c.whatsapp)}" target="_blank" rel="noopener">${icon("whatsapp")} WhatsApp</a>` : "",
   ].join("");
 
+  const infoBanner = (settings.covers && settings.covers.infoBanner) || "covers/info-banner/cover.webp";
+  const infoStory = (settings.covers && settings.covers.infoStory) || "covers/info-story/cover.webp";
+
   const html = `<section class="hero-mini">
-      <div class="hero-mini__bg"><img src="assets/scenes/banner-signature.webp" alt=""></div>
+      <div class="hero-mini__bg"><img src="${attr(mediaUrl(infoBanner))}" alt=""></div>
       <div class="hero-mini__inner">
         <p class="eyebrow" style="color:rgba(255,255,255,.55)">The Embassy</p>
         <h1 class="h1">Glass, considered.</h1>
@@ -1102,7 +1117,7 @@ export function infoView(data) {
     <div class="wrap">
       <section class="section split">
         <div class="split__media split__media--portrait">
-          <img src="assets/products/coupe.webp" alt="Saucer Coupe — hand-blown crystal" loading="lazy">
+          <img src="${attr(mediaUrl(infoStory))}" alt="Saucer Coupe — hand-blown crystal" loading="lazy">
         </div>
         <div class="split__copy">
           <p class="eyebrow">Since 2024</p>

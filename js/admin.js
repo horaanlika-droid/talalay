@@ -480,15 +480,20 @@ async function publishToGitHub({ repo, branch = "main", token }, data, onStatus)
 
   const copy = cloneContent(data);
 
-  // Upload any inline data: images into assets/products/ so content.json stays clean & fast
+  // Upload any inline data: images into per-item folders (glasses/, packaging/, covers/)
   for (const product of copy.products) {
     if (!Array.isArray(product.images)) continue;
+    const topFolder =
+      product.categorySlug === "acids" || product.categorySlug === "essences"
+        ? "packaging"
+        : "glasses";
     for (let i = 0; i < product.images.length; i++) {
       const img = product.images[i];
       const m = /^data:image\/(webp|png|jpe?g);base64,(.+)$/i.exec(img || "");
       if (m) {
         const ext = m[1].toLowerCase() === "jpeg" ? "jpg" : m[1].toLowerCase();
-        const filePath = `assets/products/${slugify(product.slug)}-${Date.now().toString(36)}-${i + 1}.${ext}`;
+        const fileName = i === 0 ? `photo.${ext}` : `photo-${i + 1}.${ext}`;
+        const filePath = `${topFolder}/${slugify(product.slug)}/${fileName}`;
         onStatus?.(`Загрузка фото ${product.name}…`);
         await ghPutFile({
           repo: cleanRepo,
@@ -507,7 +512,7 @@ async function publishToGitHub({ repo, branch = "main", token }, data, onStatus)
     const m = /^data:image\/(webp|png|jpe?g);base64,(.+)$/i.exec(cat.cover || "");
     if (m) {
       const ext = m[1].toLowerCase() === "jpeg" ? "jpg" : m[1].toLowerCase();
-      const filePath = `assets/categories/${slugify(cat.slug)}-${Date.now().toString(36)}.${ext}`;
+      const filePath = `covers/category-${slugify(cat.slug)}/cover.${ext}`;
       onStatus?.(`Загрузка обложки ${cat.name}…`);
       await ghPutFile({
         repo: cleanRepo,
@@ -787,7 +792,7 @@ function productsView(data, rerender) {
                   </label>
                 </div>
                 <div class="admin__img-previews" data-prod-previews></div>
-                <textarea class="admin__textarea" name="images" rows="2" placeholder="assets/products/martini.webp (по одному пути на строку)"></textarea>
+                <textarea class="admin__textarea" name="images" rows="2" placeholder="glasses/levitating-martini/photo.webp (по одному пути на строку)"></textarea>
               </div>
 
               <footer class="admin__modal-foot">
@@ -1109,7 +1114,7 @@ function categoriesView(data, rerender) {
                     <input type="file" accept="image/*" hidden data-cat-upload>
                   </label>
                 </div>
-                <input class="admin__input" name="cover" type="text" placeholder="assets/categories/acids.webp">
+                <input class="admin__input" name="cover" type="text" placeholder="covers/category-acids/cover.webp">
               </div>
               <footer class="admin__modal-foot">
                 ${btn("Отмена", "default", "button", "data-cat-close")}
