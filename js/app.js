@@ -19,7 +19,6 @@ const NAV_ITEMS = [
   { key: "home", href: "#/", label: "Home" },
   { key: "shop", href: "#/shop", label: "Shop" },
   { key: "info", href: "#/info", label: "The Embassy" },
-  { key: "admin", href: "#/admin", label: "Admin", admin: true },
 ];
 
 /* ------------------------------------------------------------ ticker */
@@ -74,6 +73,14 @@ function paintTicker(settings) {
 
 /* --------------------------------------------------------------- shell */
 
+function tabbarInnerHTML() {
+  return `<a class="tab" href="#/" data-tab="home">${icon("home")}<span>Home</span></a>
+    <a class="tab" href="#/shop" data-tab="shop">${icon("shop")}<span>Shop</span></a>
+    <a class="tab" href="#/request" data-tab="request">${icon("bag")}<span>Request</span><span class="tab__badge" data-tab-badge hidden>0</span></a>
+    <a class="tab" href="#/info" data-tab="info">${icon("info")}<span>Info</span></a>
+    ${isAdmin() ? `<a class="tab" href="#/admin" data-tab="admin">${icon("sliders")}<span>Admin</span></a>` : ""}`;
+}
+
 function shellHTML() {
   return `<a class="skip-link" href="#view">Skip to content</a>
   <header class="nav" data-nav data-theme="light" data-deep="false">
@@ -88,7 +95,7 @@ function shellHTML() {
           (item) => `<a class="nav__link" href="${item.href}" data-navlink="${item.key}">${item.label}</a>`
         ).join("")}
         <a class="nav__link" href="#/request" data-navlink="request">Request</a>
-      ${isAdmin() ? `<a class="nav__link" href="#/admin" data-navlink="admin">Admin</a>` : ""}
+        <a class="nav__link" href="#/admin" data-navlink="admin">Admin</a>
       </nav>
       <a class="iconbtn" href="#/request" aria-label="Open request" data-cartbtn>
         ${icon("bag")}
@@ -107,15 +114,11 @@ function shellHTML() {
 
   <a class="rail" href="#/request" data-rail aria-label="Open your request">
     <span><span class="rail__count" data-rail-count>0</span> in your request</span>
-    <span class="btn">Review <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15"/><path d="m13.4 6.4 5.6 5.6-5.6 5.6"/></svg></span>
+    <span class="btn">Review ${icon("arrowRight")}</span>
   </a>
 
-  <nav class="tabbar" aria-label="Primary">
-    <a class="tab" href="#/" data-tab="home">${icon("home")}<span>Home</span></a>
-    <a class="tab" href="#/shop" data-tab="shop">${icon("shop")}<span>Shop</span></a>
-    <a class="tab" href="#/request" data-tab="request">${icon("bag")}<span>Request</span><span class="tab__badge" data-tab-badge hidden>0</span></a>
-    <a class="tab" href="#/info" data-tab="info">${icon("info")}<span>Info</span></a>
-    ${isAdmin() ? `<a class="tab" href="#/admin" data-tab="admin">${icon("sliders")}<span>Admin</span></a>` : ""}
+  <nav class="tabbar" data-tabbar aria-label="Primary">
+    ${tabbarInnerHTML()}
   </nav>`;
 }
 
@@ -143,7 +146,7 @@ function footerHTML(data) {
   </div>
   <div class="footer__base">
     <span>© ${new Date().getFullYear()} ${esc(s.brand || "Cocktail Embassy")}. All rights reserved.</span>
-    <span>${esc(s.priceNote || "")}</span>
+    <span>${esc(s.priceNote || "")}${s.priceNote ? " · " : ""}<a href="#/admin" class="footer__admin-link">Admin</a></span>
   </div>`;
 }
 
@@ -213,7 +216,7 @@ const routeDefs = [
   },
   { test: (s) => s[0] === "request", view: (data) => requestView(data), tab: "request", nav: "request" },
   { test: (s) => s[0] === "info", view: (data) => infoView(data), tab: "info", nav: "info" },
-  { test: (s) => s[0] === "admin", view: (data) => adminView(data), tab: "", nav: "" },
+  { test: (s) => s[0] === "admin", view: (data) => adminView(data), tab: "admin", nav: "admin" },
 ];
 
 /* How deep a route sits: the tab roots are one step in, a piece or a collection
@@ -423,6 +426,21 @@ request.subscribe(updateBadges);
 window.addEventListener("scroll", () => updateNavTheme(), { passive: true });
 window.addEventListener("resize", () => updateNavTheme(), { passive: true });
 window.addEventListener("hashchange", render);
+window.addEventListener("ce-auth-changed", () => {
+  const tabbar = document.querySelector("[data-tabbar]");
+  if (tabbar) {
+    tabbar.innerHTML = tabbarInnerHTML();
+    updateBadges();
+    updateActiveNav(currentRoute);
+  }
+});
+window.addEventListener("ce-content-updated", () => {
+  const data = state.content;
+  if (!data) return;
+  paintTicker(data.settings || {});
+  const footer = document.querySelector("[data-footer]");
+  if (footer) footer.innerHTML = footerHTML(data);
+});
 
 /* ---------------------------------------------------------------- boot */
 
@@ -446,7 +464,8 @@ async function boot() {
 
   window.__CE_DATA__ = data;
   paintTicker(data.settings || {});
-  document.querySelector("[data-footer]").innerHTML = footerHTML(data);
+  const footerEl = document.querySelector("[data-footer]");
+  if (footerEl) footerEl.innerHTML = footerHTML(data);
 
   // Preload the hero plates after first paint — each is one finished raster
   // picture (room + glow + glass), so the carousel never flashes a frame.
@@ -492,7 +511,10 @@ async function boot() {
   }
 
   if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-    navigator.serviceWorker.register("sw.js").catch(() => {});
+    navigator.serviceWorker
+      .register("sw.js?v=16")
+      .then((reg) => reg.update().catch(() => {}))
+      .catch(() => {});
   }
 }
 

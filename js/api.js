@@ -1,17 +1,22 @@
 /**
  * Data layer.
- * Priority: live API (BotHost) → local cache → bundled data/content.json.
- * The bundled file guarantees GitHub Pages always renders a complete catalogue.
+ * Priority: live API (BotHost / local server) → admin local override → bundled data/content.json → offline cache.
+ * The bundled file guarantees GitHub Pages always renders a complete catalogue,
+ * while the local override lets #/admin edit & preview immediately even without a backend.
  */
 import { icon } from "./icons.js";
 
-const CONFIG = window.CE_CONFIG || {};
-const API_BASE = (CONFIG.apiBase || "").replace(/\/+$/, "");
+const CONFIG = (typeof window !== "undefined" && window.CE_CONFIG) || {};
+const CUSTOM_API_KEY = "ce.admin.apiBase";
+const OVERRIDE_KEY = "ce.admin.override.v1";
+const LOCAL_REQ_KEY = "ce.requests.local.v1";
 const CONTENT_KEY = "ce.content.v1";
 const CACHE_MAX_AGE = 1000 * 60 * 60 * 24 * 3; // 3 days
 
+let sameOriginApi = null; // null = unknown, "" = none, string = origin
 let contentPromise = null;
-let source = API_BASE ? "api" : "static";
+let bundledCache = null;
+let source = "static";
 
 export const state = {
   content: null,
@@ -19,12 +24,73 @@ export const state = {
   online: false,
 };
 
+export function getCustomApiBase() {
+  try {
+    return (localStorage.getItem(CUSTOM_API_KEY) || "").trim().replace(/\/+$/, "");
+  } catch {
+    return "";
+  }
+}
+
+export function setCustomApiBase(url) {
+  try {
+    const clean = String(url || "").trim().replace(/\/+$/, "");
+    if (clean) localStorage.setItem(CUSTOM_API_KEY, clean);
+    else localStorage.removeItem(CUSTOM_API_KEY);
+  } catch {
+    /* ignore */
+  }
+  contentPromise = null;
+}
+
 export function apiBase() {
-  return API_BASE;
+  const custom = getCustomApiBase();
+  if (custom) return custom;
+  const configured = String(CONFIG.apiBase || "").trim().replace(/\/+$/, "");
+  if (configured) return configured;
+  if (sameOriginApi) return sameOriginApi;
+  return "";
 }
 
 export function isStatic() {
-  return !API_BASE;
+  return !apiBase();
+}
+
+/** Probe whether the current origin also hosts the FastAPI server (/api/health). */
+export async function probeSameOriginApi() {
+  if (sameOriginApi !== null) return sameOriginApi;
+  if (getCustomApiBase() || String(CONFIG.apiBase || "").trim()) {
+    sameOriginApi = "";
+    return "";
+  }
+  const host = (typeof location !== "undefined" && location.hostname) || "";
+  const origin = (typeof location !== "undefined" && location.origin) || "";
+  if (!host || !origin || origin === "null" || host.endsWith(".github.io")) {
+    sameOriginApi = "";
+    return "";
+  }
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 1200);
+  try {
+    const res = await fetch(`${origin}/api/health`, {
+      cache: "no-store",
+      signal: controller.signal,
+      headers: { Accept: "application/json" },
+    });
+    if (res.ok) {
+      const json = await res.json().catch(() => null);
+      if (json && json.ok === true) {
+        sameOriginApi = origin.replace(/\/+$/, "");
+        return sameOriginApi;
+      }
+    }
+  } catch {
+    /* static server */
+  } finally {
+    clearTimeout(timer);
+  }
+  sameOriginApi = "";
+  return "";
 }
 
 /** Turn a stored media path into a usable URL, wherever it came from. */
@@ -32,8 +98,8 @@ export function mediaUrl(path) {
   if (!path) return "";
   if (/^(https?:)?\/\//.test(path) || path.startsWith("data:")) return path;
   if (path.startsWith("/")) {
-    // Uploaded media lives on the API host.
-    return API_BASE ? API_BASE + path : path;
+    const base = apiBase();
+    return base ? base + path : path;
   }
   return path;
 }
@@ -59,6 +125,60 @@ function writeCache(data) {
   }
 }
 
+/* ---------- Local admin override (used on static hosts like GitHub Pages) ---------- */
+
+export function readLocalOverride() {
+  try {
+    const raw = localStorage.getItem(OVERRIDE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    const data = parsed && parsed.data ? parsed.data : parsed;
+    if (!data || !Array.isArray(data.products)) return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+export function hasLocalOverride() {
+  return !!readLocalOverride();
+}
+
+export function saveLocalOverride(rawContent) {
+  const normalized = normalize(rawContent);
+  const payload = {
+    version: 7,
+    updatedAt: new Date().toISOString(),
+    settings: normalized.settings,
+    categories: normalized.categories,
+    products: normalized.products,
+  };
+  localStorage.setItem(OVERRIDE_KEY, JSON.stringify({ at: Date.now(), data: payload }));
+  state.content = normalized;
+  source = "local";
+  if (typeof window !== "undefined") {
+    window.__CE_DATA__ = normalized;
+    window.dispatchEvent?.(new CustomEvent("ce-content-updated", { detail: normalized }));
+  }
+  return normalized;
+}
+
+export function clearLocalOverride() {
+  try {
+    localStorage.removeItem(OVERRIDE_KEY);
+  } catch {
+    /* ignore */
+  }
+  contentPromise = null;
+}
+
+export async function loadBundledRaw() {
+  if (bundledCache) return JSON.parse(JSON.stringify(bundledCache));
+  const raw = await fetchJSON("data/content.json", { cache: "no-cache" });
+  bundledCache = raw;
+  return JSON.parse(JSON.stringify(raw));
+}
+
 /** Normalise whatever the API or the file returns into the UI shape. */
 export function normalize(raw) {
   const data = raw && raw.data ? raw.data : raw;
@@ -74,6 +194,7 @@ export function normalize(raw) {
     sort: Number.isFinite(p.sort) ? p.sort : i,
     featured: !!p.featured,
     inStock: p.inStock !== false,
+    comingSoon: !!p.comingSoon,
   }));
   const categories = (data.categories || []).map((c, i) => ({ sort: i, ...c }));
   return {
@@ -103,10 +224,13 @@ export function loadContent({ force = false } = {}) {
   if (contentPromise && !force) return contentPromise;
 
   contentPromise = (async () => {
+    await probeSameOriginApi();
+    const base = apiBase();
+
     // 1. Live API
-    if (API_BASE) {
+    if (base) {
       try {
-        const raw = await fetchJSON(`${API_BASE}/api/content`, { cache: "no-store" });
+        const raw = await fetchJSON(`${base}/api/content`, { cache: "no-store" });
         const data = normalize(raw);
         state.content = data;
         state.online = true;
@@ -115,13 +239,29 @@ export function loadContent({ force = false } = {}) {
         writeCache(data);
         return data;
       } catch (err) {
-        console.warn("[CE] API unavailable, falling back to static data", err);
+        console.warn("[CE] API unavailable, falling back to local/static data", err);
       }
     }
 
-    // 2. Bundled JSON
+    // 2. Local admin override (immediate edits made in #/admin on static hosting)
+    const override = readLocalOverride();
+    if (override) {
+      try {
+        const data = normalize(override);
+        state.content = data;
+        state.online = false;
+        state.loading = false;
+        source = "local";
+        return data;
+      } catch (err) {
+        console.warn("[CE] local override malformed, ignoring", err);
+      }
+    }
+
+    // 3. Bundled JSON
     try {
       const raw = await fetchJSON("data/content.json", { cache: "no-cache" });
+      bundledCache = raw;
       const data = normalize(raw);
       state.content = data;
       state.online = false;
@@ -133,7 +273,7 @@ export function loadContent({ force = false } = {}) {
       console.warn("[CE] bundled data failed", err);
     }
 
-    // 3. Cache
+    // 4. Cache
     const cached = readCache();
     if (cached) {
       const data = normalize(cached);
@@ -155,11 +295,55 @@ export function dataSource() {
   return source;
 }
 
+/* ---------- Local request log (fallback when API is not connected) ---------- */
+
+export function listLocalRequests() {
+  try {
+    const raw = localStorage.getItem(LOCAL_REQ_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    return Array.isArray(list) ? list : [];
+  } catch {
+    return [];
+  }
+}
+
+export function setLocalRequestStatus(id, status) {
+  const list = listLocalRequests();
+  const idx = list.findIndex((r) => String(r.id) === String(id));
+  if (idx >= 0) {
+    list[idx].status = status;
+    try {
+      localStorage.setItem(LOCAL_REQ_KEY, JSON.stringify(list));
+    } catch {
+      /* ignore */
+    }
+  }
+  return list;
+}
+
+function recordLocalRequest(payload, reference) {
+  try {
+    const list = listLocalRequests();
+    const id = Date.now();
+    list.unshift({
+      id,
+      reference,
+      createdAt: new Date().toISOString(),
+      status: "new",
+      ...payload,
+    });
+    localStorage.setItem(LOCAL_REQ_KEY, JSON.stringify(list.slice(0, 100)));
+  } catch {
+    /* ignore */
+  }
+}
+
 /** Submit a quote/order request. Returns { ok, reference, mailto? }. */
 export async function submitRequest(payload) {
-  if (API_BASE) {
+  const base = apiBase();
+  if (base) {
     try {
-      const res = await fetch(`${API_BASE}/api/requests`, {
+      const res = await fetch(`${base}/api/requests`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -177,7 +361,9 @@ export async function submitRequest(payload) {
       console.warn("[CE] request API unreachable, using email fallback", err);
     }
   }
-  return { ok: true, reference: "", channel: "email" };
+  const reference = `CE-${Date.now().toString().slice(-6)}`;
+  recordLocalRequest(payload, reference);
+  return { ok: true, reference, channel: "email" };
 }
 
 /* ---------- Selectors ---------- */

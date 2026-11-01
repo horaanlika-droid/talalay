@@ -1,12 +1,15 @@
-/* Cocktail Embassy — offline shell (stale-while-revalidate). */
-const CACHE = "ce-shell-v14";
+/* Cocktail Embassy — offline shell.
+   Code & catalogue JSON use network-first so deploys appear immediately;
+   heavy static photography uses cache-first with background refresh. */
+const CACHE = "ce-shell-v16";
 const SHELL = [
   "./",
   "index.html",
-  "css/app.css",
-  "js/app.js",
-  "js/config.js",
+  "css/app.css?v=16",
+  "js/app.js?v=16",
+  "js/config.js?v=16",
   "js/api.js",
+  "js/admin.js",
   "js/store.js",
   "js/ui.js",
   "js/views.js",
@@ -24,7 +27,10 @@ const SHELL = [
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting())
+    caches
+      .open(CACHE)
+      .then((cache) => cache.addAll(SHELL).catch(() => {}))
+      .then(() => self.skipWaiting())
   );
 });
 
@@ -43,23 +49,43 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
 
   // Never cache the API.
-  if (url.pathname.includes("/api/")) return;
+  if (url.pathname.includes("/api/") || url.pathname.includes("/media/")) return;
+  if (url.origin !== location.origin) return;
 
-  // Same-origin assets: cache-first, refresh in the background.
-  if (url.origin === location.origin) {
+  const isCodeOrData =
+    request.mode === "navigate" ||
+    /\.(html|css|js|mjs|json|webmanifest)$/i.test(url.pathname) ||
+    url.pathname.endsWith("/");
+
+  if (isCodeOrData) {
+    // Network-first so CSS/JS/JSON updates land on the first reload.
     event.respondWith(
-      caches.match(request).then((cached) => {
-        const network = fetch(request)
-          .then((response) => {
-            if (response && response.ok) {
-              const copy = response.clone();
-              caches.open(CACHE).then((cache) => cache.put(request, copy));
-            }
-            return response;
-          })
-          .catch(() => cached);
-        return cached || network;
-      })
+      fetch(request, { cache: "no-cache" })
+        .then((response) => {
+          if (response && response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE).then((cache) => cache.put(request, copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request))
     );
+    return;
   }
+
+  // Static images/assets: cache-first, refresh in the background.
+  event.respondWith(
+    caches.match(request).then((cached) => {
+      const network = fetch(request)
+        .then((response) => {
+          if (response && response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE).then((cache) => cache.put(request, copy));
+          }
+          return response;
+        })
+        .catch(() => cached);
+      return cached || network;
+    })
+  );
 });

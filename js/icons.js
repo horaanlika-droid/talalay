@@ -1,6 +1,8 @@
-/** Inline SVG icon set — thin, SF-Symbol-like strokes. */
+/** Inline SVG icon set — thin, SF-Symbol-like strokes.
+ *  Presentational width/height="18" prevents unsized 300×300 SVG fallback while
+ *  letting any CSS width/height rule override with zero specificity friction. */
 const s = (paths, extra = "") =>
-  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ${extra}>${paths}</svg>`;
+  `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ${extra}>${paths}</svg>`;
 
 export const icons = {
   home: s('<path d="M3.6 10.4 12 3.5l8.4 6.9"/><path d="M5.5 9.4V20h13V9.4"/><path d="M9.7 20v-5.3h4.6V20"/>'),
@@ -35,6 +37,14 @@ export const icons = {
   shield: s('<path d="M12 3.6 19 6v5.6c0 4.3-3 7-7 8.8-4-1.8-7-4.5-7-8.8V6l7-2.4Z"/><path d="m9.2 11.8 2 2 3.6-3.8"/>'),
   search: s('<circle cx="11" cy="11" r="6.6"/><path d="m16.2 16.2 4 4"/>'),
   quote: s('<path d="M4.5 6.5h15"/><path d="M4.5 12h15"/><path d="M4.5 17.5h9"/>'),
+  eye: s('<path d="M2.2 12S5.8 5.5 12 5.5 21.8 12 21.8 12 18.2 18.5 12 18.5 2.2 12 2.2 12Z"/><circle cx="12" cy="12" r="2.8"/>'),
+  eyeOff: s('<path d="M3 3l18 18"/><path d="M10.6 10.6a2.8 2.8 0 0 0 3.9 3.9"/><path d="M9.4 5.8A9.8 9.8 0 0 1 12 5.5c6.2 0 9.8 6.5 9.8 6.5a16.8 16.8 0 0 1-3.2 4.1"/><path d="M6.2 6.3C3.8 8.1 2.2 12 2.2 12s3.6 6.5 9.8 6.5c1.5 0 2.9-.4 4.1-1"/>'),
+  upload: s('<path d="M12 15.5V4.5"/><path d="m7.5 9 4.5-4.5L16.5 9"/><path d="M4.5 16.5v2a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-2"/>'),
+  trash: s('<path d="M4.5 7h15"/><path d="M9.5 7V5.2c0-.7.5-1.2 1.2-1.2h2.6c.7 0 1.2.5 1.2 1.2V7"/><path d="m6.8 7 .8 12.2c0 .9.8 1.6 1.7 1.6h5.4c.9 0 1.6-.7 1.7-1.6L17.2 7"/>'),
+  edit: s('<path d="M15.8 4.6a2.1 2.1 0 0 1 3 3L8.2 18.2l-4 .9.9-4L15.8 4.6Z"/>'),
+  lock: s('<rect x="5" y="11" width="14" height="9.5" rx="2.2"/><path d="M8 11V7.8a4 4 0 0 1 8 0V11"/>'),
+  globe: s('<circle cx="12" cy="12" r="8.6"/><path d="M3.6 12h16.8"/><path d="M12 3.4a13 13 0 0 1 0 17.2"/><path d="M12 3.4a13 13 0 0 0 0 17.2"/>'),
+  refresh: s('<path d="M20 11a8 8 0 0 0-14.6-4.5L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.6 4.5L20 16"/><path d="M20 20v-4h-4"/>'),
 };
 
 export const icon = (name) => icons[name] || "";

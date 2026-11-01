@@ -164,11 +164,20 @@ ORDER_COLUMNS = {
 
 
 def _migrate(conn: sqlite3.Connection) -> None:
-    """Add order columns to a database that was created before they existed."""
-    have = {row["name"] for row in conn.execute("PRAGMA table_info(requests)").fetchall()}
+    """Add newer columns to databases created before they existed."""
+    have_req = {row["name"] for row in conn.execute("PRAGMA table_info(requests)").fetchall()}
     for column, decl in ORDER_COLUMNS.items():
-        if column not in have:
+        if column not in have_req:
             conn.execute(f"ALTER TABLE requests ADD COLUMN {column} {decl}")
+
+    have_cat = {row["name"] for row in conn.execute("PRAGMA table_info(categories)").fetchall()}
+    if "cover" not in have_cat:
+        conn.execute("ALTER TABLE categories ADD COLUMN cover TEXT DEFAULT ''")
+
+    have_prod = {row["name"] for row in conn.execute("PRAGMA table_info(products)").fetchall()}
+    if "coming_soon" not in have_prod:
+        conn.execute("ALTER TABLE products ADD COLUMN coming_soon INTEGER DEFAULT 0")
+
     conn.commit()
 
 
@@ -198,6 +207,7 @@ def seed_database() -> None:
             name=category["name"],
             blurb=category.get("blurb", ""),
             sort=category.get("sort", index),
+            cover=category.get("cover", ""),
         )
     for index, product in enumerate(payload.get("products", [])):
         upsert_product(
@@ -211,6 +221,7 @@ def seed_database() -> None:
             badge=product.get("badge", ""),
             featured=bool(product.get("featured")),
             in_stock=product.get("inStock", True) is not False,
+            coming_soon=bool(product.get("comingSoon")),
             sort=product.get("sort", index),
             images=product.get("images", []),
             collections=[],
@@ -282,13 +293,13 @@ def list_categories() -> list[dict]:
     return [dict(r) for r in rows]
 
 
-def upsert_category(slug: str, name: str, blurb: str = "", sort: int = 0) -> int:
+def upsert_category(slug: str, name: str, blurb: str = "", sort: int = 0, cover: str = "") -> int:
     conn = get_conn()
     with _lock:
         conn.execute(
-            "INSERT INTO categories(slug, name, blurb, sort) VALUES(?,?,?,?) "
-            "ON CONFLICT(slug) DO UPDATE SET name=excluded.name, blurb=excluded.blurb, sort=excluded.sort",
-            (slug, name, blurb, sort),
+            "INSERT INTO categories(slug, name, blurb, sort, cover) VALUES(?,?,?,?,?) "
+            "ON CONFLICT(slug) DO UPDATE SET name=excluded.name, blurb=excluded.blurb, sort=excluded.sort, cover=excluded.cover",
+            (slug, name, blurb, sort, cover or ""),
         )
         conn.commit()
         row = conn.execute("SELECT id FROM categories WHERE slug = ?", (slug,)).fetchone()
@@ -343,7 +354,8 @@ def delete_collection(slug: str) -> None:
 
 # ----------------------------------------------------------------- products
 def _product_to_dict(row: sqlite3.Row) -> dict:
-    return {
+    keys = row.keys()
+    out = {
         "id": row["id"],
         "slug": row["slug"],
         "name": row["name"],
@@ -360,6 +372,9 @@ def _product_to_dict(row: sqlite3.Row) -> dict:
         "images": _loads(row["images"], []),
         "specs": _loads(row["specs"], {}),
     }
+    if "coming_soon" in keys and bool(row["coming_soon"]):
+        out["comingSoon"] = True
+    return out
 
 
 def list_products() -> list[dict]:
@@ -395,20 +410,21 @@ def upsert_product(
     images: Iterable[str] | None = None,
     collections: Iterable[str] | None = None,
     specs: dict | None = None,
+    coming_soon: bool = False,
 ) -> int:
     conn = get_conn()
     with _lock:
         conn.execute(
             """
             INSERT INTO products(slug, name, subtitle, description, price, volume, category_slug,
-                                 badge, featured, in_stock, sort, images, collections, specs)
-            VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                                 badge, featured, in_stock, coming_soon, sort, images, collections, specs)
+            VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             ON CONFLICT(slug) DO UPDATE SET
                 name=excluded.name, subtitle=excluded.subtitle, description=excluded.description,
                 price=excluded.price, volume=excluded.volume, category_slug=excluded.category_slug,
                 badge=excluded.badge, featured=excluded.featured, in_stock=excluded.in_stock,
-                sort=excluded.sort, images=excluded.images, collections=excluded.collections,
-                specs=excluded.specs
+                coming_soon=excluded.coming_soon, sort=excluded.sort, images=excluded.images,
+                collections=excluded.collections, specs=excluded.specs
             """,
             (
                 slug,
@@ -421,6 +437,7 @@ def upsert_product(
                 badge,
                 1 if featured else 0,
                 1 if in_stock else 0,
+                1 if coming_soon else 0,
                 sort,
                 _json(list(images or [])),
                 _json(list(collections or [])),
@@ -637,13 +654,20 @@ def request_counts() -> dict[str, int]:
 
 # -------------------------------------------------------------- public feed
 def get_content() -> dict:
-    settings = all_settings()
+    raw_settings = all_settings()
+    settings = {k: v for k, v in raw_settings.items() if not str(k).startswith("_")}
     return {
-        "version": 2,
+        "version": 7,
         "updatedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "settings": settings,
         "categories": [
-            {"slug": c["slug"], "name": c["name"], "blurb": c["blurb"], "sort": c["sort"]}
+            {
+                "slug": c["slug"],
+                "name": c["name"],
+                "blurb": c["blurb"],
+                "sort": c["sort"],
+                **({"cover": c["cover"]} if c.get("cover") else {}),
+            }
             for c in list_categories()
         ],
         "collections": [
