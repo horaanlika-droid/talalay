@@ -13,7 +13,7 @@
  * is unreachable, so GitHub Pages always renders a full catalogue.
  */
 window.CE_CONFIG = {
-  apiBase: "http://localhost:8080",
+  apiBase: "",
   telegramAdmin: "",
   requestEmail: "bartending.solution.uae@gmail.com",
 };

@@ -1800,11 +1800,19 @@ main {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 16px 0;
+  padding: 14px 0;
   text-align: left;
   font-size: 15px;
   font-weight: 550;
   letter-spacing: -0.015em;
+}
+.accordion__trigger span {
+  display: inline-block;
+  font-size: 15px;
+  line-height: 1.4;
+  letter-spacing: -0.015em;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 .accordion__trigger svg {
   flex: none;

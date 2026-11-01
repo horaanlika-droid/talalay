@@ -119,6 +119,37 @@ function card(title, body, actions = "") {
 /* -------------------------------------------------------------- views */
 
 function loginView() {
+  if (isStatic()) {
+    return {
+      title: "Админ-панель",
+      html: `
+        <div class="admin admin--panel">
+          <header class="admin__shell-header">
+            <div class="admin__shell-brand">
+              <img src="assets/brand/mark-dark.png" alt="Cocktail Embassy" class="admin__logo">
+              <span class="admin__shell-title">Админ-панель</span>
+            </div>
+            <div class="admin__shell-actions">${btn("Выйти", "danger")}</div>
+          </header>
+          <div class="admin__empty">
+            <h2 style="font-size:16px;margin:0 0 8px">API не настроен</h2>
+            <p style="font-size:13px;color:#8a8a8a;margin:0 0 16px">
+              Чтобы редактировать контент прямо на сайте, запустите сервер:<br>
+              <code style="color:#c8c8c8">cd server && python main.py</code><br>
+              и укажите в <code>js/config.js</code>:<br>
+              <code style="color:#c8c8c8">apiBase: "http://&lt;ваш-ip&gt;:8080"</code><br>
+              (с телефона укажите IP вашего компьютера в локальной сети, не localhost)
+            </p>
+            ${btn("В магазин", "primary")}
+          </div>
+        </div>
+      `,
+      mount(main) {
+        main.querySelector(".admin__btn--danger")?.addEventListener("click", () => { logout(); });
+        main.querySelector(".admin__btn--primary")?.addEventListener("click", () => { location.hash = "#/"; location.reload(); });
+      },
+    };
+  }
   return {
     title: "Вход в админку",
     html: `
