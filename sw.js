@@ -1,13 +1,13 @@
 /* Cocktail Embassy — offline shell.
-   Code & catalogue JSON use network-first so deploys appear immediately;
-   heavy static photography uses cache-first with background refresh. */
-const CACHE = "ce-shell-v16";
+   Code, catalogue JSON, and per-item photo folders (glasses/, covers/, packaging/)
+   use network-first so replaced repository photos appear on the very first reload. */
+const CACHE = "ce-shell-v17";
 const SHELL = [
   "./",
   "index.html",
-  "css/app.css?v=16",
-  "js/app.js?v=16",
-  "js/config.js?v=16",
+  "css/app.css?v=17",
+  "js/app.js?v=17",
+  "js/config.js?v=17",
   "js/api.js",
   "js/admin.js",
   "js/store.js",
@@ -15,14 +15,12 @@ const SHELL = [
   "js/views.js",
   "js/icons.js",
   "data/content.json",
+  "data/folder-defaults.json",
   "manifest.webmanifest",
   "assets/brand/mark-dark.png",
   "assets/brand/ce-logo-chrome.png",
   "assets/brand/mark-chrome.png",
   "assets/brand/favicon.png",
-  "assets/products/martini.webp",
-  "assets/scenes/hero-levitating-martini.webp",
-  "assets/scenes/hero-levitating-martini-portrait.webp",
 ];
 
 self.addEventListener("install", (event) => {
@@ -52,13 +50,14 @@ self.addEventListener("fetch", (event) => {
   if (url.pathname.includes("/api/") || url.pathname.includes("/media/")) return;
   if (url.origin !== location.origin) return;
 
-  const isCodeOrData =
+  const isFreshFirst =
     request.mode === "navigate" ||
     /\.(html|css|js|mjs|json|webmanifest)$/i.test(url.pathname) ||
+    /\/(glasses|covers|packaging)\//i.test(url.pathname) ||
     url.pathname.endsWith("/");
 
-  if (isCodeOrData) {
-    // Network-first so CSS/JS/JSON updates land on the first reload.
+  if (isFreshFirst) {
+    // Network-first so code/JSON and folder photography updates land immediately.
     event.respondWith(
       fetch(request, { cache: "no-cache" })
         .then((response) => {
@@ -73,7 +72,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Static images/assets: cache-first, refresh in the background.
+  // Brand icons and legacy static assets: cache-first, refresh in the background.
   event.respondWith(
     caches.match(request).then((cached) => {
       const network = fetch(request)
