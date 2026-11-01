@@ -53,12 +53,12 @@ GLOW_HOT = np.array([64.0, 110.0, 164.0], np.float32)
 GLOW_HAZE = np.array([11.0, 24.0, 46.0], np.float32)
 SHEEN = np.array([6.0, 1.0, 10.0], np.float32)     # thin-film violet on the rim
 
-BLOOM_TIGHT = 0.45            # light licked off the glass (close)
-BLOOM_WIDE = 0.26             # atmospheric halo (far)
-SHARPEN = 0.45                # unsharp on the glass, keeps 4K crisp
+BLOOM_TIGHT = 0.65            # light licked off the glass (close) — brighter rims so glass reads on black
+BLOOM_WIDE = 0.40             # atmospheric halo (far)
+SHARPEN = 0.60                # unsharp on the glass, keeps 4K crisp
 
 D_CLAMP = 22.0                # max light the piece may add to the new room
-D_LF_BASE = 0.12              # how much of its soft body a clear glass keeps
+D_LF_BASE = 0.17              # how much of its soft body a clear glass keeps — more glass body visible
 D_LF_LIQUID = 0.52            # …and how much a drink keeps
 
 
