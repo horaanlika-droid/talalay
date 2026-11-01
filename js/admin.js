@@ -127,20 +127,20 @@ function loginView() {
           <img src="assets/brand/mark-dark.png" alt="Cocktail Embassy" class="admin__logo">
           <h1 class="admin__h1">Админ-панель</h1>
           <p class="admin__subtitle">Редактирование каталога и настроек сайта</p>
-          <div class="admin__card">
+          <form class="admin__card admin__login-form" novalidate>
             <div class="admin__card-body">
               ${input("Пароль", "password", "", "password", "введите админ-пароль")}
               <div class="admin__field" style="margin-top:14px;text-align:right">
                 ${btn("Войти", "primary")}
               </div>
             </div>
-          </div>
+          </form>
           <p class="admin__hint">Если пароля ещё нет — задайте переменную ADMIN_PASSWORD на сервере.</p>
         </div>
       </div>
     `,
     mount(main) {
-      const form = main.querySelector(".admin__card");
+      const form = main.querySelector(".admin__login-form");
       if (!form) return;
       const inp = form.querySelector('[name="password"]');
       form.addEventListener("submit", async (e) => {
@@ -148,6 +148,7 @@ function loginView() {
         try {
           await adminLogin(inp.value);
           toast("Вход выполнен");
+          location.hash = "#/admin";
           location.reload();
         } catch (err) {
           toast("Неверный пароль");
