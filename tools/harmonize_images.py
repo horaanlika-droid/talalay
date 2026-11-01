@@ -53,13 +53,13 @@ GLOW_HOT = np.array([16.0, 17.0, 20.0], np.float32)
 GLOW_HAZE = np.array([11.0, 11.0, 12.0], np.float32)
 SHEEN = np.array([2.0, 1.0, 3.0], np.float32)         # thin-film violet on the rim
 
-BLOOM_TIGHT = 0.70            # bright specular rim light off the glass (IMG_1704 p99≈245)
-BLOOM_WIDE = 0.30             # soft halo around the glass, not in the background
-SHARPEN = 0.65                # crisp rims, engraving and wall thickness
+BLOOM_TIGHT = 3.00            # bright specular rim light off the glass (IMG_1704 p99≈245)
+BLOOM_WIDE = 0.60             # soft halo around the glass, not in the background
+SHARPEN = 1.20                # crisp rims, engraving and wall thickness
 
-D_CLAMP = 22.0                # max light the piece may add to the new room
-D_LF_BASE = 0.15              # soft glass body kept visible
-D_LF_LIQUID = 0.45            # …and how much a drink keeps
+D_CLAMP = 400.0               # max light the piece may add to the new room (near-white speculars)
+D_LF_BASE = 0.05              # soft glass body kept visible — darker body, brighter rims
+D_LF_LIQUID = 0.35            # …and how much a drink keeps
 
 
 # ------------------------------------------------------------------ helpers
