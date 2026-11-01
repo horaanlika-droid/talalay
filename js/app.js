@@ -10,13 +10,16 @@ import {
   requestView,
   infoView,
   notFoundView,
+  adminView,
 } from "./views.js";
+import { isAdmin, logout } from "./admin.js";
 
 const app = document.getElementById("app");
 const NAV_ITEMS = [
   { key: "home", href: "#/", label: "Home" },
   { key: "shop", href: "#/shop", label: "Shop" },
   { key: "info", href: "#/info", label: "The Embassy" },
+  { key: "admin", href: "#/admin", label: "Admin", admin: true },
 ];
 
 /* ------------------------------------------------------------ ticker */
@@ -85,6 +88,7 @@ function shellHTML() {
           (item) => `<a class="nav__link" href="${item.href}" data-navlink="${item.key}">${item.label}</a>`
         ).join("")}
         <a class="nav__link" href="#/request" data-navlink="request">Request</a>
+      ${isAdmin() ? `<a class="nav__link" href="#/admin" data-navlink="admin">Admin</a>` : ""}
       </nav>
       <a class="iconbtn" href="#/request" aria-label="Open request" data-cartbtn>
         ${icon("bag")}
@@ -111,6 +115,7 @@ function shellHTML() {
     <a class="tab" href="#/shop" data-tab="shop">${icon("shop")}<span>Shop</span></a>
     <a class="tab" href="#/request" data-tab="request">${icon("bag")}<span>Request</span><span class="tab__badge" data-tab-badge hidden>0</span></a>
     <a class="tab" href="#/info" data-tab="info">${icon("info")}<span>Info</span></a>
+    ${isAdmin() ? `<a class="tab" href="#/admin" data-tab="admin">${icon("sliders")}<span>Admin</span></a>` : ""}
   </nav>`;
 }
 
@@ -208,6 +213,7 @@ const routeDefs = [
   },
   { test: (s) => s[0] === "request", view: (data) => requestView(data), tab: "request", nav: "request" },
   { test: (s) => s[0] === "info", view: (data) => infoView(data), tab: "info", nav: "info" },
+  { test: (s) => s[0] === "admin", view: (data) => adminView(data), tab: "", nav: "" },
 ];
 
 /* How deep a route sits: the tab roots are one step in, a piece or a collection

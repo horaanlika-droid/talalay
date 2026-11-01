@@ -3501,3 +3501,118 @@ body.is-booting .ticker {
   object-fit: contain;
   padding: clamp(24px, 8vw, 90px);
 }
+
+/* ==========================================================================
+   Admin panel (web back office, #/admin)
+   ========================================================================== */
+
+.admin { color: #f2f2f2; }
+.admin a { color: #c8c8c8; text-decoration: none; }
+.admin a:hover { color: #ffffff; }
+
+/* --- login --- */
+.admin--login { display: grid; place-items: center; min-height: 100dvh; background: #0a0a0a; }
+.admin--login .admin__shell { width: min(92vw, 420px); padding: 24px; }
+.admin--login .admin__logo { width: 48px; height: 48px; display: block; margin: 0 auto 16px; }
+.admin--login .admin__h1 { font-size: 20px; letter-spacing: -0.02em; text-align: center; margin: 0 0 6px; }
+.admin--login .admin__subtitle { font-size: 12px; color: #8a8a8a; text-align: center; margin: 0 0 20px; }
+.admin--login .admin__hint { font-size: 11px; color: #666; text-align: center; margin-top: 16px; }
+
+/* --- panel shell --- */
+.admin--panel .admin__shell-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; border-bottom: 1px solid #1a1a1a;
+}
+.admin--panel .admin__shell-brand { display: flex; align-items: center; gap: 10px; }
+.admin--panel .admin__logo { width: 32px; height: 32px; }
+.admin--panel .admin__shell-title { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+.admin--panel .admin__shell-actions { display: flex; gap: 10px; }
+.admin__tabs { display: flex; gap: 0; border-bottom: 1px solid #1a1a1a; overflow-x: auto; }
+.admin__tab {
+  flex-shrink: 0; padding: 12px 16px; font-size: 12px; font-weight: 600;
+  letter-spacing: 0.05em; text-transform: uppercase; color: #8a8a8a;
+  border-bottom: 2px solid transparent; white-space: nowrap;
+}
+.admin__tab:hover { color: #c8c8c8; }
+.admin__tab--active { color: #ffffff; border-bottom-color: #c8c8c8; }
+
+/* --- common admin UI --- */
+.admin__bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-bottom: 1px solid #1a1a1a; }
+.admin__h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+.admin__bar-right { display: flex; gap: 8px; }
+.admin__section-title { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #8a8a8a; margin: 20px 20px 8px; }
+.admin__section-intro { font-size: 13px; color: #8a8a8a; margin: 0 20px 16px; }
+
+.admin__form { padding: 0 20px 24px; }
+.admin__grid { display: grid; gap: 12px; }
+.admin__grid--2 { grid-template-columns: 1fr 1fr; }
+.admin__field { display: flex; flex-direction: column; gap: 6px; }
+.admin__label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #8a8a8a; }
+.admin__label--checkbox { flex-direction: row; align-items: center; gap: 8px; font-size: 13px; text-transform: none; }
+.admin__input, .admin__textarea, select.admin__input {
+  width: 100%; background: #0a0a0a; border: 1px solid #222; color: #f2f2f2;
+  font-size: 13px; padding: 10px 12px; border-radius: 8px; box-sizing: border-box;
+}
+.admin__input:focus, .admin__textarea:focus { outline: none; border-color: #c8c8c8; }
+.admin__textarea { font-family: inherit; resize: vertical; }
+.admin__label--checkbox input { accent-color: #c8c8c8; width: 16px; height: 16px; }
+
+.admin__btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 6px; height: 36px; padding: 0 16px; border: 1px solid #222;
+  background: #141414; color: #f2f2f2; font-size: 13px; font-weight: 600;
+  border-radius: 8px; cursor: pointer; white-space: nowrap;
+}
+.admin__btn:hover { background: #1e1e1e; border-color: #333; }
+.admin__btn--primary { background: #ffffff; color: #000000; border-color: #ffffff; }
+.admin__btn--primary:hover { background: #e8e8e8; }
+.admin__btn--danger { background: #141414; color: #ff6b6b; border-color: #333; }
+.admin__btn--danger:hover { background: #1e1e1e; }
+.admin__btn--ghost { background: transparent; border-color: transparent; color: #8a8a8a; }
+.admin__btn--ghost:hover { color: #c8c8c8; }
+
+.admin__card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 12px; margin: 0 20px 16px; overflow: hidden; }
+.admin__card-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #1a1a1a; }
+.admin__card-title { font-size: 14px; font-weight: 600; margin: 0; }
+.admin__card-actions { display: flex; gap: 8px; }
+.admin__card-body { padding: 12px 16px; }
+
+.admin__product-list { padding: 0 20px 24px; display: grid; gap: 10px; }
+.admin__product-row {
+  display: flex; align-items: center; gap: 12px;
+  background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 10px;
+  padding: 10px 14px;
+}
+.admin__product-thumb { width: 60px; height: 75px; flex-shrink: 0; border-radius: 8px; overflow: hidden; background: #000; }
+.admin__product-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.admin__product-info { flex: 1; min-width: 0; }
+.admin__product-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.admin__product-meta { font-size: 11px; color: #8a8a8a; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.admin__product-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+.admin__sheet {
+  position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.6); display: none;
+}
+.admin__sheet-inner {
+  width: min(94vw, 560px); max-height: 90vh; background: #0a0a0a;
+  border: 1px solid #1a1a1a; border-radius: 12px; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.admin__sheet-close {
+  position: absolute; top: 10px; right: 10px; z-index: 1;
+  width: 32px; height: 32px; border: none; background: transparent; color: #8a8a8a;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.admin__sheet-close:hover { color: #ffffff; }
+.admin__sheet form { padding: 20px; overflow-y: auto; flex: 1; }
+
+.admin__empty { padding: 40px 20px; text-align: center; color: #8a8a8a; font-size: 13px; }
+
+.admin__hint { font-size: 11px; color: #666; }
+
+@media (max-width: 600px) {
+  .admin__grid--2 { grid-template-columns: 1fr; }
+  .admin__shell-header { flex-direction: column; gap: 10px; align-items: flex-start; }
+  .admin__shell-actions { width: 100%; justify-content: flex-end; }
+}
