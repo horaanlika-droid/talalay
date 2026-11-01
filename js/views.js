@@ -1076,21 +1076,6 @@ function renderRequestSuccess(root, { reference, total, data, mailto, channel })
 
 /* ------------------------------------------------------------------- info */
 
-const FAQ = [
-  {
-    q: "How do I place a trade order?",
-    a: "Build a request from the catalogue. We reply with availability, shipping cost and lead time, then issue an invoice.",
-  },
-  {
-    q: "Do you ship outside the UAE?",
-    a: "Yes — worldwide, including the Gulf and North America. Duties and taxes are payable by the recipient.",
-  },
-  {
-    q: "What if glass arrives broken?",
-    a: "Send photos within 48 hours. We replace transit breakage free of charge.",
-  },
-];
-
 export function infoView(data) {
   const settings = data.settings || {};
   const c = settings.contacts || {};
@@ -1162,22 +1147,6 @@ export function infoView(data) {
         </div>
       </section>
 
-      <section class="section section--faq" aria-labelledby="faq-title">
-        <div class="section-head" style="margin-bottom:12px">
-          <h2 class="h3" id="faq-title">Good questions</h2>
-        </div>
-        <div class="accordion" data-accordion>
-          ${(Array.isArray(settings.faq) && settings.faq.length ? settings.faq : FAQ).map(
-            (item, i) => `<div class="accordion__item">
-              <button class="accordion__trigger" type="button" aria-expanded="false" aria-controls="faq-${i}">
-                <span>${esc(item.q)}</span>${icon("plus")}
-              </button>
-              <div class="accordion__panel" id="faq-${i}"><div>${esc(item.a)}</div></div>
-            </div>`
-          ).join("")}
-        </div>
-      </section>
-
       <section class="section">
         <div class="mesh-card">
           <div style="display:grid;gap:14px;max-width:52ch">
@@ -1193,24 +1162,6 @@ export function infoView(data) {
     title: `About — ${settings.brand || "Cocktail Embassy"}`,
     html,
     theme: "dark-top",
-    mount(root) {
-      const acc = root.querySelector("[data-accordion]");
-      if (!acc) return;
-      acc.addEventListener("click", (e) => {
-        const trigger = e.target.closest(".accordion__trigger");
-        if (!trigger) return;
-        const panel = trigger.nextElementSibling;
-        const open = trigger.getAttribute("aria-expanded") === "true";
-        acc.querySelectorAll(".accordion__trigger").forEach((t) => {
-          t.setAttribute("aria-expanded", "false");
-          t.nextElementSibling.style.height = "0px";
-        });
-        if (!open) {
-          trigger.setAttribute("aria-expanded", "true");
-          panel.style.height = `${panel.scrollHeight}px`;
-        }
-      });
-    },
   };
 }
 

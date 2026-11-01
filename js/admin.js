@@ -37,21 +37,6 @@ const GH_REPO_KEY = "ce.admin.ghRepo";
 // Default SHA-256("embassy2026")
 const DEFAULT_PW_HASH = "81c02e5848f5cf8363cd941e29c5cb337b0033ad8d7ab834530aea6c7ecb15c1";
 
-const DEFAULT_FAQ = [
-  {
-    q: "How do I place a trade order?",
-    a: "Build a request from the catalogue. We reply with availability, shipping cost and lead time, then issue an invoice.",
-  },
-  {
-    q: "Do you ship outside the UAE?",
-    a: "Yes — worldwide, including the Gulf and North America. Duties and taxes are payable by the recipient.",
-  },
-  {
-    q: "What if glass arrives broken?",
-    a: "Send photos within 48 hours. We replace transit breakage free of charge.",
-  },
-];
-
 let adminToken = "";
 try {
   adminToken = localStorage.getItem(TOKEN_KEY) || "";
@@ -1217,7 +1202,6 @@ function categoriesView(data, rerender) {
 function settingsView(data, rerender) {
   const s = data.settings || {};
   const c = s.contacts || {};
-  const faqList = Array.isArray(s.faq) && s.faq.length ? s.faq : DEFAULT_FAQ;
   const heroSlides = Array.isArray(s.hero) ? s.hero : [];
   const productOptions = (selectedSlug) =>
     (data.products || [])
@@ -1236,7 +1220,7 @@ function settingsView(data, rerender) {
         <header class="admin__bar admin__bar--sticky">
           <div>
             <h2 class="admin__h2">Настройки сайта</h2>
-            <p class="admin__sub">Бренд, контакты, бегущие строки, главный экран и вопросы (FAQ)</p>
+            <p class="admin__sub">Бренд, контакты, бегущие строки и главный экран</p>
           </div>
           <div class="admin__bar-right">
             <button type="submit" form="admin-settings-form" class="admin__btn admin__btn--primary">
@@ -1293,26 +1277,6 @@ function settingsView(data, rerender) {
           </div>
 
           <div class="admin__subhead-row">
-            <h3 class="admin__section-title" style="margin:0">Вопросы и ответы (FAQ на странице The Embassy)</h3>
-            ${btn(`${icon("plus")}<span>Добавить вопрос</span>`, "default", "button", "data-faq-add")}
-          </div>
-          <div class="admin__repeater" data-faq-list>
-            ${faqList
-              .map(
-                (item) => `
-              <div class="admin__repeater-item" data-faq-item>
-                <div class="admin__repeater-main">
-                  <input class="admin__input" type="text" data-faq-q value="${attr(item.q || "")}" placeholder="Вопрос">
-                  <textarea class="admin__textarea" rows="2" data-faq-a placeholder="Ответ">${esc(item.a || "")}</textarea>
-                </div>
-                <button type="button" class="admin__btn admin__btn--danger" data-faq-rm aria-label="Удалить вопрос">${icon("trash")}</button>
-              </div>
-            `
-              )
-              .join("")}
-          </div>
-
-          <div class="admin__subhead-row">
             <h3 class="admin__section-title" style="margin:0">Слайды на главной (Hero)</h3>
             ${btn(`${icon("plus")}<span>Добавить слайд</span>`, "default", "button", "data-hero-add")}
           </div>
@@ -1352,28 +1316,7 @@ function settingsView(data, rerender) {
     `,
     mount(root) {
       const form = root.querySelector("#admin-settings-form");
-      const faqListEl = root.querySelector("[data-faq-list]");
       const heroListEl = root.querySelector("[data-hero-list]");
-
-      root.querySelector("[data-faq-add]")?.addEventListener("click", () => {
-        const div = document.createElement("div");
-        div.className = "admin__repeater-item";
-        div.dataset.faqItem = "";
-        div.innerHTML = `
-          <div class="admin__repeater-main">
-            <input class="admin__input" type="text" data-faq-q placeholder="Вопрос">
-            <textarea class="admin__textarea" rows="2" data-faq-a placeholder="Ответ"></textarea>
-          </div>
-          <button type="button" class="admin__btn admin__btn--danger" data-faq-rm aria-label="Удалить вопрос">${icon("trash")}</button>
-        `;
-        faqListEl.appendChild(div);
-        div.querySelector("[data-faq-q]")?.focus();
-      });
-
-      faqListEl?.addEventListener("click", (e) => {
-        const rm = e.target.closest("[data-faq-rm]");
-        if (rm) rm.closest("[data-faq-item]")?.remove();
-      });
 
       root.querySelector("[data-hero-add]")?.addEventListener("click", () => {
         const firstProd = data.products?.[0];
@@ -1425,22 +1368,22 @@ function settingsView(data, rerender) {
         }
         patch.contacts = contacts;
 
-        patch.faq = [...faqListEl.querySelectorAll("[data-faq-item]")]
-          .map((row) => ({
-            q: row.querySelector("[data-faq-q]")?.value.trim() || "",
-            a: row.querySelector("[data-faq-a]")?.value.trim() || "",
-          }))
-          .filter((x) => x.q && x.a);
-
+        const existingHeroBySlug = new Map(heroSlides.map((h) => [h.productSlug, h]));
         patch.hero = [...heroListEl.querySelectorAll("[data-hero-item]")]
-          .map((row) => ({
-            productSlug: row.querySelector("[data-hero-slug]")?.value || "",
-            kicker: row.querySelector("[data-hero-kicker]")?.value.trim() || "",
-            title: row.querySelector("[data-hero-title]")?.value.trim() || "",
-            name: row.querySelector("[data-hero-name]")?.value.trim() || "",
-            subtitle: row.querySelector("[data-hero-sub]")?.value.trim() || "",
-            copy: row.querySelector("[data-hero-copy]")?.value.trim() || "",
-          }))
+          .map((row) => {
+            const productSlug = row.querySelector("[data-hero-slug]")?.value || "";
+            const prev = existingHeroBySlug.get(productSlug) || {};
+            return {
+              productSlug,
+              kicker: row.querySelector("[data-hero-kicker]")?.value.trim() || "",
+              title: row.querySelector("[data-hero-title]")?.value.trim() || "",
+              name: row.querySelector("[data-hero-name]")?.value.trim() || "",
+              subtitle: row.querySelector("[data-hero-sub]")?.value.trim() || "",
+              copy: row.querySelector("[data-hero-copy]")?.value.trim() || "",
+              ...(prev.cover ? { cover: prev.cover } : {}),
+              ...(prev.portraitCover ? { portraitCover: prev.portraitCover } : {}),
+            };
+          })
           .filter((x) => x.productSlug);
 
         try {
