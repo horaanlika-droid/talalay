@@ -1067,23 +1067,15 @@ function renderRequestSuccess(root, { reference, total, data, mailto, channel })
 const FAQ = [
   {
     q: "How do I place a trade order?",
-    a: "Build a request from the catalogue and submit your details. We reply with availability, shipping cost and lead time, then issue an invoice. Payment is by bank transfer or by link once the order is confirmed.",
-  },
-  {
-    q: "What are the minimum quantities?",
-    a: "Single pieces are available for studios and private bars. Bars and hotels usually order 6 per case; mixed cases are welcome. Pallet orders are quoted individually.",
+    a: "Build a request from the catalogue. We reply with availability, shipping cost and lead time, then issue an invoice.",
   },
   {
     q: "Do you ship outside the UAE?",
-    a: "Yes — we ship worldwide, including the Gulf and North America. Import duties and local taxes are payable by the recipient unless agreed otherwise.",
+    a: "Yes — worldwide, including the Gulf and North America. Duties and taxes are payable by the recipient.",
   },
   {
-    q: "What happens if glass arrives broken?",
-    a: "Send us photographs within 48 hours of delivery. We replace transit breakage free of charge and file the carrier claim ourselves.",
-  },
-  {
-    q: "Can pieces be engraved or customised?",
-    a: "Absolutely. Etching, blast finishes and custom volumes are available from 48 pieces per design. Tell us what you need in the notes field of your request.",
+    q: "What if glass arrives broken?",
+    a: "Send photos within 48 hours. We replace transit breakage free of charge.",
   },
 ];
 
