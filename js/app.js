@@ -550,7 +550,7 @@ async function boot() {
 
   if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
     navigator.serviceWorker
-      .register("sw.js?v=17")
+      .register("sw.js?v=18")
       .then((reg) => reg.update().catch(() => {}))
       .catch(() => {});
   }

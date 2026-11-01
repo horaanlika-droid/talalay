@@ -92,9 +92,7 @@ ok("request renders", views.requestView(data).html.length > 500);
 const info = views.infoView(data);
 ok("info renders", info.html.length > 500);
 ok("info uses cover folders", info.html.includes("covers/info-banner/cover.webp") && info.html.includes("covers/info-story/cover.webp"));
-ok("faq svgs have explicit dimensions", /accordion__trigger[\s\S]*?<svg width="\d+" height="\d+"/.test(info.html));
-const cssText = await readFile(join(root, "css/app.css"), "utf8");
-ok("css sizes accordion trigger svg", /\.accordion__trigger svg\s*\{[^}]*width:\s*\d+px/.test(cssText));
+ok("faq removed from info page", !info.html.includes("Good questions") && !info.html.includes("section--faq") && !info.html.includes("data-accordion"));
 const swText = await readFile(join(root, "sw.js"), "utf8");
 ok("sw network-first for photo folders", /\(glasses\|covers\|packaging\)/.test(swText));
 
@@ -189,6 +187,9 @@ for (const tab of ["products", "categories", "settings", "requests", "sync"]) {
   globalThis.location.hash = `#/admin/${tab}`;
   const panel = admin.adminView(data);
   ok(`admin ${tab} renders visible body`, panel.html.includes("admin__body") && !panel.html.includes('class="admin__sheet"'));
+  if (tab === "settings") {
+    ok("faq removed from admin settings", !panel.html.includes("data-faq-list"));
+  }
 }
 admin.logout();
 ok("admin logout clears session", admin.isAdmin() === false);
