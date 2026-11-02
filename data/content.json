@@ -1,6 +1,6 @@
 {
   "version": 7,
-  "updatedAt": "2026-10-31T16:00:00Z",
+  "updatedAt": "2026-11-02T13:30:00+03:00",
   "settings": {
     "brand": "Cocktail Embassy",
     "tagline": "Hand-blown glassware for the modern bar.",
@@ -178,6 +178,7 @@
       "priceUsd": null,
       "volume": "210 ml",
       "images": [
+        "glasses/levitating-martini/IMG_1762.png",
         "glasses/levitating-martini/photo.webp"
       ],
       "description": "An ultra-delicate, elongated martini glass designed for minimal elegance. The pulled stem replicates classic proportions while keeping the piece almost weightless in the hand.",
@@ -205,6 +206,7 @@
       "priceUsd": null,
       "volume": "250 ml",
       "images": [
+        "glasses/champagne-saucer/IMG_1761.png",
         "glasses/champagne-saucer/photo.webp"
       ],
       "description": "The classic saucer, re-proportioned for aroma. A wide surface and thin rim make it the glass we reach for at the end of the night.",
@@ -232,6 +234,7 @@
       "priceUsd": null,
       "volume": "330 ml",
       "images": [
+        "glasses/stemmed-tumbler/IMG_1751.jpeg",
         "glasses/stemmed-tumbler/photo.webp"
       ],
       "description": "A tumbler lifted onto a low foot — the silhouette of a wine glass with the ease of a rocks. Our quiet favourite.",
@@ -261,6 +264,7 @@
       "priceUsd": 8.2,
       "volume": "140 ml",
       "images": [
+        "glasses/levitating-super-pony/IMG_1765.jpeg",
         "glasses/levitating-super-pony/photo.webp"
       ],
       "description": "Ultra-light crystal with a pulled stem, suspended for a unique experience.",
@@ -290,6 +294,7 @@
       "priceUsd": 8.2,
       "volume": "300 ml",
       "images": [
+        "glasses/levitating-rocks-glass/IMG_1764.jpeg",
         "glasses/levitating-rocks-glass/photo.webp"
       ],
       "description": "Ultra-light crystal with a pulled stem, suspended for a unique experience.",
@@ -318,6 +323,7 @@
       "priceUsd": 8.2,
       "volume": "390 ml",
       "images": [
+        "glasses/levitating-highball-glass/IMG_1763.jpeg",
         "glasses/levitating-highball-glass/photo.webp"
       ],
       "description": "Ultra-light crystal with a pulled stem, suspended for a unique experience.",
@@ -345,6 +351,7 @@
       "priceUsd": null,
       "volume": "220 ml",
       "images": [
+        "glasses/saucer-coupe/IMG_1752.jpeg",
         "glasses/saucer-coupe/photo.webp"
       ],
       "description": "A stepped coupe with an inner volume ring so the bowl reads fuller than it is. Tuned for champagne, sours and clarified milk punches.",
@@ -372,6 +379,7 @@
       "priceUsd": null,
       "volume": "400 ml",
       "images": [
+        "glasses/embassy-goblet/IMG_1747.jpeg",
         "glasses/embassy-goblet/photo.webp"
       ],
       "description": "A generous all-purpose goblet with a slim shoulder and a wide, stable foot. Our most requested piece for wine service and large-format stirred drinks.",
@@ -427,6 +435,7 @@
       "priceUsd": null,
       "volume": "300 ml",
       "images": [
+        "glasses/column-tumbler/IMG_1759.jpeg",
         "glasses/column-tumbler/photo.webp"
       ],
       "description": "A clean cylinder with a hand-etched chevron. Designed to disappear into the table and hold the light.",
@@ -454,6 +463,7 @@
       "priceUsd": null,
       "volume": "320 ml",
       "images": [
+        "glasses/basalt-rocks/IMG_1757.jpeg",
         "glasses/basalt-rocks/photo.webp"
       ],
       "description": "A thick-bottomed rocks glass with a straight wall and a hint of weight. Built for spirit-forward serves and slow ice.",
@@ -481,6 +491,7 @@
       "priceUsd": null,
       "volume": "300 ml",
       "images": [
+        "glasses/slope-tumbler/IMG_1756.jpeg",
         "glasses/slope-tumbler/photo.webp"
       ],
       "description": "A taper that stacks in the cupboard and reads clean on the table. The everyday workhorse of the Embassy range.",
@@ -508,6 +519,7 @@
       "priceUsd": null,
       "volume": "380 ml",
       "images": [
+        "glasses/cylinder-hurricane/IMG_1750.jpeg",
         "glasses/cylinder-hurricane/photo.webp"
       ],
       "description": "A straight-sided hurricane that holds a pillar candle or a tall floral centre. Blown thick at the foot so it stands level.",
@@ -535,6 +547,7 @@
       "priceUsd": 8.2,
       "volume": "140 ml",
       "images": [
+        "glasses/retro-asia-cocktail-glass/IMG_1749.jpeg",
         "glasses/retro-asia-cocktail-glass/photo.webp"
       ],
       "description": "The house classic: fine walls, a straight taper and a foot that finds the table by itself.",
@@ -619,6 +632,7 @@
       "priceUsd": 2.8,
       "volume": "60 ml",
       "images": [
+        "glasses/retro-asia-shot-glass/IMG_1754.jpeg",
         "glasses/retro-asia-shot-glass/photo.webp"
       ],
       "description": "The house classic: fine walls, a straight taper and a foot that finds the table by itself.",
@@ -731,6 +745,7 @@
       "priceUsd": 8.2,
       "volume": "210 ml",
       "images": [
+        "glasses/bullet-chalet-glass/IMG_1755.jpeg",
         "glasses/bullet-chalet-glass/photo.webp"
       ],
       "description": "Tall-sided chalet shapes, weighted at the base for a low centre of gravity.",
@@ -759,6 +774,7 @@
       "priceUsd": 6.8,
       "volume": "390 ml",
       "images": [
+        "glasses/bullet-rocks-glass/IMG_1760.jpeg",
         "glasses/bullet-rocks-glass/photo.webp"
       ],
       "description": "Tall-sided chalet shapes, weighted at the base for a low centre of gravity.",
@@ -899,6 +915,7 @@
       "priceUsd": 8.2,
       "volume": "145 ml",
       "images": [
+        "glasses/coupethini-coupethini/IMG_1758.jpeg",
         "glasses/coupethini-coupethini/photo.webp"
       ],
       "description": "A coupe and a martini in one profile — the widest serve in the collection.",
@@ -955,6 +972,7 @@
       "priceUsd": 8.2,
       "volume": "150 ml",
       "images": [
+        "glasses/shorties-mini-martini/IMG_1744.png",
         "glasses/shorties-mini-martini/photo.webp"
       ],
       "description": "Small-format glasses for tasting flights and miniature serves.",
@@ -981,6 +999,7 @@
       "priceUsd": 8.2,
       "volume": "150 ml",
       "images": [
+        "glasses/shorties-daisy-coupe/IMG_1748.png",
         "glasses/shorties-daisy-coupe/photo.webp"
       ],
       "description": "Small-format glasses for tasting flights and miniature serves.",
@@ -1007,6 +1026,7 @@
       "priceUsd": 8.2,
       "volume": "160 ml",
       "images": [
+        "glasses/shorties-lil-nora/IMG_1753.jpeg",
         "glasses/shorties-lil-nora/photo.webp"
       ],
       "description": "Small-format glasses for tasting flights and miniature serves.",
@@ -1033,6 +1053,7 @@
       "priceUsd": 8.2,
       "volume": "200 ml",
       "images": [
+        "glasses/shorties-modern-margo/IMG_1746.png",
         "glasses/shorties-modern-margo/photo.webp"
       ],
       "description": "Small-format glasses for tasting flights and miniature serves.",
