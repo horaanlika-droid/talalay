@@ -23,7 +23,7 @@ const FOLDER_IMAGE_RE = new RegExp(
   "i"
 );
 const PACKAGING_CATS = new Set(["acids", "essences"]);
-const SITE_COVER_KEYS = [
+export const SITE_COVER_KEYS = [
   ["homeCraft", "covers/home-craft"],
   ["infoBanner", "covers/info-banner"],
   ["infoStory", "covers/info-story"],
@@ -163,6 +163,35 @@ export function hasLocalOverride() {
   return !!readLocalOverride();
 }
 
+let lastSaveStrippedImagesFlag = false;
+/** True when the last saveLocalOverride() hit the storage quota and had to drop inline data: photos. */
+export function lastSaveStrippedImages() {
+  return lastSaveStrippedImagesFlag;
+}
+
+/** Deep-copy a payload without inline data: images (they are too big for localStorage). */
+function stripInlineImages(payload) {
+  const clone = JSON.parse(JSON.stringify(payload));
+  for (const p of clone.products || []) {
+    if (Array.isArray(p.images)) p.images = p.images.filter((u) => !String(u).startsWith("data:"));
+  }
+  for (const c of clone.categories || []) {
+    if (String(c.cover || "").startsWith("data:")) delete c.cover;
+  }
+  const covers = clone.settings && clone.settings.covers;
+  if (covers && typeof covers === "object") {
+    for (const k of Object.keys(covers)) {
+      if (String(covers[k] || "").startsWith("data:")) delete covers[k];
+    }
+  }
+  for (const slide of (clone.settings && clone.settings.hero) || []) {
+    for (const field of ["cover", "portraitCover"]) {
+      if (String(slide[field] || "").startsWith("data:")) delete slide[field];
+    }
+  }
+  return clone;
+}
+
 export function saveLocalOverride(rawContent) {
   const normalized = normalize(rawContent);
   const payload = {
@@ -172,16 +201,24 @@ export function saveLocalOverride(rawContent) {
     categories: normalized.categories,
     products: normalized.products,
   };
+  lastSaveStrippedImagesFlag = false;
   try {
     localStorage.setItem(OVERRIDE_KEY, JSON.stringify({ at: Date.now(), data: payload }));
   } catch {
-    // QuotaExceededError: inline data: photos are too big for localStorage.
-    // Tell the owner how to route photos straight into the repo instead.
-    throw new Error(
-      "Черновик не помещается в хранилище браузера (фото как data URL слишком большие). " +
-        "Сохраните GitHub-токен во вкладке «Публикация» — тогда фото будут сразу заливаться в папки репозитория, " +
-        "либо сначала нажмите «Опубликовать на сайт»."
-    );
+    // QuotaExceededError: the draft with inline data: photos doesn't fit into
+    // localStorage. Persist it WITHOUT the inline photos — they stay in memory
+    // (state.content) for this session, so preview and «Опубликовать на сайт»
+    // still see and upload them. Only fail if even the stripped draft doesn't fit.
+    const stripped = stripInlineImages(payload);
+    lastSaveStrippedImagesFlag = JSON.stringify(stripped) !== JSON.stringify(payload);
+    try {
+      localStorage.setItem(OVERRIDE_KEY, JSON.stringify({ at: Date.now(), data: stripped }));
+    } catch {
+      throw new Error(
+        "Черновик не помещается в хранилище браузера. Сохраните GitHub-токен во вкладке «Публикация» — " +
+          "тогда фото будут сразу заливаться в папки репозитория, либо нажмите «Опубликовать на сайт»."
+      );
+    }
   }
   state.content = normalized;
   source = "local";

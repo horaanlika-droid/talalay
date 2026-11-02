@@ -475,6 +475,10 @@ async function boot() {
 
   window.__CE_DATA__ = data;
   paintTicker(data.settings || {});
+  // og:image follows settings.covers.ogShare when the owner changes it in the admin panel
+  const ogShare = String((data.settings?.covers && data.settings.covers.ogShare) || "").trim();
+  const ogMeta = document.querySelector('meta[property="og:image"]');
+  if (ogShare && ogMeta) ogMeta.setAttribute("content", mediaUrl(ogShare));
   const footerEl = document.querySelector("[data-footer]");
   if (footerEl) footerEl.innerHTML = footerHTML(data);
 

@@ -145,6 +145,18 @@ for (const k of ["homeCraft", "infoBanner", "infoStory", "ogShare"]) {
 }
 ok("all category, hero, and page cover folders exist", allCoverFilesExist);
 
+let heroPortraitsOk = true;
+for (const s of data.settings.hero || []) {
+  if (s.portraitCover && !(await exists(s.portraitCover))) heroPortraitsOk = false;
+}
+ok("hero portrait covers exist when referenced", heroPortraitsOk);
+ok(
+  "SITE_COVER_KEYS exported with the 5 site cover folders",
+  Array.isArray(api.SITE_COVER_KEYS) &&
+    api.SITE_COVER_KEYS.length === 5 &&
+    api.SITE_COVER_KEYS.every(([k, f]) => typeof k === "string" && f.startsWith("covers/"))
+);
+
 // Verify dynamic folder auto-discovery (replacing/adding files with any name or extension)
 const defaults = JSON.parse(await readFile(join(root, "data/folder-defaults.json"), "utf8"));
 const cloned = api.normalize(JSON.parse(JSON.stringify(raw)));
@@ -220,6 +232,39 @@ for (const tab of ["products", "categories", "settings", "requests", "sync"]) {
 }
 admin.logout();
 ok("admin logout clears session", admin.isAdmin() === false);
+
+// storage quota: saveLocalOverride must survive QuotaExceededError by persisting
+// the draft WITHOUT inline data: images (they stay in memory for this session)
+const ls = globalThis.localStorage;
+const origSet = ls.setItem;
+let storedVal = null;
+let setCalls = 0;
+ls.setItem = (k, v) => {
+  setCalls += 1;
+  if (k === "ce.admin.override.v1" && setCalls === 1) {
+    const e = new Error("The quota has been exceeded.");
+    e.name = "QuotaExceededError";
+    throw e;
+  }
+  storedVal = v;
+};
+const draft = JSON.parse(JSON.stringify(raw));
+draft.products[0].images = ["data:image/png;base64,AAAA", "glasses/x/photo.webp"];
+draft.categories[0].cover = "data:image/png;base64,BBBB";
+draft.settings.covers.homeCraft = "data:image/png;base64,CCCC";
+draft.settings.hero[0].cover = "data:image/png;base64,DDDD";
+draft.settings.hero[0].portraitCover = "data:image/png;base64,EEEE";
+let quotaSaved = true;
+try {
+  api.saveLocalOverride(draft);
+} catch {
+  quotaSaved = false;
+}
+ok(
+  "saveLocalOverride survives storage quota (strips inline photos incl. covers/hero, no throw)",
+  quotaSaved && typeof storedVal === "string" && !storedVal.includes("data:image") && api.lastSaveStrippedImages() === true
+);
+ls.setItem = origSet;
 
 let failed = 0;
 for (const [name, passed] of checks) {
