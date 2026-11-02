@@ -221,6 +221,35 @@ for (const tab of ["products", "categories", "settings", "requests", "sync"]) {
 admin.logout();
 ok("admin logout clears session", admin.isAdmin() === false);
 
+// storage quota: saveLocalOverride must survive QuotaExceededError by persisting
+// the draft WITHOUT inline data: images (they stay in memory for this session)
+const ls = globalThis.localStorage;
+const origSet = ls.setItem;
+let storedVal = null;
+let setCalls = 0;
+ls.setItem = (k, v) => {
+  setCalls += 1;
+  if (k === "ce.admin.override.v1" && setCalls === 1) {
+    const e = new Error("The quota has been exceeded.");
+    e.name = "QuotaExceededError";
+    throw e;
+  }
+  storedVal = v;
+};
+const draft = JSON.parse(JSON.stringify(raw));
+draft.products[0].images = ["data:image/png;base64,AAAA", "glasses/x/photo.webp"];
+let quotaSaved = true;
+try {
+  api.saveLocalOverride(draft);
+} catch {
+  quotaSaved = false;
+}
+ok(
+  "saveLocalOverride survives storage quota (strips inline photos, no throw)",
+  quotaSaved && typeof storedVal === "string" && !storedVal.includes("data:image") && api.lastSaveStrippedImages() === true
+);
+ls.setItem = origSet;
+
 let failed = 0;
 for (const [name, passed] of checks) {
   if (!passed) {

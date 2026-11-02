@@ -26,6 +26,7 @@ import {
   setCustomApiBase,
   listLocalRequests,
   setLocalRequestStatus,
+  lastSaveStrippedImages,
 } from "./api.js";
 import { esc, attr, toast } from "./ui.js";
 import { icon } from "./icons.js";
@@ -34,6 +35,19 @@ const TOKEN_KEY = "ce.admin.token";
 const PW_HASH_KEY = "ce.admin.pwHash";
 const GH_TOKEN_KEY = "ce.admin.ghToken";
 const GH_REPO_KEY = "ce.admin.ghRepo";
+
+/** Human-readable error text; storage quota errors get a clear explanation. */
+function errText(err) {
+  const msg = String((err && err.message) || err || "");
+  if ((err && err.name === "QuotaExceededError") || /quota/i.test(msg)) {
+    return (
+      "Не хватает места в хранилище браузера (черновик с фото слишком большой). " +
+      "Сохраните GitHub-токен во вкладке «Публикация» — тогда фото будут сразу заливаться в папки репозитория, " +
+      "либо нажмите «Опубликовать на сайт»."
+    );
+  }
+  return msg || "Неизвестная ошибка";
+}
 // Default SHA-256("embassy2026")
 const DEFAULT_PW_HASH = "81c02e5848f5cf8363cd941e29c5cb337b0033ad8d7ab834530aea6c7ecb15c1";
 
@@ -209,7 +223,11 @@ export async function changeAdminPassword(currentPassword, newPassword) {
   if (sha256Hex(cur) !== expectedLocalHash()) {
     throw new Error("Текущий пароль указан неверно");
   }
-  localStorage.setItem(PW_HASH_KEY, sha256Hex(next));
+  try {
+    localStorage.setItem(PW_HASH_KEY, sha256Hex(next));
+  } catch {
+    throw new Error(errText({ name: "QuotaExceededError", message: "quota" }));
+  }
 }
 
 function authHeaders() {
@@ -389,7 +407,11 @@ async function processImageFile(file, target = null) {
       const img = new Image();
       img.onerror = () => reject(new Error("Неподдерживаемый формат изображения"));
       img.onload = () => {
-        const maxSide = 1200;
+        // When the result will be kept in localStorage (static mode, no GitHub
+        // token), compress harder so several photos still fit the storage quota.
+        const willStoreLocally = isStatic() && !(localStorage.getItem(GH_TOKEN_KEY) || "").trim();
+        const maxSide = willStoreLocally ? 960 : 1200;
+        const q = willStoreLocally ? 0.78 : 0.84;
         let { width, height } = img;
         if (width > maxSide || height > maxSide) {
           const ratio = Math.min(maxSide / width, maxSide / height);
@@ -401,9 +423,9 @@ async function processImageFile(file, target = null) {
         canvas.height = height;
         const ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, width, height);
-        let out = canvas.toDataURL("image/webp", 0.84);
+        let out = canvas.toDataURL("image/webp", q);
         if (!out.startsWith("data:image/webp")) {
-          out = canvas.toDataURL("image/jpeg", 0.86);
+          out = canvas.toDataURL("image/jpeg", Math.min(q + 0.06, 0.86));
         }
         resolve(out);
       };
@@ -717,7 +739,7 @@ function loginView() {
             window.dispatchEvent(new HashChangeEvent("hashchange"));
           }
         } catch (err) {
-          errEl.textContent = err.message || "Неверный пароль";
+          errEl.textContent = errText(err) || "Неверный пароль";
           errEl.hidden = false;
           inp.focus();
           inp.select?.();
@@ -904,7 +926,7 @@ function productsView(data, rerender) {
           paintPreviews();
           toast("Фото добавлено");
         } catch (err) {
-          toast("Ошибка загрузки: " + err.message, { iconName: "warning" });
+          toast("Ошибка загрузки: " + errText(err), { iconName: "warning" });
         }
       });
 
@@ -1020,7 +1042,7 @@ function productsView(data, rerender) {
             toast("Товар удалён");
             rerender(updated);
           } catch (err) {
-            toast("Ошибка: " + err.message, { iconName: "warning" });
+            toast("Ошибка: " + errText(err), { iconName: "warning" });
           }
         }
       });
@@ -1069,10 +1091,15 @@ function productsView(data, rerender) {
         try {
           const updated = await saveProductOp(existingSlug, payload, data);
           closeModal(modal);
-          toast("Товар сохранён");
+          toast(
+            lastSaveStrippedImages()
+              ? "Сохранено. Фото не влезли в черновик браузера — нажмите «Опубликовать на сайт» (вкладка «Публикация»), чтобы залить их в репозиторий"
+              : "Товар сохранён",
+            { iconName: lastSaveStrippedImages() ? "warning" : "checkCircle", duration: lastSaveStrippedImages() ? 6000 : 2600 }
+          );
           rerender(updated);
         } catch (err) {
-          toast("Ошибка сохранения: " + err.message, { iconName: "warning" });
+          toast("Ошибка сохранения: " + errText(err), { iconName: "warning" });
         }
       });
 
@@ -1211,7 +1238,7 @@ function categoriesView(data, rerender) {
           form.elements.cover.value = url;
           toast("Обложка загружена");
         } catch (err) {
-          toast("Ошибка: " + err.message, { iconName: "warning" });
+          toast("Ошибка: " + errText(err), { iconName: "warning" });
         }
       });
 
@@ -1232,7 +1259,7 @@ function categoriesView(data, rerender) {
             toast("Категория удалена");
             rerender(updated);
           } catch (err) {
-            toast("Ошибка: " + err.message, { iconName: "warning" });
+            toast("Ошибка: " + errText(err), { iconName: "warning" });
           }
         }
       });
@@ -1253,10 +1280,15 @@ function categoriesView(data, rerender) {
         try {
           const updated = await saveCategoryOp(existingSlug, payload, data);
           closeModal(modal);
-          toast("Категория сохранена");
+          toast(
+            lastSaveStrippedImages()
+              ? "Сохранено. Фото не влезли в черновик браузера — нажмите «Опубликовать на сайт» (вкладка «Публикация»), чтобы залить их в репозиторий"
+              : "Категория сохранена",
+            { iconName: lastSaveStrippedImages() ? "warning" : "checkCircle", duration: lastSaveStrippedImages() ? 6000 : 2600 }
+          );
           rerender(updated);
         } catch (err) {
-          toast("Ошибка: " + err.message, { iconName: "warning" });
+          toast("Ошибка: " + errText(err), { iconName: "warning" });
         }
       });
     },
@@ -1428,7 +1460,7 @@ function settingsView(data, rerender) {
           paintAnnouncePreview();
           toast("Картинка загружена");
         } catch (err) {
-          toast("Ошибка загрузки: " + err.message, { iconName: "warning" });
+          toast("Ошибка загрузки: " + errText(err), { iconName: "warning" });
         }
       });
 
@@ -1508,10 +1540,15 @@ function settingsView(data, rerender) {
 
         try {
           const updated = await saveSettingsOp(patch, data);
-          toast("Настройки сохранены");
+          toast(
+            lastSaveStrippedImages()
+              ? "Сохранено. Фото не влезли в черновик браузера — нажмите «Опубликовать на сайт» (вкладка «Публикация»), чтобы залить их в репозиторий"
+              : "Настройки сохранены",
+            { iconName: lastSaveStrippedImages() ? "warning" : "checkCircle", duration: lastSaveStrippedImages() ? 6000 : 2600 }
+          );
           rerender(updated);
         } catch (err) {
-          toast("Ошибка сохранения: " + err.message, { iconName: "warning" });
+          toast("Ошибка сохранения: " + errText(err), { iconName: "warning" });
         }
       });
     },
@@ -1618,7 +1655,7 @@ function requestsView(data) {
             })
             .join("");
         } catch (err) {
-          listEl.innerHTML = `<div class="admin__empty">Ошибка загрузки заявок: ${esc(err.message)}</div>`;
+          listEl.innerHTML = `<div class="admin__empty">Ошибка загрузки заявок: ${esc(errText(err))}</div>`;
         }
       }
 
@@ -1640,7 +1677,7 @@ function requestsView(data) {
           }
           toast("Статус обновлён");
         } catch (err) {
-          toast("Ошибка: " + err.message, { iconName: "warning" });
+          toast("Ошибка: " + errText(err), { iconName: "warning" });
         }
       });
 
@@ -1766,8 +1803,8 @@ function syncView(data, rerender) {
           ghStatus.textContent = "Опубликовано в ветку main! GitHub Pages обновится примерно за 30–60 секунд.";
           toast("Опубликовано на GitHub Pages");
         } catch (err) {
-          ghStatus.textContent = "Ошибка: " + err.message;
-          toast("Ошибка публикации: " + err.message, { iconName: "warning" });
+          ghStatus.textContent = "Ошибка: " + errText(err);
+          toast("Ошибка публикации: " + errText(err), { iconName: "warning" });
         } finally {
           ghPublishBtn.disabled = false;
         }
@@ -1791,7 +1828,7 @@ function syncView(data, rerender) {
           toast("API подключён — войдите с паролем сервера");
           window.dispatchEvent(new HashChangeEvent("hashchange"));
         } catch (err) {
-          toast(`Не удалось подключиться к ${rawUrl}/api/health (${err.message})`, { iconName: "warning" });
+          toast(`Не удалось подключиться к ${rawUrl}/api/health (${errText(err)})`, { iconName: "warning" });
         }
       });
 
@@ -1830,7 +1867,7 @@ function syncView(data, rerender) {
           toast("Каталог импортирован");
           rerender(updated);
         } catch (err) {
-          toast("Некорректный JSON: " + err.message, { iconName: "warning" });
+          toast("Некорректный JSON: " + errText(err), { iconName: "warning" });
         }
       });
 
@@ -1853,7 +1890,7 @@ function syncView(data, rerender) {
           e.currentTarget.reset();
           toast("Пароль успешно изменён");
         } catch (err) {
-          toast(err.message || "Ошибка смены пароля", { iconName: "warning" });
+          toast(errText(err) || "Ошибка смены пароля", { iconName: "warning" });
         }
       });
     },
