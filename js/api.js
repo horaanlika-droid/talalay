@@ -12,14 +12,23 @@ const OVERRIDE_KEY = "ce.admin.override.v1";
 const LOCAL_REQ_KEY = "ce.requests.local.v1";
 const CONTENT_KEY = "ce.content.v1";
 const GH_TREE_KEY = "ce.gh.tree.v1";
+const GH_TOKEN_KEY = "ce.admin.ghToken"; // saved by the admin panel's GitHub publisher
 const CACHE_MAX_AGE = 1000 * 60 * 60 * 24 * 3; // 3 days
-const FOLDER_IMAGE_RE = /^(glasses|covers|packaging)\/[^/]+\/[^/]+\.(webp|png|jpe?g|avif|gif)$/i;
+/** Every raster format a photo dropped into glasses/|covers/|packaging/ may use.
+ *  PNG is fully supported — single source of truth for the tree filter, the
+ *  <img> onerror fallback in app.js and the render checks. */
+export const FOLDER_IMAGE_EXTS = ["webp", "png", "jpg", "jpeg", "avif", "gif"];
+const FOLDER_IMAGE_RE = new RegExp(
+  `^(glasses|covers|packaging)\\/[^/]+\\/[^/]+\\.(${FOLDER_IMAGE_EXTS.join("|")})$`,
+  "i"
+);
 const PACKAGING_CATS = new Set(["acids", "essences"]);
 const SITE_COVER_KEYS = [
   ["homeCraft", "covers/home-craft"],
   ["infoBanner", "covers/info-banner"],
   ["infoStory", "covers/info-story"],
   ["ogShare", "covers/og-share"],
+  ["announcementImage", "covers/announcement"],
 ];
 
 let sameOriginApi = null; // null = unknown, "" = none, string = origin
@@ -163,7 +172,17 @@ export function saveLocalOverride(rawContent) {
     categories: normalized.categories,
     products: normalized.products,
   };
-  localStorage.setItem(OVERRIDE_KEY, JSON.stringify({ at: Date.now(), data: payload }));
+  try {
+    localStorage.setItem(OVERRIDE_KEY, JSON.stringify({ at: Date.now(), data: payload }));
+  } catch {
+    // QuotaExceededError: inline data: photos are too big for localStorage.
+    // Tell the owner how to route photos straight into the repo instead.
+    throw new Error(
+      "Черновик не помещается в хранилище браузера (фото как data URL слишком большие). " +
+        "Сохраните GitHub-токен во вкладке «Публикация» — тогда фото будут сразу заливаться в папки репозитория, " +
+        "либо сначала нажмите «Опубликовать на сайт»."
+    );
+  }
   state.content = normalized;
   source = "local";
   if (typeof window !== "undefined") {
@@ -378,17 +397,38 @@ async function resolveRepoFolders(data) {
     /* ignore */
   }
   const sameTarget = cachedTree && cachedTree.repo === gh.repo && cachedTree.branch === gh.branch;
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 3500);
 
   let files = sameTarget && Array.isArray(cachedTree.files) ? cachedTree.files : null;
+
+  // If the owner saved a GitHub token in the admin panel (used for publishing),
+  // reuse it here for api.github.com only: it lifts the anonymous 60 req/hour
+  // rate limit to 5000, so a photo just dropped into a repo folder shows up on
+  // the very next reload even after heavy refreshing while testing.
+  let ghToken = "";
+  try {
+    ghToken = (localStorage.getItem(GH_TOKEN_KEY) || "").trim();
+  } catch {
+    /* ignore */
+  }
+
+  const treeUrl = `https://api.github.com/repos/${gh.repo}/git/trees/${encodeURIComponent(gh.branch)}?recursive=1`;
+  const fetchTree = (headers) => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 8000);
+    return fetch(treeUrl, { cache: "no-store", signal: controller.signal, headers }).finally(() =>
+      clearTimeout(timer)
+    );
+  };
+
   try {
     const headers = { Accept: "application/vnd.github+json" };
-    if (sameTarget && cachedTree.etag) headers["If-None-Match"] = cachedTree.etag;
-    const res = await fetch(
-      `https://api.github.com/repos/${gh.repo}/git/trees/${encodeURIComponent(gh.branch)}?recursive=1`,
-      { cache: "no-store", signal: controller.signal, headers }
-    );
+    if (ghToken) headers.Authorization = `Bearer ${ghToken}`;
+    else if (sameTarget && cachedTree.etag) headers["If-None-Match"] = cachedTree.etag;
+    let res = await fetchTree(headers);
+    if (res.status !== 200 && res.status !== 304 && !ghToken) {
+      // conditional request went sideways (etag drift / 412) — retry plainly once
+      res = await fetchTree({ Accept: "application/vnd.github+json" });
+    }
     if (res.status === 200) {
       const json = await res.json();
       if (json && Array.isArray(json.tree)) {
@@ -406,10 +446,9 @@ async function resolveRepoFolders(data) {
         }
       }
     }
+    // 304 / non-200: keep the cached list — offline or rate-limited fallback
   } catch {
     /* offline or rate-limited — fall back to cached tree or bundled paths */
-  } finally {
-    clearTimeout(timer);
   }
 
   if (!files || !files.length) return data;

@@ -1,6 +1,6 @@
 /** App shell, router and global interactions. */
 import { icon } from "./icons.js";
-import { loadContent, state, mediaUrl, detectGitHubRepo } from "./api.js";
+import { loadContent, state, mediaUrl, detectGitHubRepo, FOLDER_IMAGE_EXTS } from "./api.js";
 import { request } from "./store.js";
 import { toast, esc, attr, prefersReducedMotion } from "./ui.js";
 import {
@@ -49,12 +49,19 @@ export function linesOf(value) {
 
 export function tickerHTML(settings = {}) {
   const announcement = String(settings.announcement || "").trim();
+  const announcementImg = String((settings.covers && settings.covers.announcementImage) || "").trim();
   const custom = linesOf(settings.ticker);
   const words = [announcement, ...(custom.length ? custom : FALLBACK_TICKER)].filter(Boolean);
+  // optional picture rides with the announcement phrase (admin can upload it)
+  const img = announcementImg
+    ? `<img class="ticker__img" src="${attr(mediaUrl(announcementImg))}" alt="" loading="lazy" decoding="async">`
+    : "";
   const lap = words
     .map(
       (word, i) =>
-        `<span class="ticker__word${i === 0 && announcement ? " ticker__word--announce" : ""}">${esc(word)}</span>`
+        `<span class="ticker__word${i === 0 && announcement ? " ticker__word--announce" : ""}">${
+          i === 0 && img ? img : ""
+        }${esc(word)}</span>`
     )
     .join("");
   // the row is carried twice: one lap is exactly half the track, so the loop is seamless
@@ -65,7 +72,11 @@ export function tickerHTML(settings = {}) {
 function paintTicker(settings) {
   const ticker = document.querySelector("[data-ticker]");
   if (!ticker) return;
-  const signature = JSON.stringify([settings?.announcement || "", settings?.ticker || []]);
+  const signature = JSON.stringify([
+    settings?.announcement || "",
+    settings?.covers?.announcementImage || "",
+    settings?.ticker || [],
+  ]);
   if (ticker.dataset.signature === signature) return;
   ticker.dataset.signature = signature;
   ticker.innerHTML = tickerHTML(settings || {});
@@ -503,9 +514,10 @@ async function boot() {
         return;
       }
 
-      // 2. Try sibling image extensions (.png, .jpg, .jpeg, .webp) when browsing static files without API
+      // 2. Try sibling image extensions (png, jpg, jpeg, webp, avif, gif) — a folder
+      //    photo swapped from .webp to .png must still render without the tree API
       const baseNoExt = relPath.replace(/\.[^./]+$/, "");
-      for (const ext of ["png", "jpg", "jpeg", "webp"]) {
+      for (const ext of FOLDER_IMAGE_EXTS) {
         const candidate = `${baseNoExt}.${ext}`;
         if (candidate.toLowerCase() === relPath.toLowerCase()) continue;
         if (!tried.includes(ext)) {
