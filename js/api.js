@@ -23,7 +23,7 @@ const FOLDER_IMAGE_RE = new RegExp(
   "i"
 );
 const PACKAGING_CATS = new Set(["acids", "essences"]);
-const SITE_COVER_KEYS = [
+export const SITE_COVER_KEYS = [
   ["homeCraft", "covers/home-craft"],
   ["infoBanner", "covers/info-banner"],
   ["infoStory", "covers/info-story"],
@@ -182,6 +182,11 @@ function stripInlineImages(payload) {
   if (covers && typeof covers === "object") {
     for (const k of Object.keys(covers)) {
       if (String(covers[k] || "").startsWith("data:")) delete covers[k];
+    }
+  }
+  for (const slide of (clone.settings && clone.settings.hero) || []) {
+    for (const field of ["cover", "portraitCover"]) {
+      if (String(slide[field] || "").startsWith("data:")) delete slide[field];
     }
   }
   return clone;

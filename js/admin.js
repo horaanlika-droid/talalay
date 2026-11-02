@@ -27,6 +27,7 @@ import {
   listLocalRequests,
   setLocalRequestStatus,
   lastSaveStrippedImages,
+  SITE_COVER_KEYS,
 } from "./api.js";
 import { esc, attr, toast } from "./ui.js";
 import { icon } from "./icons.js";
@@ -554,23 +555,51 @@ async function publishToGitHub({ repo, branch = "main", token }, data, onStatus)
     }
   }
 
-  // Announcement image (settings.covers.announcementImage) as inline data: -> repo folder
+  // Site-wide covers (settings.covers.*) as inline data: -> repo folders
   const coversIn = (copy.settings && copy.settings.covers) || {};
-  if (typeof coversIn.announcementImage === "string") {
-    const m = /^data:image\/(webp|png|jpe?g);base64,(.+)$/i.exec(coversIn.announcementImage || "");
-    if (m) {
+  for (const [key, folder] of SITE_COVER_KEYS) {
+    const val = coversIn[key];
+    if (typeof val !== "string") continue;
+    const m = /^data:image\/(webp|png|jpe?g);base64,(.+)$/i.exec(val);
+    if (!m) continue;
+    const ext = m[1].toLowerCase() === "jpeg" ? "jpg" : m[1].toLowerCase();
+    const base = key === "announcementImage" ? "announcement" : "cover";
+    const filePath = `${folder}/${base}.${ext}`;
+    onStatus?.(`Загрузка обложки ${key}…`);
+    await ghPutFile({
+      repo: cleanRepo,
+      branch,
+      token: cleanToken,
+      path: filePath,
+      base64Content: m[2],
+      message: `Admin: upload site cover ${key}`,
+    });
+    copy.settings.covers = { ...coversIn, [key]: filePath };
+  }
+
+  // Hero slide covers (settings.hero[].cover / portraitCover) as inline data:
+  // -> covers/hero-<productSlug>/
+  for (const slide of (copy.settings && copy.settings.hero) || []) {
+    if (!slide.productSlug) continue;
+    const folder = `covers/hero-${slugify(slide.productSlug)}`;
+    for (const field of ["cover", "portraitCover"]) {
+      const val = slide[field];
+      if (typeof val !== "string") continue;
+      const m = /^data:image\/(webp|png|jpe?g);base64,(.+)$/i.exec(val);
+      if (!m) continue;
       const ext = m[1].toLowerCase() === "jpeg" ? "jpg" : m[1].toLowerCase();
-      const filePath = `covers/announcement/announcement.${ext}`;
-      onStatus?.("Загрузка картинки объявления…");
+      const base = field === "portraitCover" ? "portrait" : "cover";
+      const filePath = `${folder}/${base}.${ext}`;
+      onStatus?.(`Загрузка обложки слайда ${slide.productSlug} (${base})…`);
       await ghPutFile({
         repo: cleanRepo,
         branch,
         token: cleanToken,
         path: filePath,
         base64Content: m[2],
-        message: "Admin: upload announcement image",
+        message: `Admin: upload hero ${base} for ${slide.productSlug}`,
       });
-      copy.settings.covers = { ...coversIn, announcementImage: filePath };
+      slide[field] = filePath;
     }
   }
 
@@ -1311,6 +1340,52 @@ function settingsView(data, rerender) {
       )
       .join("");
 
+  // One editable site-wide cover (settings.covers.<key>): upload button + preview + path input
+  const siteCoverField = (label, key, value, placeholder) => {
+    const folder = (SITE_COVER_KEYS.find(([k]) => k === key) || [null, "covers"])[1];
+    const base = key === "announcementImage" ? "announcement" : "cover";
+    return `
+          <div class="admin__field">
+            <div class="admin__label-row">
+              <label class="admin__label">${label}</label>
+              <label class="admin__upload-btn">
+                ${icon("upload")}<span>Загрузить</span>
+                <input type="file" accept="image/*" hidden data-sitecover-upload data-key="${attr(key)}" data-folder="${attr(folder)}" data-base="${base}">
+              </label>
+            </div>
+            <div class="admin__img-previews" data-sitecover-preview="${attr(key)}"></div>
+            <input class="admin__input" name="covers.${attr(key)}" type="text"
+              value="${attr(value || "")}" placeholder="${attr(placeholder)}">
+          </div>`;
+  };
+
+  // Cover + portrait upload fields for one hero slide row
+  const heroCoverFields = (coverVal, portraitVal) => `
+                  <div class="admin__grid admin__grid--2" style="margin-top:8px">
+                    <div class="admin__field">
+                      <div class="admin__label-row">
+                        <label class="admin__label">Обложка слайда (cover)</label>
+                        <label class="admin__upload-btn">
+                          ${icon("upload")}<span>Загрузить</span>
+                          <input type="file" accept="image/*" hidden data-hero-cover-upload>
+                        </label>
+                      </div>
+                      <div class="admin__img-previews" data-hero-cover-preview></div>
+                      <input class="admin__input" type="text" data-hero-cover value="${attr(coverVal || "")}" placeholder="covers/hero-…/cover.webp">
+                    </div>
+                    <div class="admin__field">
+                      <div class="admin__label-row">
+                        <label class="admin__label">Обложка для мобильных (portrait)</label>
+                        <label class="admin__upload-btn">
+                          ${icon("upload")}<span>Загрузить</span>
+                          <input type="file" accept="image/*" hidden data-hero-portrait-upload>
+                        </label>
+                      </div>
+                      <div class="admin__img-previews" data-hero-portrait-preview></div>
+                      <input class="admin__input" type="text" data-hero-portrait value="${attr(portraitVal || "")}" placeholder="covers/hero-…/portrait.webp">
+                    </div>
+                  </div>`;
+
   return {
     title: "Настройки сайта — Админ-панель",
     html: `
@@ -1358,6 +1433,14 @@ function settingsView(data, rerender) {
             <div class="admin__img-previews" data-announce-preview></div>
             <input class="admin__input" name="covers.announcementImage" type="text"
               value="${attr((s.covers && s.covers.announcementImage) || "")}" placeholder="covers/announcement/announcement.webp">
+          </div>
+
+          <h3 class="admin__section-title">Фото на сайте (главная, «Инфо», шаринг)</h3>
+          <div class="admin__grid admin__grid--2">
+            ${siteCoverField("Фото блока «Ремесло» на главной", "homeCraft", s.covers && s.covers.homeCraft, "covers/home-craft/cover.webp")}
+            ${siteCoverField("Баннер на странице «Инфо»", "infoBanner", s.covers && s.covers.infoBanner, "covers/info-banner/cover.webp")}
+            ${siteCoverField("Фото в блоке «История» на «Инфо»", "infoStory", s.covers && s.covers.infoStory, "covers/info-story/cover.webp")}
+            ${siteCoverField("Картинка для шаринга (og:image)", "ogShare", s.covers && s.covers.ogShare, "covers/og-share/cover.jpg")}
           </div>
 
           <h3 class="admin__section-title">Контакты</h3>
@@ -1409,6 +1492,7 @@ function settingsView(data, rerender) {
                   <textarea class="admin__textarea" style="margin-top:8px" rows="2" data-hero-copy placeholder="Описание на слайде">${esc(
                     sl.copy || ""
                   )}</textarea>
+                  ${heroCoverFields(sl.cover, sl.portraitCover)}
                 </div>
                 <button type="button" class="admin__btn admin__btn--danger" data-hero-rm aria-label="Удалить слайд">${icon("trash")}</button>
               </div>
@@ -1464,6 +1548,89 @@ function settingsView(data, rerender) {
         }
       });
 
+      /* site-wide covers (settings.covers.homeCraft/infoBanner/infoStory/ogShare):
+         upload -> covers/<folder>/ (repo, when token saved), /media/ on the API
+         server, or a data URL in plain static mode */
+      const paintSiteCoverPreview = (key) => {
+        const field = form?.elements?.[`covers.${key}`];
+        const preview = root.querySelector(`[data-sitecover-preview="${key}"]`);
+        if (preview) {
+          const v = String(field?.value || "").trim();
+          preview.innerHTML = v
+            ? `<div class="admin__img-chip"><img src="${attr(mediaUrl(v))}" alt=""></div>`
+            : "";
+        }
+      };
+      root.querySelectorAll("[data-sitecover-upload]").forEach((inp) => {
+        const key = inp.dataset.key || "";
+        const field = form?.elements?.[`covers.${key}`];
+        field?.addEventListener("input", () => paintSiteCoverPreview(key));
+        paintSiteCoverPreview(key);
+        inp.addEventListener("change", async () => {
+          const file = inp.files?.[0];
+          inp.value = "";
+          if (!file || !key) return;
+          try {
+            toast("Обработка фото…");
+            const url = await processImageFile(file, {
+              folder: inp.dataset.folder || "covers",
+              baseName: inp.dataset.base || "cover",
+            });
+            if (field) field.value = url;
+            paintSiteCoverPreview(key);
+            toast("Фото загружено");
+          } catch (err) {
+            toast("Ошибка загрузки: " + errText(err), { iconName: "warning" });
+          }
+        });
+      });
+
+      /* hero slide covers: per-row upload into covers/hero-<productSlug>/ */
+      const paintHeroPreviews = (row) => {
+        for (const [fieldSel, prevSel] of [
+          ["[data-hero-cover]", "[data-hero-cover-preview]"],
+          ["[data-hero-portrait]", "[data-hero-portrait-preview]"],
+        ]) {
+          const field = row.querySelector(fieldSel);
+          const preview = row.querySelector(prevSel);
+          if (preview) {
+            const v = String(field?.value || "").trim();
+            preview.innerHTML = v
+              ? `<div class="admin__img-chip"><img src="${attr(mediaUrl(v))}" alt=""></div>`
+              : "";
+          }
+        }
+      };
+      heroListEl?.querySelectorAll("[data-hero-item]").forEach(paintHeroPreviews);
+      heroListEl?.addEventListener("input", (e) => {
+        if (e.target.closest("[data-hero-cover],[data-hero-portrait]")) {
+          const row = e.target.closest("[data-hero-item]");
+          if (row) paintHeroPreviews(row);
+        }
+      });
+      heroListEl?.addEventListener("change", async (e) => {
+        const inp = e.target.closest("[data-hero-cover-upload],[data-hero-portrait-upload]");
+        if (!inp) return;
+        const row = inp.closest("[data-hero-item]");
+        const file = inp.files?.[0];
+        inp.value = "";
+        if (!file || !row) return;
+        const isPortrait = inp.hasAttribute("data-hero-portrait-upload");
+        const slug = String(row.querySelector("[data-hero-slug]")?.value || "").trim();
+        const folder = slug ? `covers/hero-${slugify(slug)}` : "";
+        const base = isPortrait ? "portrait" : "cover";
+        const field = row.querySelector(isPortrait ? "[data-hero-portrait]" : "[data-hero-cover]");
+        try {
+          toast("Обработка фото…");
+          const url = await processImageFile(file, folder ? { folder, baseName: base } : null);
+          if (field) field.value = url;
+          paintHeroPreviews(row);
+          toast("Обложка слайда загружена");
+        } catch (err) {
+          toast("Ошибка загрузки: " + errText(err), { iconName: "warning" });
+        }
+      });
+
       root.querySelector("[data-hero-add]")?.addEventListener("click", () => {
         const firstProd = data.products?.[0];
         const div = document.createElement("div");
@@ -1481,6 +1648,7 @@ function settingsView(data, rerender) {
               <input class="admin__input" type="text" data-hero-sub value="${attr(firstProd?.subtitle || "")}" placeholder="Подзаголовок">
             </div>
             <textarea class="admin__textarea" style="margin-top:8px" rows="2" data-hero-copy placeholder="Описание на слайде"></textarea>
+            ${heroCoverFields("", "")}
           </div>
           <button type="button" class="admin__btn admin__btn--danger" data-hero-rm aria-label="Удалить слайд">${icon("trash")}</button>
         `;
@@ -1525,6 +1693,8 @@ function settingsView(data, rerender) {
           .map((row) => {
             const productSlug = row.querySelector("[data-hero-slug]")?.value || "";
             const prev = existingHeroBySlug.get(productSlug) || {};
+            const coverVal = String(row.querySelector("[data-hero-cover]")?.value || "").trim();
+            const portraitVal = String(row.querySelector("[data-hero-portrait]")?.value || "").trim();
             return {
               productSlug,
               kicker: row.querySelector("[data-hero-kicker]")?.value.trim() || "",
@@ -1532,8 +1702,12 @@ function settingsView(data, rerender) {
               name: row.querySelector("[data-hero-name]")?.value.trim() || "",
               subtitle: row.querySelector("[data-hero-sub]")?.value.trim() || "",
               copy: row.querySelector("[data-hero-copy]")?.value.trim() || "",
-              ...(prev.cover ? { cover: prev.cover } : {}),
-              ...(prev.portraitCover ? { portraitCover: prev.portraitCover } : {}),
+              ...(coverVal ? { cover: coverVal } : prev.cover ? { cover: prev.cover } : {}),
+              ...(portraitVal
+                ? { portraitCover: portraitVal }
+                : prev.portraitCover
+                  ? { portraitCover: prev.portraitCover }
+                  : {}),
             };
           })
           .filter((x) => x.productSlug);
