@@ -32,3 +32,4 @@
 | [`info-banner/`](./info-banner/) | Страница «The Embassy» (`#/info`) — верхний широкий баннер |
 | [`info-story/`](./info-story/) | Страница «The Embassy» (`#/info`) — фото блока «Since 2024» |
 | [`og-share/`](./og-share/) | Превью ссылки при отправке сайта в Telegram / WhatsApp |
+| [`announcement/`](./announcement/) | Картинка объявления — в бегущей строке сверху (также можно загрузить из админки: Настройки → «Картинка к объявлению») |

@@ -81,6 +81,18 @@ for (const product of data.products) {
 const app = await import(join(root, "js/app.js"));
 const tick = app.tickerHTML(data.settings || {});
 ok("ticker carries contacts", /@|\+971/.test(tick));
+const tickImg = app.tickerHTML({
+  ...data.settings,
+  announcement: "Warehouse sale",
+  covers: { ...(data.settings.covers || {}), announcementImage: "covers/announcement/announcement.webp" },
+});
+ok(
+  "ticker renders announcement image",
+  tickImg.includes("ticker__img") &&
+    tickImg.includes('src="covers/announcement/announcement.webp"') &&
+    tickImg.includes("Warehouse sale")
+);
+ok("ticker without image has no img tag", !app.tickerHTML({ announcement: "Hi" }).includes("ticker__img"));
 ok("ticker drops the country line", !/china/i.test(tick));
 const heroSlides = (home.html.match(/data-hero-slide=/g) || []).length;
 ok("hero carousel = slides", heroSlides === (data.settings.hero || []).length && heroSlides > 1);
@@ -150,6 +162,10 @@ api.applyFolderFiles(
     { path: "covers/hero-levitating-martini/portrait.webp", sha: defaults["covers/hero-levitating-martini/portrait.webp"] },
     // User drops custom PNG into covers/category-cocktail
     { path: "covers/category-cocktail/new-cover.png", sha: "feedface12345678" },
+    // User DELETES photo.webp and uploads photo.png instead (PNG-only folder)
+    { path: "glasses/basalt-rocks/photo.png", sha: "706e67706e676f6e" },
+    // User drops a PNG hero cover with an arbitrary phone name
+    { path: "covers/hero-etched-highball/IMG_2044.png", sha: "1mg20442044png00" },
   ],
   defaults
 );
@@ -176,6 +192,17 @@ const cocktailCatAfter = cloned.categories.find((c) => c.slug === "cocktail");
 ok(
   "new photo in category cover folder updates category cover",
   cocktailCatAfter.cover === "covers/category-cocktail/new-cover.png?v=feedface"
+);
+const basaltAfter = cloned.products.find((p) => p.slug === "basalt-rocks");
+ok(
+  "png-only folder (photo.webp deleted) becomes the product image",
+  basaltAfter.images.length === 1 && basaltAfter.images[0] === "glasses/basalt-rocks/photo.png?v=706e6770"
+);
+const etchedHeroAfter = cloned.settings.hero.find((s) => s.productSlug === "etched-highball");
+ok(
+  "png with arbitrary name wins hero folder",
+  etchedHeroAfter.cover === "covers/hero-etched-highball/IMG_2044.png?v=1mg20442" &&
+    !etchedHeroAfter.portraitCover
 );
 
 const admin = await import(join(root, "js/admin.js"));

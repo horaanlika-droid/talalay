@@ -377,8 +377,11 @@ async function deleteCategoryOp(slug, data) {
   return saveLocalOverride(copy);
 }
 
-/** Resize/compress picked image file in browser, then upload to API or return compact data URL. */
-async function processImageFile(file) {
+/** Resize/compress picked image file in browser, then upload to API or return compact data URL.
+ *  Static mode + saved GitHub token: the photo goes straight into its repo folder
+ *  (target = { folder, baseName }), so only a small path string is stored locally —
+ *  no multi-megabyte data URLs that overflow localStorage. */
+async function processImageFile(file, target = null) {
   const dataUrl = await new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = () => reject(new Error("Не удалось прочитать файл"));
@@ -416,6 +419,24 @@ async function processImageFile(file) {
       body: JSON.stringify({ filename: file.name || "photo.webp", dataUrl }),
     });
     return res.url;
+  }
+  // Static (GitHub Pages) mode: if the owner saved a token in the Публикация tab,
+  // upload directly into the item's repo folder and keep just the path.
+  const token = (localStorage.getItem(GH_TOKEN_KEY) || "").trim();
+  if (token && target && target.folder) {
+    const repo = (localStorage.getItem(GH_REPO_KEY) || "horaanlika-droid/talalay").trim();
+    const m = /^data:image\/(webp|png|jpe?g);base64,(.+)$/i.exec(dataUrl);
+    const ext = m ? (m[1].toLowerCase() === "jpeg" ? "jpg" : m[1].toLowerCase()) : "webp";
+    const filePath = `${target.folder}/${target.baseName || "photo"}.${ext}`;
+    await ghPutFile({
+      repo,
+      branch: "main",
+      token,
+      path: filePath,
+      base64Content: m ? m[2] : "",
+      message: `Admin: upload ${filePath}`,
+    });
+    return filePath;
   }
   return dataUrl;
 }
@@ -508,6 +529,26 @@ async function publishToGitHub({ repo, branch = "main", token }, data, onStatus)
         message: `Admin: upload cover for ${cat.slug}`,
       });
       cat.cover = filePath;
+    }
+  }
+
+  // Announcement image (settings.covers.announcementImage) as inline data: -> repo folder
+  const coversIn = (copy.settings && copy.settings.covers) || {};
+  if (typeof coversIn.announcementImage === "string") {
+    const m = /^data:image\/(webp|png|jpe?g);base64,(.+)$/i.exec(coversIn.announcementImage || "");
+    if (m) {
+      const ext = m[1].toLowerCase() === "jpeg" ? "jpg" : m[1].toLowerCase();
+      const filePath = `covers/announcement/announcement.${ext}`;
+      onStatus?.("Загрузка картинки объявления…");
+      await ghPutFile({
+        repo: cleanRepo,
+        branch,
+        token: cleanToken,
+        path: filePath,
+        base64Content: m[2],
+        message: "Admin: upload announcement image",
+      });
+      copy.settings.covers = { ...coversIn, announcementImage: filePath };
     }
   }
 
@@ -839,7 +880,21 @@ function productsView(data, rerender) {
         if (!file) return;
         try {
           toast("Обработка фото…");
-          const url = await processImageFile(file);
+          // target folder so a saved GitHub token can drop the photo straight into the repo
+          const slug =
+            String(form.elements.existingSlug.value || "").trim() ||
+            slugify(String(form.elements.name.value || ""));
+          const catSlug = String(form.elements.categorySlug.value || "").trim();
+          const top = catSlug === "acids" || catSlug === "essences" ? "packaging" : "glasses";
+          const folder = slug ? `${top}/${slug}` : "";
+          const folderImgs = folder
+            ? imagesArea.value
+                .split(/\r?\n/)
+                .map((s) => s.trim())
+                .filter((u) => u.startsWith(folder + "/"))
+            : [];
+          const baseName = folderImgs.length === 0 ? "photo" : `photo-${folderImgs.length + 1}`;
+          const url = await processImageFile(file, folder ? { folder, baseName } : null);
           const cur = imagesArea.value
             .split(/\r?\n/)
             .map((s) => s.trim())
@@ -1141,7 +1196,18 @@ function categoriesView(data, rerender) {
         uploadInp.value = "";
         if (!file) return;
         try {
-          const url = await processImageFile(file);
+          toast("Обработка фото…");
+          const slug =
+            String(form.elements.existingSlug.value || "").trim() ||
+            slugify(String(form.elements.slug.value || form.elements.name.value || ""));
+          const folder = slug ? `covers/category-${slug}` : "";
+          const cur = String(form.elements.cover.value || "").trim();
+          // keep the current folder file if there is one, else use the canonical cover name
+          const baseName =
+            folder && cur.startsWith(folder + "/")
+              ? cur.slice(folder.length + 1).replace(/\.[^.]+$/, "")
+              : "cover";
+          const url = await processImageFile(file, folder ? { folder, baseName } : null);
           form.elements.cover.value = url;
           toast("Обложка загружена");
         } catch (err) {
@@ -1249,6 +1315,19 @@ function settingsView(data, rerender) {
             ${textarea("О бренде (About)", "about", s.about || "", 3)}
           </div>
 
+          <div class="admin__field" style="margin-top:12px">
+            <div class="admin__label-row">
+              <label class="admin__label">Картинка к объявлению (показывается в бегущей строке, необязательно)</label>
+              <label class="admin__upload-btn">
+                ${icon("upload")}<span>Загрузить картинку</span>
+                <input type="file" accept="image/*" hidden data-announce-upload>
+              </label>
+            </div>
+            <div class="admin__img-previews" data-announce-preview></div>
+            <input class="admin__input" name="covers.announcementImage" type="text"
+              value="${attr((s.covers && s.covers.announcementImage) || "")}" placeholder="covers/announcement/announcement.webp">
+          </div>
+
           <h3 class="admin__section-title">Контакты</h3>
           <div class="admin__grid admin__grid--2">
             ${input("Email", "contacts.email", c.email || "", "email")}
@@ -1318,6 +1397,41 @@ function settingsView(data, rerender) {
       const form = root.querySelector("#admin-settings-form");
       const heroListEl = root.querySelector("[data-hero-list]");
 
+      /* announcement image: upload -> covers/announcement/ (repo, when token saved)
+         or /media/ on the API server, or a data URL in plain static mode */
+      const announceInp = root.querySelector("[data-announce-upload]");
+      const announceField = form?.elements?.["covers.announcementImage"];
+      const announcePreview = root.querySelector("[data-announce-preview]");
+      function paintAnnouncePreview() {
+        const v = String(announceField?.value || "").trim();
+        if (announcePreview) {
+          announcePreview.innerHTML = v
+            ? `<div class="admin__img-chip"><img src="${attr(mediaUrl(v))}" alt=""></div>`
+            : "";
+        }
+      }
+      if (announceField) {
+        announceField.addEventListener("input", paintAnnouncePreview);
+        paintAnnouncePreview();
+      }
+      announceInp?.addEventListener("change", async () => {
+        const file = announceInp.files?.[0];
+        announceInp.value = "";
+        if (!file) return;
+        try {
+          toast("Обработка фото…");
+          const url = await processImageFile(file, {
+            folder: "covers/announcement",
+            baseName: "announcement",
+          });
+          announceField.value = url;
+          paintAnnouncePreview();
+          toast("Картинка загружена");
+        } catch (err) {
+          toast("Ошибка загрузки: " + err.message, { iconName: "warning" });
+        }
+      });
+
       root.querySelector("[data-hero-add]")?.addEventListener("click", () => {
         const firstProd = data.products?.[0];
         const div = document.createElement("div");
@@ -1351,10 +1465,13 @@ function settingsView(data, rerender) {
         const fd = new FormData(form);
         const patch = {};
         const contacts = { ...(s.contacts || {}) };
+        const coversPatch = {};
 
         for (const [key, value] of fd.entries()) {
           if (key.startsWith("contacts.")) {
             contacts[key.slice("contacts.".length)] = String(value).trim();
+          } else if (key.startsWith("covers.")) {
+            coversPatch[key.slice("covers.".length)] = String(value).trim();
           } else if (key === "ticker" || key === "marquee") {
             patch[key] = String(value)
               .split(/\r?\n/)
@@ -1367,6 +1484,9 @@ function settingsView(data, rerender) {
           }
         }
         patch.contacts = contacts;
+        if (Object.keys(coversPatch).length) {
+          patch.covers = { ...(s.covers || {}), ...coversPatch };
+        }
 
         const existingHeroBySlug = new Map(heroSlides.map((h) => [h.productSlug, h]));
         patch.hero = [...heroListEl.querySelectorAll("[data-hero-item]")]

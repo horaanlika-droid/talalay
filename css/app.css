@@ -2723,6 +2723,15 @@ main {
 .ticker__word--announce {
   color: var(--fg-soft);
 }
+.ticker__img {
+  height: 1.5em;
+  width: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 3px;
+  border: 1px solid var(--hairline);
+  margin-right: 2px;
+}
 @keyframes ticker-run {
   from {
     transform: translate3d(0, 0, 0);

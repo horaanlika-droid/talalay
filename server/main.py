@@ -159,6 +159,7 @@ _SITE_COVERS = (
     ("infoBanner", "covers/info-banner"),
     ("infoStory", "covers/info-story"),
     ("ogShare", "covers/og-share"),
+    ("announcementImage", "covers/announcement"),
 )
 _SHA_CACHE: dict[str, tuple[int, int, str]] = {}
 _DEFAULTS_CACHE: tuple[int, dict[str, str]] | None = None
