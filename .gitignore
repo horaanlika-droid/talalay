@@ -13,3 +13,6 @@ venv/
 Thumbs.db
 .idea/
 .vscode/
+
+# staged previews derived from brand-source masters
+brand-source/photos-2026-11/staged/
